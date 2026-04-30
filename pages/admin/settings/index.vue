@@ -531,10 +531,14 @@ const saveProfile = async () => {
     const profileData = await $fetch('/api/admin/profile')
     console.log('✅ [Frontend] Профиль загружен из БД:', profileData.admin)
     
-    // Обновляем локальные данные
-    profile.email = profileData.admin.email
-    profile.name = profileData.admin.name
-    profile.password = ''
+    // Обновляем локальные данные реактивно
+    console.log('🔄 [Frontend] Обновляю локальные данные реактивно...')
+    Object.assign(profile, {
+      email: profileData.admin.email,
+      name: profileData.admin.name,
+      password: '',
+    })
+    console.log('✅ [Frontend] Локальные данные обновлены:', { email: profile.email, name: profile.name })
     
     profileMessage.value = { type: 'success', text: 'Профиль успешно обновлен! Данные сохранены в БД.' }
   } catch (e: any) {
