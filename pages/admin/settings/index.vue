@@ -717,8 +717,29 @@ const saveVkGroup = async () => {
 
 const saveEmail = async () => {
   email.saving = true
+  console.log('🟡 [Frontend] Сохранение email настроек...')
   try {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'email',
+        data: {
+          smtpHost: email.smtpHost,
+          smtpPort: email.smtpPort,
+          smtpUser: email.smtpUser,
+          smtpPass: email.smtpPass,
+          smtpFrom: email.smtpFrom,
+          enableWelcome: email.enableWelcome,
+          enablePurchase: email.enablePurchase,
+          enableVkGroup: email.enableVkGroup,
+        },
+      },
+    })
+    console.log('✅ [Frontend] Email настройки сохранены')
+    alert('Email настройки сохранены!')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения email:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
   } finally {
     email.saving = false
   }
@@ -726,8 +747,26 @@ const saveEmail = async () => {
 
 const saveSeo = async () => {
   seo.saving = true
+  console.log('🟡 [Frontend] Сохранение SEO настроек...')
   try {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'seo',
+        data: {
+          title: seo.title,
+          description: seo.description,
+          keywords: seo.keywords,
+          enableSitemap: seo.enableSitemap,
+          enableRobots: seo.enableRobots,
+        },
+      },
+    })
+    console.log('✅ [Frontend] SEO настройки сохранены')
+    alert('SEO настройки сохранены!')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения SEO:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
   } finally {
     seo.saving = false
   }
@@ -735,8 +774,23 @@ const saveSeo = async () => {
 
 const saveGeneral = async () => {
   general.saving = true
+  console.log('🟡 [Frontend] Сохранение общих настроек...')
   try {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'general',
+        data: {
+          siteName: general.siteName,
+          adminEmail: general.adminEmail,
+        },
+      },
+    })
+    console.log('✅ [Frontend] Общие настройки сохранены')
+    alert('Общие настройки сохранены!')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения общих настроек:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
   } finally {
     general.saving = false
   }
@@ -758,6 +812,40 @@ onMounted(async () => {
     const adminsData = await $fetch('/api/admin/admins')
     console.log('✅ [Frontend] Администраторы загружены:', adminsData.admins)
     admins.value = adminsData.admins
+    
+    // Загружаем остальные настройки
+    const allSettings = await $fetch('/api/admin/settings/all')
+    console.log('✅ [Frontend] Все настройки загружены:', allSettings)
+    
+    if (allSettings.email) {
+      Object.assign(email, {
+        smtpHost: allSettings.email.smtpHost,
+        smtpPort: allSettings.email.smtpPort,
+        smtpUser: allSettings.email.smtpUser,
+        smtpPass: allSettings.email.smtpPass,
+        smtpFrom: allSettings.email.smtpFrom,
+        enableWelcome: !!allSettings.email.enableWelcome,
+        enablePurchase: !!allSettings.email.enablePurchase,
+        enableVkGroup: !!allSettings.email.enableVkGroup,
+      })
+    }
+    
+    if (allSettings.seo) {
+      Object.assign(seo, {
+        title: allSettings.seo.title,
+        description: allSettings.seo.description,
+        keywords: allSettings.seo.keywords,
+        enableSitemap: !!allSettings.seo.enableSitemap,
+        enableRobots: !!allSettings.seo.enableRobots,
+      })
+    }
+    
+    if (allSettings.general) {
+      Object.assign(general, {
+        siteName: allSettings.general.siteName,
+        adminEmail: allSettings.general.adminEmail,
+      })
+    }
     
     console.log('✅ [Frontend] Все данные обновлены в компоненте')
   } catch (e) {

@@ -2612,6 +2612,7 @@ const _lazy_A8X4T2 = () => Promise.resolve().then(function () { return login_pos
 const _lazy_EE5Nrq = () => Promise.resolve().then(function () { return profile_get$1; });
 const _lazy_1d2OBt = () => Promise.resolve().then(function () { return profile_post$1; });
 const _lazy_v2SzUE = () => Promise.resolve().then(function () { return settings_post$1; });
+const _lazy_GxDtRk = () => Promise.resolve().then(function () { return all_get$1; });
 const _lazy_iLABVq = () => Promise.resolve().then(function () { return _slug__get$1; });
 const _lazy_KhDoCk = () => Promise.resolve().then(function () { return index_get$3; });
 const _lazy_Bbdfzr = () => Promise.resolve().then(function () { return send_post$1; });
@@ -2631,6 +2632,7 @@ const handlers = [
   { route: '/api/admin/profile', handler: _lazy_EE5Nrq, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/profile', handler: _lazy_1d2OBt, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/settings', handler: _lazy_v2SzUE, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/settings/all', handler: _lazy_GxDtRk, lazy: true, middleware: false, method: "get" },
   { route: '/api/courses/:slug', handler: _lazy_iLABVq, lazy: true, middleware: false, method: "get" },
   { route: '/api/courses', handler: _lazy_KhDoCk, lazy: true, middleware: false, method: "get" },
   { route: '/api/email/send', handler: _lazy_Bbdfzr, lazy: true, middleware: false, method: "post" },
@@ -3046,13 +3048,43 @@ const vkGroups = sqliteTable("vk_groups", {
   token: text("token").notNull(),
   createdAt: text("created_at").default(sql`(datetime('now'))`)
 });
+const emailSettings = sqliteTable("email_settings", {
+  id: integer("id").primaryKey(),
+  smtpHost: text("smtp_host").notNull().default("smtp.gmail.com"),
+  smtpPort: integer("smtp_port").notNull().default(587),
+  smtpUser: text("smtp_user").notNull().default(""),
+  smtpPass: text("smtp_pass").notNull().default(""),
+  smtpFrom: text("smtp_from").notNull().default("noreply@kroyfit.ru"),
+  enableWelcome: integer("enable_welcome").notNull().default(1),
+  enablePurchase: integer("enable_purchase").notNull().default(1),
+  enableVkGroup: integer("enable_vk_group").notNull().default(1),
+  updatedAt: text("updated_at").default(sql`(datetime('now'))`)
+});
+const seoSettings = sqliteTable("seo_settings", {
+  id: integer("id").primaryKey(),
+  title: text("title").notNull().default("\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F"),
+  description: text("description").notNull().default("\u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F"),
+  keywords: text("keywords").notNull().default("\u043A\u0440\u043E\u0439\u043A\u0430, \u0448\u0438\u0442\u044C\u0435, \u043A\u0443\u0440\u0441\u044B"),
+  enableSitemap: integer("enable_sitemap").notNull().default(1),
+  enableRobots: integer("enable_robots").notNull().default(1),
+  updatedAt: text("updated_at").default(sql`(datetime('now'))`)
+});
+const generalSettings = sqliteTable("general_settings", {
+  id: integer("id").primaryKey(),
+  siteName: text("site_name").notNull().default("\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F"),
+  adminEmail: text("admin_email").notNull().default(""),
+  updatedAt: text("updated_at").default(sql`(datetime('now'))`)
+});
 
 const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   admins: admins$1,
   courses: courses$2,
+  emailSettings: emailSettings,
+  generalSettings: generalSettings,
   purchases: purchases,
   roles: roles,
+  seoSettings: seoSettings,
   users: users,
   vkGroups: vkGroups
 }, Symbol.toStringTag, { value: 'Module' }));
@@ -3273,6 +3305,45 @@ const settings_post = defineEventHandler(async (event) => {
       }
       return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D" };
     }
+    if (type === "email") {
+      console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 email \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
+      const { smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom, enableWelcome, enablePurchase, enableVkGroup } = data;
+      await db.update(emailSettings).set({
+        smtpHost,
+        smtpPort,
+        smtpUser,
+        smtpPass,
+        smtpFrom,
+        enableWelcome: enableWelcome ? 1 : 0,
+        enablePurchase: enablePurchase ? 1 : 0,
+        enableVkGroup: enableVkGroup ? 1 : 0
+      }).where(eq(emailSettings.id, 1));
+      console.log("\u2705 [API] Email \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B");
+      return { success: true, message: "Email \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B" };
+    }
+    if (type === "seo") {
+      console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 SEO \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
+      const { title, description, keywords, enableSitemap, enableRobots } = data;
+      await db.update(seoSettings).set({
+        title,
+        description,
+        keywords,
+        enableSitemap: enableSitemap ? 1 : 0,
+        enableRobots: enableRobots ? 1 : 0
+      }).where(eq(seoSettings.id, 1));
+      console.log("\u2705 [API] SEO \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B");
+      return { success: true, message: "SEO \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B" };
+    }
+    if (type === "general") {
+      console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u043E\u0431\u0449\u0438\u0445 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
+      const { siteName, adminEmail } = data;
+      await db.update(generalSettings).set({
+        siteName,
+        adminEmail
+      }).where(eq(generalSettings.id, 1));
+      console.log("\u2705 [API] \u041E\u0431\u0449\u0438\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B");
+      return { success: true, message: "\u041E\u0431\u0449\u0438\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B" };
+    }
     console.error("\u274C [API] \u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u044B\u0439 \u0442\u0438\u043F \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F:", type);
     throw createError({
       statusCode: 400,
@@ -3290,6 +3361,40 @@ const settings_post = defineEventHandler(async (event) => {
 const settings_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: settings_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const all_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/admin/settings/all - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0432\u0441\u0435\u0445 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A");
+  try {
+    const vk = await db.select().from(vkGroups);
+    const email = await db.select().from(emailSettings);
+    const seo = await db.select().from(seoSettings);
+    const general = await db.select().from(generalSettings);
+    console.log("\u2705 [API] \u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u044B:", {
+      vkGroups: vk.length,
+      email: email.length,
+      seo: seo.length,
+      general: general.length
+    });
+    return {
+      success: true,
+      vkGroups: vk,
+      email: email[0] || null,
+      seo: seo[0] || null,
+      general: general[0] || null
+    };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A"
+    });
+  }
+});
+
+const all_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: all_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const courses$1 = [

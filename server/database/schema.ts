@@ -75,3 +75,33 @@ export const vkGroups = sqliteTable('vk_groups', {
   token: text('token').notNull(),
   createdAt: text('created_at').default(sql`(datetime('now'))`),
 })
+
+export const emailSettings = sqliteTable('email_settings', {
+  id: integer('id').primaryKey(),
+  smtpHost: text('smtp_host').notNull().default('smtp.gmail.com'),
+  smtpPort: integer('smtp_port').notNull().default(587),
+  smtpUser: text('smtp_user').notNull().default(''),
+  smtpPass: text('smtp_pass').notNull().default(''),
+  smtpFrom: text('smtp_from').notNull().default('noreply@kroyfit.ru'),
+  enableWelcome: integer('enable_welcome').notNull().default(1),
+  enablePurchase: integer('enable_purchase').notNull().default(1),
+  enableVkGroup: integer('enable_vk_group').notNull().default(1),
+  updatedAt: text('updated_at').default(sql`(datetime('now'))`),
+})
+
+export const seoSettings = sqliteTable('seo_settings', {
+  id: integer('id').primaryKey(),
+  title: text('title').notNull().default('Генетика Кроя'),
+  description: text('description').notNull().default('Курсы кройки и шитья'),
+  keywords: text('keywords').notNull().default('кройка, шитье, курсы'),
+  enableSitemap: integer('enable_sitemap').notNull().default(1),
+  enableRobots: integer('enable_robots').notNull().default(1),
+  updatedAt: text('updated_at').default(sql`(datetime('now'))`),
+})
+
+export const generalSettings = sqliteTable('general_settings', {
+  id: integer('id').primaryKey(),
+  siteName: text('site_name').notNull().default('Генетика Кроя'),
+  adminEmail: text('admin_email').notNull().default(''),
+  updatedAt: text('updated_at').default(sql`(datetime('now'))`),
+})

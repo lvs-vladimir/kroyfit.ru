@@ -1,5 +1,5 @@
 import { d as defineEventHandler, r as readBody, c as createError } from '../../../nitro/nitro.mjs';
-import { d as db, a as admins, r as roles } from '../../../_/db.mjs';
+import { d as db, a as admins, r as roles, e as emailSettings, s as seoSettings, g as generalSettings } from '../../../_/db.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
 import 'node:https';
@@ -100,6 +100,45 @@ const settings_post = defineEventHandler(async (event) => {
         console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0437\u0434\u0430\u043D:", newId);
       }
       return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D" };
+    }
+    if (type === "email") {
+      console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 email \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
+      const { smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom, enableWelcome, enablePurchase, enableVkGroup } = data;
+      await db.update(emailSettings).set({
+        smtpHost,
+        smtpPort,
+        smtpUser,
+        smtpPass,
+        smtpFrom,
+        enableWelcome: enableWelcome ? 1 : 0,
+        enablePurchase: enablePurchase ? 1 : 0,
+        enableVkGroup: enableVkGroup ? 1 : 0
+      }).where(eq(emailSettings.id, 1));
+      console.log("\u2705 [API] Email \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B");
+      return { success: true, message: "Email \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B" };
+    }
+    if (type === "seo") {
+      console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 SEO \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
+      const { title, description, keywords, enableSitemap, enableRobots } = data;
+      await db.update(seoSettings).set({
+        title,
+        description,
+        keywords,
+        enableSitemap: enableSitemap ? 1 : 0,
+        enableRobots: enableRobots ? 1 : 0
+      }).where(eq(seoSettings.id, 1));
+      console.log("\u2705 [API] SEO \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B");
+      return { success: true, message: "SEO \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B" };
+    }
+    if (type === "general") {
+      console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u043E\u0431\u0449\u0438\u0445 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
+      const { siteName, adminEmail } = data;
+      await db.update(generalSettings).set({
+        siteName,
+        adminEmail
+      }).where(eq(generalSettings.id, 1));
+      console.log("\u2705 [API] \u041E\u0431\u0449\u0438\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B");
+      return { success: true, message: "\u041E\u0431\u0449\u0438\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B" };
     }
     console.error("\u274C [API] \u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u044B\u0439 \u0442\u0438\u043F \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u044F:", type);
     throw createError({

@@ -1,7 +1,7 @@
 import { ref, customRef } from 'vue';
-import { A as klona, B as parse, C as getRequestHeader, D as isEqual, E as setCookie, F as getCookie, G as deleteCookie } from '../nitro/nitro.mjs';
+import { z as klona, A as parse, B as getRequestHeader, C as isEqual, D as setCookie, E as getCookie, F as deleteCookie } from '../nitro/nitro.mjs';
 import { L as useNuxtApp } from './server.mjs';
-import { a as useRequestEvent } from './ssr-BEZSE_YS.mjs';
+import { u as useRequestEvent } from './ssr-BEZSE_YS.mjs';
 
 function parseCookieValue(value) {
   if (value === "undefined") {

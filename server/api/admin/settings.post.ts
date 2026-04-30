@@ -1,5 +1,5 @@
 import { db } from '../../database/db'
-import { roles, admins } from '../../database/schema'
+import { roles, admins, emailSettings, seoSettings, generalSettings } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
@@ -100,6 +100,41 @@ export default defineEventHandler(async (event) => {
         console.log('✅ [API] Администратор создан:', newId)
       }
       return { success: true, message: 'Администратор сохранен' }
+    }
+
+    if (type === 'email') {
+      console.log('🟡 [API] Сохранение email настроек...')
+      const { smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom, enableWelcome, enablePurchase, enableVkGroup } = data
+      await db.update(emailSettings).set({
+        smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom,
+        enableWelcome: enableWelcome ? 1 : 0,
+        enablePurchase: enablePurchase ? 1 : 0,
+        enableVkGroup: enableVkGroup ? 1 : 0,
+      }).where(eq(emailSettings.id, 1))
+      console.log('✅ [API] Email настройки сохранены')
+      return { success: true, message: 'Email настройки сохранены' }
+    }
+
+    if (type === 'seo') {
+      console.log('🟡 [API] Сохранение SEO настроек...')
+      const { title, description, keywords, enableSitemap, enableRobots } = data
+      await db.update(seoSettings).set({
+        title, description, keywords,
+        enableSitemap: enableSitemap ? 1 : 0,
+        enableRobots: enableRobots ? 1 : 0,
+      }).where(eq(seoSettings.id, 1))
+      console.log('✅ [API] SEO настройки сохранены')
+      return { success: true, message: 'SEO настройки сохранены' }
+    }
+
+    if (type === 'general') {
+      console.log('🟡 [API] Сохранение общих настроек...')
+      const { siteName, adminEmail } = data
+      await db.update(generalSettings).set({
+        siteName, adminEmail,
+      }).where(eq(generalSettings.id, 1))
+      console.log('✅ [API] Общие настройки сохранены')
+      return { success: true, message: 'Общие настройки сохранены' }
     }
 
     console.error('❌ [API] Неизвестный тип сохранения:', type)

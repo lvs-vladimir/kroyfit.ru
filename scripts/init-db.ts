@@ -89,6 +89,45 @@ sqlite.exec(`
   )
 `)
 
+// Email настройки
+sqlite.exec(`
+  CREATE TABLE IF NOT EXISTS email_settings (
+    id INTEGER PRIMARY KEY,
+    smtp_host TEXT NOT NULL DEFAULT 'smtp.gmail.com',
+    smtp_port INTEGER NOT NULL DEFAULT 587,
+    smtp_user TEXT NOT NULL DEFAULT '',
+    smtp_pass TEXT NOT NULL DEFAULT '',
+    smtp_from TEXT NOT NULL DEFAULT 'noreply@kroyfit.ru',
+    enable_welcome INTEGER NOT NULL DEFAULT 1,
+    enable_purchase INTEGER NOT NULL DEFAULT 1,
+    enable_vk_group INTEGER NOT NULL DEFAULT 1,
+    updated_at TEXT DEFAULT (datetime('now'))
+  )
+`)
+
+// SEO настройки
+sqlite.exec(`
+  CREATE TABLE IF NOT EXISTS seo_settings (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL DEFAULT 'Генетика Кроя',
+    description TEXT NOT NULL DEFAULT 'Курсы кройки и шитья',
+    keywords TEXT NOT NULL DEFAULT 'кройка, шитье, курсы',
+    enable_sitemap INTEGER NOT NULL DEFAULT 1,
+    enable_robots INTEGER NOT NULL DEFAULT 1,
+    updated_at TEXT DEFAULT (datetime('now'))
+  )
+`)
+
+// Общие настройки
+sqlite.exec(`
+  CREATE TABLE IF NOT EXISTS general_settings (
+    id INTEGER PRIMARY KEY,
+    site_name TEXT NOT NULL DEFAULT 'Генетика Кроя',
+    admin_email TEXT NOT NULL DEFAULT '',
+    updated_at TEXT DEFAULT (datetime('now'))
+  )
+`)
+
 console.log('Добавление тестовых данных...')
 
 // Роли
@@ -111,6 +150,36 @@ if (existingAdmins.count === 0) {
     ('1', 'admin@kroyfit.ru', 'hashed_password_here', 'Администратор', '1', 1)
   `)
   console.log('Администраторы добавлены')
+}
+
+// Email настройки
+const existingEmail = sqlite.prepare('SELECT COUNT(*) as count FROM email_settings').get() as any
+if (existingEmail.count === 0) {
+  sqlite.exec(`
+    INSERT INTO email_settings (id, smtp_host, smtp_port, smtp_user, smtp_pass, smtp_from, enable_welcome, enable_purchase, enable_vk_group) VALUES
+    (1, 'smtp.gmail.com', 587, '', '', 'noreply@kroyfit.ru', 1, 1, 1)
+  `)
+  console.log('Email настройки добавлены')
+}
+
+// SEO настройки
+const existingSeo = sqlite.prepare('SELECT COUNT(*) as count FROM seo_settings').get() as any
+if (existingSeo.count === 0) {
+  sqlite.exec(`
+    INSERT INTO seo_settings (id, title, description, keywords, enable_sitemap, enable_robots) VALUES
+    (1, 'Генетика Кроя', 'Курсы кройки и шитья', 'кройка, шитье, курсы', 1, 1)
+  `)
+  console.log('SEO настройки добавлены')
+}
+
+// Общие настройки
+const existingGeneral = sqlite.prepare('SELECT COUNT(*) as count FROM general_settings').get() as any
+if (existingGeneral.count === 0) {
+  sqlite.exec(`
+    INSERT INTO general_settings (id, site_name, admin_email) VALUES
+    (1, 'Генетика Кроя', '')
+  `)
+  console.log('Общие настройки добавлены')
 }
 
 // Курсы

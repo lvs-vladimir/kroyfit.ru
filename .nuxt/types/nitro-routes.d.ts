@@ -16,6 +16,9 @@ declare module "nitropack/types" {
     '/api/admin/settings': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/settings.post').default>>>>
     }
+    '/api/admin/settings/all': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/settings/all.get').default>>>>
+    }
     '/api/courses/:slug': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/courses/[slug].get').default>>>>
     }

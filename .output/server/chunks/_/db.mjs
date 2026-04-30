@@ -66,13 +66,43 @@ const vkGroups = sqliteTable("vk_groups", {
   token: text("token").notNull(),
   createdAt: text("created_at").default(sql`(datetime('now'))`)
 });
+const emailSettings = sqliteTable("email_settings", {
+  id: integer("id").primaryKey(),
+  smtpHost: text("smtp_host").notNull().default("smtp.gmail.com"),
+  smtpPort: integer("smtp_port").notNull().default(587),
+  smtpUser: text("smtp_user").notNull().default(""),
+  smtpPass: text("smtp_pass").notNull().default(""),
+  smtpFrom: text("smtp_from").notNull().default("noreply@kroyfit.ru"),
+  enableWelcome: integer("enable_welcome").notNull().default(1),
+  enablePurchase: integer("enable_purchase").notNull().default(1),
+  enableVkGroup: integer("enable_vk_group").notNull().default(1),
+  updatedAt: text("updated_at").default(sql`(datetime('now'))`)
+});
+const seoSettings = sqliteTable("seo_settings", {
+  id: integer("id").primaryKey(),
+  title: text("title").notNull().default("\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F"),
+  description: text("description").notNull().default("\u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F"),
+  keywords: text("keywords").notNull().default("\u043A\u0440\u043E\u0439\u043A\u0430, \u0448\u0438\u0442\u044C\u0435, \u043A\u0443\u0440\u0441\u044B"),
+  enableSitemap: integer("enable_sitemap").notNull().default(1),
+  enableRobots: integer("enable_robots").notNull().default(1),
+  updatedAt: text("updated_at").default(sql`(datetime('now'))`)
+});
+const generalSettings = sqliteTable("general_settings", {
+  id: integer("id").primaryKey(),
+  siteName: text("site_name").notNull().default("\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F"),
+  adminEmail: text("admin_email").notNull().default(""),
+  updatedAt: text("updated_at").default(sql`(datetime('now'))`)
+});
 
 const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   admins: admins,
   courses: courses,
+  emailSettings: emailSettings,
+  generalSettings: generalSettings,
   purchases: purchases,
   roles: roles,
+  seoSettings: seoSettings,
   users: users,
   vkGroups: vkGroups
 }, Symbol.toStringTag, { value: 'Module' }));
@@ -80,5 +110,5 @@ const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
 const sqlite = new Database("kroyfit.db");
 const db = drizzle(sqlite, { schema });
 
-export { admins as a, courses as c, db as d, purchases as p, roles as r, users as u, vkGroups as v };
+export { admins as a, courses as c, db as d, emailSettings as e, generalSettings as g, purchases as p, roles as r, seoSettings as s, users as u, vkGroups as v };
 //# sourceMappingURL=db.mjs.map
