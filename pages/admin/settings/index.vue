@@ -468,7 +468,7 @@ const email = reactive({
 })
 
 const seo = reactive({
-  title: siteName,
+  title: '',
   description: 'Курсы кройки и шитья',
   keywords: 'кройка, шитье, курсы',
   enableSitemap: true,
