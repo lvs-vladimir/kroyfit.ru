@@ -246,6 +246,9 @@
                   <div class="flex-grow-1">
                     <h3 class="text-subtitle-1 font-weight-bold mb-0" style="color: #020617;">{{ group.name }}</h3>
                   </div>
+                  <v-btn icon size="small" variant="text" color="grey-darken-2" @click="editVkGroup(group)">
+                    <v-icon size="18">mdi-pencil</v-icon>
+                  </v-btn>
                   <v-btn icon size="small" variant="text" color="red" @click="deleteVkGroup(group.id)">
                     <v-icon size="18">mdi-delete</v-icon>
                   </v-btn>
@@ -260,7 +263,7 @@
           <v-dialog v-model="showAddVkDialog" max-width="500">
             <v-card style="border-radius: 12px;">
               <v-card-title class="pa-6 pb-2">
-                <h2 class="text-h6 font-weight-bold">Добавление VK группы</h2>
+                <h2 class="text-h6 font-weight-bold">{{ editingVkGroup ? 'Редактирование' : 'Добавление' }} VK группы</h2>
               </v-card-title>
               <v-card-text class="pa-6">
                 <div class="mb-4">
@@ -281,7 +284,7 @@
                 </div>
                 <div class="d-flex ga-2">
                   <v-btn color="green-darken-3" variant="flat" @click="saveVkGroup" :loading="vkSaving">
-                    Добавить
+                    {{ editingVkGroup ? 'Обновить' : 'Добавить' }}
                   </v-btn>
                   <v-btn variant="text" color="grey-darken-2" @click="showAddVkDialog = false">
                     Отмена
@@ -386,6 +389,7 @@ const showAddAdminDialog = ref(false)
 const showAddVkDialog = ref(false)
 const editingRole = ref(null)
 const editingAdmin = ref(null)
+const editingVkGroup = ref(null)
 const roleSaving = ref(false)
 const adminSaving = ref(false)
 const vkSaving = ref(false)
@@ -569,19 +573,30 @@ const deleteAdmin = (id: string) => {
   if (confirm('Удалить администратора?')) admins.value = admins.value.filter(a => a.id !== id)
 }
 
+const deleteVkGroup = (id: string) => {
+  if (confirm('Удалить группу?')) vkGroups.value = vkGroups.value.filter(g => g.id !== id)
+}
+
+const editVkGroup = (group: any) => {
+  editingVkGroup.value = group
+  Object.assign(newVkGroup, group)
+  showAddVkDialog.value = true
+}
+
 const saveVkGroup = async () => {
   vkSaving.value = true
   try {
-    vkGroups.value.push({ id: String(Date.now()), ...newVkGroup })
+    if (editingVkGroup.value) {
+      Object.assign(editingVkGroup.value, newVkGroup)
+    } else {
+      vkGroups.value.push({ id: String(Date.now()), ...newVkGroup })
+    }
     showAddVkDialog.value = false
+    editingVkGroup.value = null
     Object.assign(newVkGroup, { name: '', vkId: '', courseSlug: '', token: '' })
   } finally {
     vkSaving.value = false
   }
-}
-
-const deleteVkGroup = (id: string) => {
-  if (confirm('Удалить группу?')) vkGroups.value = vkGroups.value.filter(g => g.id !== id)
 }
 
 const saveEmail = async () => {
