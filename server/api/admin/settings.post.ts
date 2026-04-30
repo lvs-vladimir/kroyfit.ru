@@ -2,6 +2,19 @@ import { db } from '../../database/db'
 import { roles, admins, emailSettings, seoSettings, generalSettings } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 
+// Получение adminId из токена
+const getAdminIdFromToken = (event: any) => {
+  const token = getCookie(event, 'admin-token')
+  if (!token) return null
+  
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf-8')
+    return decoded.split(':')[0]
+  } catch (e) {
+    return null
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { type, data } = body
@@ -19,7 +32,17 @@ export default defineEventHandler(async (event) => {
   try {
     if (type === 'profile') {
       console.log('🟡 [API] Сохранение профиля администратора...')
-      const { adminId, email, name, password } = data
+      
+      // Получаем adminId из токена (безопасно)
+      const adminId = getAdminIdFromToken(event)
+      if (!adminId) {
+        throw createError({
+          statusCode: 401,
+          message: 'Не авторизован',
+        })
+      }
+      
+      const { email, name, password } = data
       
       console.log('📝 [API] Данные для обновления:', { adminId, email, name, hasPassword: !!password })
       

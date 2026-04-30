@@ -2147,7 +2147,22 @@ const plugins = [
 _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"2f653-xw35J+ICd5PKsyyPWjVLnwvFAJc\"",
+    "mtime": "2026-04-30T12:23:45.804Z",
+    "size": 194131,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"b7244-Jbodtx1CLiCx/molHofMUNXPfGg\"",
+    "mtime": "2026-04-30T12:23:45.806Z",
+    "size": 750148,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -3197,9 +3212,26 @@ const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProper
 
 const profile_get = defineEventHandler(async (event) => {
   console.log("\u{1F535} [API] GET /api/admin/profile - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430");
+  const token = getCookie(event, "admin-token");
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      message: "\u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D"
+    });
+  }
+  let adminId;
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    adminId = decoded.split(":")[0];
+  } catch (e) {
+    throw createError({
+      statusCode: 401,
+      message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0442\u043E\u043A\u0435\u043D"
+    });
+  }
   try {
     const admin = await db.query.admins.findFirst({
-      where: eq(admins.id, "1")
+      where: eq(admins.id, adminId)
     });
     if (!admin) {
       console.error("\u274C [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D");
@@ -3209,7 +3241,8 @@ const profile_get = defineEventHandler(async (event) => {
       });
     }
     console.log("\u2705 [API] \u041F\u0440\u043E\u0444\u0438\u043B\u044C \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D:", { email: admin.email, name: admin.name });
-    return { success: true, admin };
+    const { password, ...adminWithoutPassword } = admin;
+    return { success: true, admin: adminWithoutPassword };
   } catch (e) {
     console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u0444\u0438\u043B\u044F:", e);
     throw createError({
@@ -3224,13 +3257,30 @@ const profile_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePrope
   default: profile_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const getAdminIdFromToken$1 = (event) => {
+  const token = getCookie(event, "admin-token");
+  if (!token) return null;
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    return decoded.split(":")[0];
+  } catch (e) {
+    return null;
+  }
+};
 const profile_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { adminId, email, name, password } = body;
-  if (!adminId || !email || !name) {
+  const { email, name, password } = body;
+  const adminId = getAdminIdFromToken$1(event);
+  if (!adminId) {
+    throw createError({
+      statusCode: 401,
+      message: "\u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D"
+    });
+  }
+  if (!email || !name) {
     throw createError({
       statusCode: 400,
-      message: "\u041D\u0435 \u043F\u0435\u0440\u0435\u0434\u0430\u043D\u044B \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B"
+      message: "Email \u0438 \u0438\u043C\u044F \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B"
     });
   }
   try {
@@ -3307,6 +3357,16 @@ const roles_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePropert
   default: roles_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const getAdminIdFromToken = (event) => {
+  const token = getCookie(event, "admin-token");
+  if (!token) return null;
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    return decoded.split(":")[0];
+  } catch (e) {
+    return null;
+  }
+};
 const settings_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { type, data } = body;
@@ -3321,7 +3381,14 @@ const settings_post = defineEventHandler(async (event) => {
   try {
     if (type === "profile") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430...");
-      const { adminId, email, name, password } = data;
+      const adminId = getAdminIdFromToken(event);
+      if (!adminId) {
+        throw createError({
+          statusCode: 401,
+          message: "\u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D"
+        });
+      }
+      const { email, name, password } = data;
       console.log("\u{1F4DD} [API] \u0414\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u044F:", { adminId, email, name, hasPassword: !!password });
       const updateData = { email, name };
       if (password && password.length > 0) {

@@ -1,8 +1,0 @@
-const index_vue_vue_type_style_index_0_scoped_cf82d46d_lang = ".data-table[data-v-cf82d46d],.settings-card[data-v-cf82d46d]{border:1px solid #e2e8f0;border-radius:12px}.data-table[data-v-cf82d46d] th{border-bottom:1px solid #e2e8f0;padding:12px 16px}.data-table[data-v-cf82d46d] td{border-bottom:1px solid #f1f5f9;padding:12px 16px}.permissions-list[data-v-cf82d46d]{display:flex;flex-direction:column;gap:8px}.permission-item[data-v-cf82d46d]{align-items:center;display:flex;gap:8px}.ga-2[data-v-cf82d46d]{gap:8px}";
-
-const indexStyles_BSSND46 = [
-  index_vue_vue_type_style_index_0_scoped_cf82d46d_lang
-];
-
-export { indexStyles_BSSND46 as default };
-//# sourceMappingURL=index-styles.BSSND-46.mjs.map

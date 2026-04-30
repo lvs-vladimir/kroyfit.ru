@@ -807,7 +807,6 @@ const saveProfile = async () => {
       body: {
         type: 'profile',
         data: {
-          adminId: '1',
           email: profile.value.email,
           name: profile.value.name,
           password: profile.value.password,

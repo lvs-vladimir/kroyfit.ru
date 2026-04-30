@@ -1,4 +1,4 @@
-import { d as defineEventHandler, r as readBody, c as createError } from '../../../nitro/nitro.mjs';
+import { d as defineEventHandler, r as readBody, c as createError, g as getCookie } from '../../../nitro/nitro.mjs';
 import { d as db, a as admins, r as roles, e as emailSettings, s as seoSettings, g as generalSettings } from '../../../_/db.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
@@ -14,6 +14,16 @@ import 'better-sqlite3';
 import 'path';
 import 'drizzle-orm/sqlite-core';
 
+const getAdminIdFromToken = (event) => {
+  const token = getCookie(event, "admin-token");
+  if (!token) return null;
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    return decoded.split(":")[0];
+  } catch (e) {
+    return null;
+  }
+};
 const settings_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { type, data } = body;
@@ -28,7 +38,14 @@ const settings_post = defineEventHandler(async (event) => {
   try {
     if (type === "profile") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430...");
-      const { adminId, email, name, password } = data;
+      const adminId = getAdminIdFromToken(event);
+      if (!adminId) {
+        throw createError({
+          statusCode: 401,
+          message: "\u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D"
+        });
+      }
+      const { email, name, password } = data;
       console.log("\u{1F4DD} [API] \u0414\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u044F:", { adminId, email, name, hasPassword: !!password });
       const updateData = { email, name };
       if (password && password.length > 0) {

@@ -2,14 +2,37 @@ import { db } from '../../database/db'
 import { admins } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 
+// Получение adminId из токена
+const getAdminIdFromToken = (event: any) => {
+  const token = getCookie(event, 'admin-token')
+  if (!token) return null
+  
+  try {
+    const decoded = Buffer.from(token, 'base64').toString('utf-8')
+    return decoded.split(':')[0]
+  } catch (e) {
+    return null
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { adminId, email, name, password } = body
+  const { email, name, password } = body
+  
+  // Получаем adminId из токена
+  const adminId = getAdminIdFromToken(event)
+  
+  if (!adminId) {
+    throw createError({
+      statusCode: 401,
+      message: 'Не авторизован',
+    })
+  }
 
-  if (!adminId || !email || !name) {
+  if (!email || !name) {
     throw createError({
       statusCode: 400,
-      message: 'Не переданы обязательные параметры',
+      message: 'Email и имя обязательны',
     })
   }
 

@@ -1,4 +1,4 @@
-import { d as defineEventHandler, r as readBody, c as createError } from '../../../nitro/nitro.mjs';
+import { d as defineEventHandler, r as readBody, c as createError, g as getCookie } from '../../../nitro/nitro.mjs';
 import { d as db, a as admins } from '../../../_/db.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
@@ -14,13 +14,30 @@ import 'better-sqlite3';
 import 'path';
 import 'drizzle-orm/sqlite-core';
 
+const getAdminIdFromToken = (event) => {
+  const token = getCookie(event, "admin-token");
+  if (!token) return null;
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    return decoded.split(":")[0];
+  } catch (e) {
+    return null;
+  }
+};
 const profile_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { adminId, email, name, password } = body;
-  if (!adminId || !email || !name) {
+  const { email, name, password } = body;
+  const adminId = getAdminIdFromToken(event);
+  if (!adminId) {
+    throw createError({
+      statusCode: 401,
+      message: "\u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D"
+    });
+  }
+  if (!email || !name) {
     throw createError({
       statusCode: 400,
-      message: "\u041D\u0435 \u043F\u0435\u0440\u0435\u0434\u0430\u043D\u044B \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B"
+      message: "Email \u0438 \u0438\u043C\u044F \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B"
     });
   }
   try {
