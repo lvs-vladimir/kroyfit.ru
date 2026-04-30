@@ -185,7 +185,6 @@
                 <v-checkbox v-model="newRole.canManageCourses" label="Курсы" hide-details class="mb-2" color="green-darken-3" />
                 <v-checkbox v-model="newRole.canManageUsers" label="Пользователи" hide-details class="mb-2" color="green-darken-3" />
                 <v-checkbox v-model="newRole.canManagePurchases" label="Покупки" hide-details class="mb-2" color="green-darken-3" />
-                <v-checkbox v-model="newRole.canManageSettings" label="Настройки" hide-details class="mb-2" color="green-darken-3" />
                 <v-checkbox v-model="newRole.canManageAdmins" label="Администраторы" hide-details class="mb-2" color="green-darken-3" />
                 <v-checkbox v-model="newRole.canEditPlan" label="План" hide-details class="mb-2" color="green-darken-3" />
                 <v-divider class="my-2" />
@@ -629,13 +628,14 @@ const currentRole = ref({
 })
 
 // Вычисляемые свойства для проверки прав на вкладки
-const canManageProfile = computed(() => currentRole.value.canManageProfile || currentRole.value.canManageSettings)
-const canManageRoles = computed(() => currentRole.value.canManageRoles || currentRole.value.canManageSettings)
-const canManageAdmins = computed(() => currentRole.value.canManageAdmins || currentRole.value.canManageSettings)
-const canManageVkGroups = computed(() => currentRole.value.canManageVkGroups || currentRole.value.canManageSettings)
-const canManageEmail = computed(() => currentRole.value.canManageEmail || currentRole.value.canManageSettings)
-const canManageSeo = computed(() => currentRole.value.canManageSeo || currentRole.value.canManageSettings)
-const canManageGeneralSettings = computed(() => currentRole.value.canManageGeneralSettings || currentRole.value.canManageSettings)
+// Каждая вкладка проверяет только своё специфическое право (независимо от canManageSettings)
+const canManageProfile = computed(() => currentRole.value.canManageProfile)
+const canManageRoles = computed(() => currentRole.value.canManageRoles)
+const canManageAdmins = computed(() => currentRole.value.canManageAdmins)
+const canManageVkGroups = computed(() => currentRole.value.canManageVkGroups)
+const canManageEmail = computed(() => currentRole.value.canManageEmail)
+const canManageSeo = computed(() => currentRole.value.canManageSeo)
+const canManageGeneralSettings = computed(() => currentRole.value.canManageGeneralSettings)
 const selectedAdminForPassword = ref(null)
 const newPassword = ref('')
 const passwordSaving = ref(false)
