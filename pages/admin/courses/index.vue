@@ -96,9 +96,23 @@ onMounted(async () => {
   }
 })
 
-const deleteCourse = (id: string) => {
-  if (confirm('Удалить курс?')) {
+const deleteCourse = async (id: string) => {
+  if (!confirm('Удалить курс? Это действие нельзя отменить.')) return
+  
+  try {
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'course-delete',
+        data: { id }
+      }
+    })
+    
     courses.value = courses.value.filter(c => c.id !== id)
+    console.log('✅ Курс удален:', id)
+  } catch (e: any) {
+    console.error('❌ Ошибка удаления курса:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось удалить курс'))
   }
 }
 

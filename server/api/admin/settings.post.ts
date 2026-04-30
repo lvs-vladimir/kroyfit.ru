@@ -191,6 +191,20 @@ export default defineEventHandler(async (event) => {
       console.log('✅ [API] Курс обновлен:', courseId)
       return { success: true, message: 'Курс обновлен', course: updatedCourse }
     }
+    
+    if (type === 'course-delete') {
+      console.log('🗑️ [API] Удаление курса:', data.id)
+      
+      // Проверяем что курс существует
+      const existing = await db.select().from(courses).where(eq(courses.id, data.id)).limit(1)
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: 'Курс не найден' })
+      }
+      
+      await db.delete(courses).where(eq(courses.id, data.id))
+      console.log('✅ [API] Курс удален:', data.id)
+      return { success: true, message: 'Курс удален' }
+    }
 
     if (type === 'admin') {
       console.log('🟡 [API] Сохранение администратора...')

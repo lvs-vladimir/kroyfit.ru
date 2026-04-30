@@ -171,6 +171,16 @@ const settings_post = defineEventHandler(async (event) => {
       console.log("\u2705 [API] \u041A\u0443\u0440\u0441 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D:", courseId);
       return { success: true, message: "\u041A\u0443\u0440\u0441 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D", course: updatedCourse };
     }
+    if (type === "course-delete") {
+      console.log("\u{1F5D1}\uFE0F [API] \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u043A\u0443\u0440\u0441\u0430:", data.id);
+      const existing = await db.select().from(courses).where(eq(courses.id, data.id)).limit(1);
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: "\u041A\u0443\u0440\u0441 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D" });
+      }
+      await db.delete(courses).where(eq(courses.id, data.id));
+      console.log("\u2705 [API] \u041A\u0443\u0440\u0441 \u0443\u0434\u0430\u043B\u0435\u043D:", data.id);
+      return { success: true, message: "\u041A\u0443\u0440\u0441 \u0443\u0434\u0430\u043B\u0435\u043D" };
+    }
     if (type === "admin") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430...");
       const { id, email, name, roleId, isActive } = data;

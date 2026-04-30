@@ -1,0 +1,5 @@
+const index_vue_vue_type_style_index_0_scoped_45e09239_lang = ".courses-table[data-v-45e09239]{border:1px solid #e2e8f0;border-radius:12px}.courses-table[data-v-45e09239] th{border-bottom:1px solid #e2e8f0;padding:12px 16px}.courses-table[data-v-45e09239] td{border-bottom:1px solid #f1f5f9;padding:12px 16px}.courses-table[data-v-45e09239] tr:last-child td{border-bottom:none}.v-application[data-v-45e09239]{font-family:Inter,sans-serif!important}";
+export {
+  index_vue_vue_type_style_index_0_scoped_45e09239_lang as default
+};
+//# sourceMappingURL=index-styles-1.mjs-BOS1eGB0.js.map
