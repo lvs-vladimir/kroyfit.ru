@@ -2607,6 +2607,7 @@ async function getIslandContext(event) {
 	};
 }
 
+const _lazy_czidWe = () => Promise.resolve().then(function () { return admins_get$1; });
 const _lazy_A8X4T2 = () => Promise.resolve().then(function () { return login_post$1; });
 const _lazy_EE5Nrq = () => Promise.resolve().then(function () { return profile_get$1; });
 const _lazy_1d2OBt = () => Promise.resolve().then(function () { return profile_post$1; });
@@ -2625,6 +2626,7 @@ const _lazy_nqijRZ = () => Promise.resolve().then(function () { return renderer;
 
 const handlers = [
   { route: '', handler: _ocHbsM, lazy: false, middleware: true, method: undefined },
+  { route: '/api/admin/admins', handler: _lazy_czidWe, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/login', handler: _lazy_A8X4T2, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/profile', handler: _lazy_EE5Nrq, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/profile', handler: _lazy_1d2OBt, lazy: true, middleware: false, method: "post" },
@@ -2981,49 +2983,6 @@ const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: styles
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const admins$1 = [
-  {
-    id: "1",
-    email: "admin@kroyfit.ru",
-    password: "admin123456",
-    // В реальности должен быть хеш
-    name: "Admin",
-    role: "admin"
-  }
-];
-const login_post = defineEventHandler(async (event) => {
-  const body = await readBody(event);
-  const { email, password } = body;
-  if (!email || !password) {
-    throw createError({
-      statusCode: 400,
-      message: "Email \u0438 \u043F\u0430\u0440\u043E\u043B\u044C \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B"
-    });
-  }
-  const admin = admins$1.find((a) => a.email === email && a.password === password);
-  if (!admin) {
-    throw createError({
-      statusCode: 401,
-      message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u0432\u0445\u043E\u0434\u0430"
-    });
-  }
-  const token = Buffer.from(`${admin.id}:${admin.email}:${Date.now()}`).toString("base64");
-  return {
-    token,
-    user: {
-      id: admin.id,
-      email: admin.email,
-      name: admin.name,
-      role: admin.role
-    }
-  };
-});
-
-const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
-  __proto__: null,
-  default: login_post
-}, Symbol.toStringTag, { value: 'Module' }));
-
 const roles = sqliteTable("roles", {
   id: text("id").primaryKey(),
   name: text("name").notNull().unique(),
@@ -3037,7 +2996,7 @@ const roles = sqliteTable("roles", {
   canEditPlan: integer("can_edit_plan", { mode: "boolean" }).default(false),
   createdAt: text("created_at").default(sql`(datetime('now'))`)
 });
-const admins = sqliteTable("admins", {
+const admins$1 = sqliteTable("admins", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
@@ -3090,7 +3049,7 @@ const vkGroups = sqliteTable("vk_groups", {
 
 const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
-  admins: admins,
+  admins: admins$1,
   courses: courses$2,
   purchases: purchases,
   roles: roles,
@@ -3101,11 +3060,74 @@ const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
 const sqlite = new Database("kroyfit.db");
 const db = drizzle(sqlite, { schema });
 
+const admins_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/admin/admins - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0441\u043F\u0438\u0441\u043A\u0430 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u043E\u0432");
+  try {
+    const adminsList = await db.select().from(admins$1);
+    console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u044B \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u044B:", adminsList.length);
+    return { success: true, admins: adminsList };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u043E\u0432:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u043E\u0432"
+    });
+  }
+});
+
+const admins_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: admins_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const admins = [
+  {
+    id: "1",
+    email: "admin@kroyfit.ru",
+    password: "admin123456",
+    // В реальности должен быть хеш
+    name: "Admin",
+    role: "admin"
+  }
+];
+const login_post = defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const { email, password } = body;
+  if (!email || !password) {
+    throw createError({
+      statusCode: 400,
+      message: "Email \u0438 \u043F\u0430\u0440\u043E\u043B\u044C \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B"
+    });
+  }
+  const admin = admins.find((a) => a.email === email && a.password === password);
+  if (!admin) {
+    throw createError({
+      statusCode: 401,
+      message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u0432\u0445\u043E\u0434\u0430"
+    });
+  }
+  const token = Buffer.from(`${admin.id}:${admin.email}:${Date.now()}`).toString("base64");
+  return {
+    token,
+    user: {
+      id: admin.id,
+      email: admin.email,
+      name: admin.name,
+      role: admin.role
+    }
+  };
+});
+
+const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: login_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
 const profile_get = defineEventHandler(async (event) => {
   console.log("\u{1F535} [API] GET /api/admin/profile - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430");
   try {
     const admin = await db.query.admins.findFirst({
-      where: eq(admins.id, "1")
+      where: eq(admins$1.id, "1")
     });
     if (!admin) {
       console.error("\u274C [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D");
@@ -3147,7 +3169,7 @@ const profile_post = defineEventHandler(async (event) => {
     if (password && password.length > 0) {
       updateData.password = password;
     }
-    await db.update(admins).set(updateData).where(eq(admins.id, adminId));
+    await db.update(admins$1).set(updateData).where(eq(admins$1.id, adminId));
     return { success: true, message: "\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D" };
   } catch (e) {
     console.error("\u041E\u0448\u0438\u0431\u043A\u0430 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u0444\u0438\u043B\u044F:", e);
@@ -3184,7 +3206,7 @@ const settings_post = defineEventHandler(async (event) => {
         updateData.password = password;
       }
       console.log("\u{1F504} [API] \u0412\u044B\u043F\u043E\u043B\u043D\u044F\u044E UPDATE \u0432 \u0411\u0414...");
-      const result = await db.update(admins).set(updateData).where(eq(admins.id, adminId));
+      const result = await db.update(admins$1).set(updateData).where(eq(admins$1.id, adminId));
       console.log("\u2705 [API] UPDATE \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D \u0443\u0441\u043F\u0435\u0448\u043D\u043E:", result);
       return { success: true, message: "\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D" };
     }
@@ -3229,17 +3251,17 @@ const settings_post = defineEventHandler(async (event) => {
       const { id, email, name, roleId, isActive } = data;
       if (id) {
         console.log("\u{1F504} [API] \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430:", id);
-        await db.update(admins).set({
+        await db.update(admins$1).set({
           email,
           name,
           roleId,
           isActive: isActive ? 1 : 0
-        }).where(eq(admins.id, id));
+        }).where(eq(admins$1.id, id));
         console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D");
       } else {
         console.log("\u2795 [API] \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043D\u043E\u0432\u043E\u0433\u043E \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430");
         const newId = crypto.randomUUID();
-        await db.insert(admins).values({
+        await db.insert(admins$1).values({
           id: newId,
           email,
           name,
