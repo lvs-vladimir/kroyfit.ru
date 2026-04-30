@@ -314,10 +314,7 @@
                 <h2 class="text-h6 font-weight-bold">{{ editingVkGroup ? 'Редактирование' : 'Добавление' }} VK группы</h2>
               </v-card-title>
               <v-card-text class="pa-6">
-                <div class="mb-4">
-                  <label class="text-caption text-grey-darken-1 d-block mb-1">Название группы</label>
-                  <v-text-field v-model="newVkGroup.name" variant="outlined" density="compact" hide-details />
-                </div>
+                <!-- 1. Ссылка на группу ВК -->
                 <div class="mb-4">
                   <label class="text-caption text-grey-darken-1 d-block mb-1">Ссылка на группу ВК</label>
                   <v-text-field 
@@ -334,7 +331,7 @@
                     <v-icon size="16" color="green-darken-3">mdi-check-circle</v-icon>
                     ID группы: {{ newVkGroup.vkId }}
                   </div>
-                  <div v-if="vkIdError" class="text-caption text-red mt-1" v-html="vkIdError" />
+                  <div v-if="vkIdError" class="text-caption mt-1" v-html="vkIdError" />
                   
                   <!-- Инструкция по добавлению группы -->
                   <v-expansion-panels variant="accordion" class="mt-3" style="border-radius: 8px;">
@@ -381,19 +378,8 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
                 </div>
-                <div class="mb-4">
-                  <label class="text-caption text-grey-darken-1 d-block mb-1">Курс</label>
-                  <v-select 
-                    v-model="newVkGroup.courseSlug" 
-                    :items="availableCourses" 
-                    item-title="title" 
-                    item-value="slug"
-                    variant="outlined" 
-                    density="compact" 
-                    hide-details 
-                    placeholder="Выберите курс"
-                  />
-                </div>
+
+                <!-- 2. Токен сообщества -->
                 <div class="mb-4">
                   <label class="text-caption text-grey-darken-1 d-block mb-1">Токен сообщества</label>
                   <div class="d-flex ga-2">
@@ -432,6 +418,36 @@
                     </v-alert>
                   </div>
                 </div>
+
+                <!-- 3. Название группы -->
+                <div class="mb-4">
+                  <label class="text-caption text-grey-darken-1 d-block mb-1">Название группы</label>
+                  <v-text-field 
+                    v-model="newVkGroup.name" 
+                    variant="outlined" 
+                    density="compact" 
+                    hide-details 
+                    placeholder="Заполнится автоматически после теста"
+                    hint="Нажмите Тест для автозаполнения"
+                    persistent-hint
+                  />
+                </div>
+
+                <!-- 4. Курс -->
+                <div class="mb-4">
+                  <label class="text-caption text-grey-darken-1 d-block mb-1">Курс</label>
+                  <v-select 
+                    v-model="newVkGroup.courseSlug" 
+                    :items="availableCourses" 
+                    item-title="title" 
+                    item-value="slug"
+                    variant="outlined" 
+                    density="compact" 
+                    hide-details 
+                    placeholder="Выберите курс"
+                  />
+                </div>
+
                 <div class="d-flex ga-2">
                   <v-btn color="green-darken-3" variant="flat" @click="saveVkGroup" :loading="vkSaving">
                     {{ editingVkGroup ? 'Обновить' : 'Добавить' }}
@@ -737,32 +753,14 @@ const extractVkId = async () => {
     }
   }
   
-  // Если это короткое имя - пробуем получить ID и название через API
+  // Если это короткое имя - используем его напрямую (ID группы может быть числом или коротким именем)
   if (screenName && !/^\d+$/.test(screenName)) {
-    vkIdLoading.value = true
-    try {
-      const response = await $fetch('/api/vk/resolve-id', {
-        method: 'POST',
-        body: { screenName }
-      }) as any
-      
-      if (response.success) {
-        newVkGroup.vkId = response.id
-        console.log('✅ [Frontend] Получен ID через API:', newVkGroup.vkId)
-        // Пробуем получить название группы
-        await fetchGroupName(response.id)
-      } else {
-        // API не смог получить ID
-        newVkGroup.vkId = screenName
-        vkIdError.value = `Не удалось автоматически определить ID. Получите ID вручную: <a href="https://regvk.com/id/${screenName}" target="_blank" style="color: #1976d2;">regvk.com/id/${screenName}</a>`
-        console.log('⚠️ [Frontend] Используем короткое имя:', screenName)
-      }
-    } catch (e) {
-      console.error('❌ [Frontend] Ошибка API:', e)
-      newVkGroup.vkId = screenName
-      vkIdError.value = `Ошибка определения ID. Получите вручную: <a href="https://regvk.com/id/${screenName}" target="_blank" style="color: #1976d2;">regvk.com/id/${screenName}</a>`
-    } finally {
-      vkIdLoading.value = false
+    newVkGroup.vkId = screenName
+    console.log('✅ [Frontend] Используем короткое имя как ID:', screenName)
+    vkIdError.value = ''
+    // Подсказка пользователю что можно нажать Тест для проверки
+    if (!newVkGroup.token) {
+      vkIdError.value = `<span style="color: #1976d2;">Введите токен и нажмите "Тест" для проверки подключения</span>`
     }
   }
 }
@@ -1058,6 +1056,13 @@ const saveVkGroup = async () => {
   // Проверяем что ID извлечен
   if (!newVkGroup.vkId) {
     alert('Введите ссылку на группу ВК или ID группы')
+    vkSaving.value = false
+    return
+  }
+  
+  // Проверяем что курс выбран
+  if (!newVkGroup.courseSlug) {
+    alert('Выберите курс для привязки к группе')
     vkSaving.value = false
     return
   }
