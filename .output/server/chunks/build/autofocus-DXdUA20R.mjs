@@ -1,7 +1,7 @@
 import { toRef, shallowRef, ref, watch, provide, markRaw, useId, computed, createElementVNode, normalizeStyle, normalizeClass, createVNode, mergeProps, withDirectives, vShow, Fragment, inject, unref, nextTick } from 'vue';
-import { u as useDensity, l as useDimension, b as useRender, p as useRounded, a as useBackgroundColor, c as useTextColor, B as Box, y as VExpandXTransition, j as VDefaultsProvider, M as MaybeTransition, v as makeDimensionProps, f as makeDensityProps, g as makeComponentProps, r as makeRoundedProps, q as makeTransitionProps, z as VSlideYTransition, V as VIcon } from './index-C1EJcibQ.mjs';
+import { a as useDensity, b as useDimension, j as useRender, e as useRounded, E as useBackgroundColor, z as useTextColor, J as Box, G as VExpandXTransition, C as VDefaultsProvider, M as MaybeTransition, s as makeDimensionProps, t as makeDensityProps, v as makeComponentProps, o as makeRoundedProps, F as makeTransitionProps, K as VSlideYTransition, V as VIcon } from './index-C1EJcibQ.mjs';
 import { f as useProxiedModel, Q as consoleWarn, P as getCurrentInstanceName, g as genericComponent, b as provideTheme, c as useRtl, d as useLocale, p as propsFactory, w as wrapInArray, C as getCurrentInstance, D as useToggleScope, I as IconValue, m as makeThemeProps, j as pick, O as EventProp, e as convertToUnit, H as callEvent, s as standardEasing } from './server.mjs';
-import { a as useLoader, L as LoaderSlot, b as makeLoaderProps } from './position-D2_Ao4AV.mjs';
+import { u as useLoader, L as LoaderSlot, b as makeLoaderProps } from './position-D2_Ao4AV.mjs';
 import { n as nullifyTransforms, a as animate } from './forwardRefs-CAP5b9ad.mjs';
 
 const makeVLabelProps = propsFactory({
@@ -981,5 +981,5 @@ function useAutofocus(props) {
   };
 }
 
-export { VInput as V, useForm as a, useAutocomplete as b, useInputIcon as c, VLabel as d, VField as e, VCounter as f, useAutofocus as g, makeVFieldProps as h, makeAutocompleteProps as i, createForm as j, makeFormProps as k, makeVInputProps as m, useFocus as u };
+export { VInput as V, useAutocomplete as a, VField as b, createForm as c, VCounter as d, useAutofocus as e, makeVFieldProps as f, makeVInputProps as g, makeAutocompleteProps as h, useForm as i, useInputIcon as j, VLabel as k, makeFormProps as m, useFocus as u };
 //# sourceMappingURL=autofocus-DXdUA20R.mjs.map

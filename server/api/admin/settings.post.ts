@@ -39,20 +39,24 @@ export default defineEventHandler(async (event) => {
       console.log('🟡 [API] Сохранение роли...')
       const { id, name, description, permissions } = data
       
+      // Проверяем permissions
+      const perms = permissions || {}
+      
       if (id) {
         console.log('🔄 [API] Обновление существующей роли:', id)
         await db.update(roles).set({
           name,
           description,
-          canViewDashboard: permissions.canViewDashboard ? 1 : 0,
-          canManageCourses: permissions.canManageCourses ? 1 : 0,
-          canManageUsers: permissions.canManageUsers ? 1 : 0,
-          canManagePurchases: permissions.canManagePurchases ? 1 : 0,
-          canManageSettings: permissions.canManageSettings ? 1 : 0,
-          canManageAdmins: permissions.canManageAdmins ? 1 : 0,
-          canEditPlan: permissions.canEditPlan ? 1 : 0,
+          canViewDashboard: perms.canViewDashboard ? 1 : 0,
+          canManageCourses: perms.canManageCourses ? 1 : 0,
+          canManageUsers: perms.canManageUsers ? 1 : 0,
+          canManagePurchases: perms.canManagePurchases ? 1 : 0,
+          canManageSettings: perms.canManageSettings ? 1 : 0,
+          canManageAdmins: perms.canManageAdmins ? 1 : 0,
+          canEditPlan: perms.canEditPlan ? 1 : 0,
         }).where(eq(roles.id, id))
         console.log('✅ [API] Роль обновлена')
+        return { success: true, message: 'Роль сохранена', id }
       } else {
         console.log('➕ [API] Создание новой роли')
         const newId = crypto.randomUUID()
@@ -60,17 +64,24 @@ export default defineEventHandler(async (event) => {
           id: newId,
           name,
           description,
-          canViewDashboard: permissions.canViewDashboard ? 1 : 0,
-          canManageCourses: permissions.canManageCourses ? 1 : 0,
-          canManageUsers: permissions.canManageUsers ? 1 : 0,
-          canManagePurchases: permissions.canManagePurchases ? 1 : 0,
-          canManageSettings: permissions.canManageSettings ? 1 : 0,
-          canManageAdmins: permissions.canManageAdmins ? 1 : 0,
-          canEditPlan: permissions.canEditPlan ? 1 : 0,
+          canViewDashboard: perms.canViewDashboard ? 1 : 0,
+          canManageCourses: perms.canManageCourses ? 1 : 0,
+          canManageUsers: perms.canManageUsers ? 1 : 0,
+          canManagePurchases: perms.canManagePurchases ? 1 : 0,
+          canManageSettings: perms.canManageSettings ? 1 : 0,
+          canManageAdmins: perms.canManageAdmins ? 1 : 0,
+          canEditPlan: perms.canEditPlan ? 1 : 0,
         })
         console.log('✅ [API] Роль создана:', newId)
+        return { success: true, message: 'Роль сохранена', id: newId }
       }
-      return { success: true, message: 'Роль сохранена' }
+    }
+
+    if (type === 'role-delete') {
+      console.log('🗑️ [API] Удаление роли:', data.id)
+      await db.delete(roles).where(eq(roles.id, data.id))
+      console.log('✅ [API] Роль удалена')
+      return { success: true, message: 'Роль удалена' }
     }
 
     if (type === 'admin') {
@@ -98,8 +109,16 @@ export default defineEventHandler(async (event) => {
           isActive: isActive ? 1 : 0,
         })
         console.log('✅ [API] Администратор создан:', newId)
+        return { success: true, message: 'Администратор сохранен', id: newId }
       }
       return { success: true, message: 'Администратор сохранен' }
+    }
+
+    if (type === 'admin-delete') {
+      console.log('🗑️ [API] Удаление администратора:', data.id)
+      await db.delete(admins).where(eq(admins.id, data.id))
+      console.log('✅ [API] Администратор удален')
+      return { success: true, message: 'Администратор удален' }
     }
 
     if (type === 'email') {

@@ -1,5 +1,5 @@
 import { inject, computed, ref, reactive, toRef, shallowRef, provide, useId, createElementVNode, normalizeStyle, normalizeClass, createVNode } from 'vue';
-import { b as useRender, l as useDimension, x as useResizeObserver, g as makeComponentProps, m as makeTagProps, v as makeDimensionProps } from './index-C1EJcibQ.mjs';
+import { j as useRender, b as useDimension, A as useResizeObserver, v as makeComponentProps, k as makeTagProps, s as makeDimensionProps } from './index-C1EJcibQ.mjs';
 import { g as genericComponent, b as provideTheme, c as useRtl, e as convertToUnit, C as getCurrentInstance, aa as findChildrenWithProvide, Q as consoleWarn, p as propsFactory, m as makeThemeProps, o as omit } from './server.mjs';
 import { u as useSsrBoot } from './ssrBoot-ZQn7gOuX.mjs';
 

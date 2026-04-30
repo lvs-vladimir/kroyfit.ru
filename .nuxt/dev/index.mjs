@@ -2147,7 +2147,22 @@ const plugins = [
 _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"2b4a9-t/yLAR9CBt11zS7WN9hnDGlx7kM\"",
+    "mtime": "2026-04-30T09:27:16.704Z",
+    "size": 177321,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"ac45f-598AhdXgZDaGTGy87rmmU9oGH8A\"",
+    "mtime": "2026-04-30T09:27:16.705Z",
+    "size": 705631,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -2611,8 +2626,10 @@ const _lazy_czidWe = () => Promise.resolve().then(function () { return admins_ge
 const _lazy_A8X4T2 = () => Promise.resolve().then(function () { return login_post$1; });
 const _lazy_EE5Nrq = () => Promise.resolve().then(function () { return profile_get$1; });
 const _lazy_1d2OBt = () => Promise.resolve().then(function () { return profile_post$1; });
+const _lazy_AUXaMQ = () => Promise.resolve().then(function () { return roles_get$1; });
 const _lazy_v2SzUE = () => Promise.resolve().then(function () { return settings_post$1; });
 const _lazy_GxDtRk = () => Promise.resolve().then(function () { return all_get$1; });
+const _lazy_DCkUpC = () => Promise.resolve().then(function () { return vkGroups_post$1; });
 const _lazy_iLABVq = () => Promise.resolve().then(function () { return _slug__get$1; });
 const _lazy_KhDoCk = () => Promise.resolve().then(function () { return index_get$3; });
 const _lazy_Bbdfzr = () => Promise.resolve().then(function () { return send_post$1; });
@@ -2631,8 +2648,10 @@ const handlers = [
   { route: '/api/admin/login', handler: _lazy_A8X4T2, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/profile', handler: _lazy_EE5Nrq, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/profile', handler: _lazy_1d2OBt, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/roles', handler: _lazy_AUXaMQ, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/settings', handler: _lazy_v2SzUE, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/settings/all', handler: _lazy_GxDtRk, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/vk-groups', handler: _lazy_DCkUpC, lazy: true, middleware: false, method: "post" },
   { route: '/api/courses/:slug', handler: _lazy_iLABVq, lazy: true, middleware: false, method: "get" },
   { route: '/api/courses', handler: _lazy_KhDoCk, lazy: true, middleware: false, method: "get" },
   { route: '/api/email/send', handler: _lazy_Bbdfzr, lazy: true, middleware: false, method: "post" },
@@ -3217,6 +3236,26 @@ const profile_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProp
   default: profile_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const roles_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/admin/roles - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0441\u043F\u0438\u0441\u043A\u0430 \u0440\u043E\u043B\u0435\u0439");
+  try {
+    const rolesList = await db.select().from(roles);
+    console.log("\u2705 [API] \u0420\u043E\u043B\u0438 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u044B:", rolesList.length);
+    return { success: true, roles: rolesList };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0440\u043E\u043B\u0435\u0439:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0440\u043E\u043B\u0435\u0439"
+    });
+  }
+});
+
+const roles_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: roles_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
 const settings_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { type, data } = body;
@@ -3245,20 +3284,22 @@ const settings_post = defineEventHandler(async (event) => {
     if (type === "role") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u0440\u043E\u043B\u0438...");
       const { id, name, description, permissions } = data;
+      const perms = permissions || {};
       if (id) {
         console.log("\u{1F504} [API] \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0435\u0439 \u0440\u043E\u043B\u0438:", id);
         await db.update(roles).set({
           name,
           description,
-          canViewDashboard: permissions.canViewDashboard ? 1 : 0,
-          canManageCourses: permissions.canManageCourses ? 1 : 0,
-          canManageUsers: permissions.canManageUsers ? 1 : 0,
-          canManagePurchases: permissions.canManagePurchases ? 1 : 0,
-          canManageSettings: permissions.canManageSettings ? 1 : 0,
-          canManageAdmins: permissions.canManageAdmins ? 1 : 0,
-          canEditPlan: permissions.canEditPlan ? 1 : 0
+          canViewDashboard: perms.canViewDashboard ? 1 : 0,
+          canManageCourses: perms.canManageCourses ? 1 : 0,
+          canManageUsers: perms.canManageUsers ? 1 : 0,
+          canManagePurchases: perms.canManagePurchases ? 1 : 0,
+          canManageSettings: perms.canManageSettings ? 1 : 0,
+          canManageAdmins: perms.canManageAdmins ? 1 : 0,
+          canEditPlan: perms.canEditPlan ? 1 : 0
         }).where(eq(roles.id, id));
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0430");
+        return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id };
       } else {
         console.log("\u2795 [API] \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043D\u043E\u0432\u043E\u0439 \u0440\u043E\u043B\u0438");
         const newId = crypto.randomUUID();
@@ -3266,17 +3307,23 @@ const settings_post = defineEventHandler(async (event) => {
           id: newId,
           name,
           description,
-          canViewDashboard: permissions.canViewDashboard ? 1 : 0,
-          canManageCourses: permissions.canManageCourses ? 1 : 0,
-          canManageUsers: permissions.canManageUsers ? 1 : 0,
-          canManagePurchases: permissions.canManagePurchases ? 1 : 0,
-          canManageSettings: permissions.canManageSettings ? 1 : 0,
-          canManageAdmins: permissions.canManageAdmins ? 1 : 0,
-          canEditPlan: permissions.canEditPlan ? 1 : 0
+          canViewDashboard: perms.canViewDashboard ? 1 : 0,
+          canManageCourses: perms.canManageCourses ? 1 : 0,
+          canManageUsers: perms.canManageUsers ? 1 : 0,
+          canManagePurchases: perms.canManagePurchases ? 1 : 0,
+          canManageSettings: perms.canManageSettings ? 1 : 0,
+          canManageAdmins: perms.canManageAdmins ? 1 : 0,
+          canEditPlan: perms.canEditPlan ? 1 : 0
         });
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u0441\u043E\u0437\u0434\u0430\u043D\u0430:", newId);
+        return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id: newId };
       }
-      return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430" };
+    }
+    if (type === "role-delete") {
+      console.log("\u{1F5D1}\uFE0F [API] \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u0440\u043E\u043B\u0438:", data.id);
+      await db.delete(roles).where(eq(roles.id, data.id));
+      console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D\u0430");
+      return { success: true, message: "\u0420\u043E\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D\u0430" };
     }
     if (type === "admin") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430...");
@@ -3302,8 +3349,15 @@ const settings_post = defineEventHandler(async (event) => {
           isActive: isActive ? 1 : 0
         });
         console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0437\u0434\u0430\u043D:", newId);
+        return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D", id: newId };
       }
       return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D" };
+    }
+    if (type === "admin-delete") {
+      console.log("\u{1F5D1}\uFE0F [API] \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430:", data.id);
+      await db.delete(admins$1).where(eq(admins$1.id, data.id));
+      console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D");
+      return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D" };
     }
     if (type === "email") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 email \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
@@ -3395,6 +3449,43 @@ const all_get = defineEventHandler(async (event) => {
 const all_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: all_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const vkGroups_post = defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const { action, data } = body;
+  console.log("\u{1F535} [API] /api/admin/vk-groups - \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435:", action);
+  try {
+    if (action === "create") {
+      const { name, vkId, courseSlug, token } = data;
+      const id = crypto.randomUUID();
+      await db.insert(vkGroups).values({ id, name, vkId, courseSlug, token });
+      console.log("\u2705 [API] VK \u0433\u0440\u0443\u043F\u043F\u0430 \u0441\u043E\u0437\u0434\u0430\u043D\u0430:", id);
+      return { success: true, group: { id, name, vkId, courseSlug, token } };
+    }
+    if (action === "update") {
+      const { id, name, vkId, courseSlug, token } = data;
+      await db.update(vkGroups).set({ name, vkId, courseSlug, token }).where(eq(vkGroups.id, id));
+      console.log("\u2705 [API] VK \u0433\u0440\u0443\u043F\u043F\u0430 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0430:", id);
+      return { success: true };
+    }
+    if (action === "delete") {
+      const { id } = data;
+      await db.delete(vkGroups).where(eq(vkGroups.id, id));
+      console.log("\u2705 [API] VK \u0433\u0440\u0443\u043F\u043F\u0430 \u0443\u0434\u0430\u043B\u0435\u043D\u0430:", id);
+      return { success: true };
+    }
+    console.error("\u274C [API] \u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u043E\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435:", action);
+    throw createError({ statusCode: 400, message: "\u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u043E\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435" });
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430:", e);
+    throw createError({ statusCode: 500, message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043E\u043F\u0435\u0440\u0430\u0446\u0438\u0438 \u0441 VK \u0433\u0440\u0443\u043F\u043F\u043E\u0439" });
+  }
+});
+
+const vkGroups_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: vkGroups_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const courses$1 = [

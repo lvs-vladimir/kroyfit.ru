@@ -1,9 +1,9 @@
 import { ref, watch, nextTick, mergeProps, createVNode } from 'vue';
-import { a as VOverlay, c as makeVOverlayProps, b as VDialogTransition } from './VOverlay-BtXALeZH.mjs';
+import { a as VOverlay, m as makeVOverlayProps, b as VDialogTransition } from './VOverlay-BtXALeZH.mjs';
 import { f as forwardRefs } from './forwardRefs-CAP5b9ad.mjs';
 import { g as genericComponent, f as useProxiedModel, p as propsFactory, o as omit } from './server.mjs';
 import { u as useScopeId } from './scopeId-DrHQwwj5.mjs';
-import { b as useRender, j as VDefaultsProvider } from './index-C1EJcibQ.mjs';
+import { j as useRender, C as VDefaultsProvider } from './index-C1EJcibQ.mjs';
 
 const makeVDialogProps = propsFactory({
   fullscreen: Boolean,

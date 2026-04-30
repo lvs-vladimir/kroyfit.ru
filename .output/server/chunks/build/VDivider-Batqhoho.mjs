@@ -1,5 +1,5 @@
 import { computed, toRef, createElementVNode, normalizeStyle, normalizeClass } from 'vue';
-import { c as useTextColor, b as useRender, g as makeComponentProps } from './index-C1EJcibQ.mjs';
+import { z as useTextColor, j as useRender, v as makeComponentProps } from './index-C1EJcibQ.mjs';
 import { g as genericComponent, b as provideTheme, e as convertToUnit, p as propsFactory, m as makeThemeProps } from './server.mjs';
 
 const allowedVariants = ["dotted", "dashed", "solid", "double"];

@@ -4,7 +4,7 @@ import { _ as _export_sfc, a as useRouter, u as useRoute, g as genericComponent,
 import { u as useCookie } from './cookie-DonjFcxZ.mjs';
 import { V as VApp, a as VMain, u as useLayoutItem, m as makeLayoutItemProps } from './VMain-_oYNW9Kv.mjs';
 import { V as VBtn } from './VBtn-p5cu1pGV.mjs';
-import { V as VIcon, k as useBorder, a as useBackgroundColor, n as useElevation, p as useRounded, N as useRouter$1, Y as toPhysical, b as useRender, m as makeTagProps, r as makeRoundedProps, t as makeElevationProps, g as makeComponentProps, w as makeBorderProps, j as VDefaultsProvider } from './index-C1EJcibQ.mjs';
+import { V as VIcon, u as useBorder, E as useBackgroundColor, c as useElevation, e as useRounded, N as useRouter$1, Y as toPhysical, j as useRender, k as makeTagProps, o as makeRoundedProps, r as makeElevationProps, v as makeComponentProps, w as makeBorderProps, C as VDefaultsProvider } from './index-C1EJcibQ.mjs';
 import { V as VSpacer } from './VSpacer-B2jXCgcb.mjs';
 import { u as useScopeId, a as useFocusTrap, m as makeFocusTrapProps, c as makeDelayProps, b as useDelay } from './scopeId-DrHQwwj5.mjs';
 import { u as useSsrBoot } from './ssrBoot-ZQn7gOuX.mjs';

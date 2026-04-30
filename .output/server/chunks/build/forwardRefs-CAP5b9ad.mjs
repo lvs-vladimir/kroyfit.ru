@@ -1,4 +1,4 @@
-import { B as Box } from './index-C1EJcibQ.mjs';
+import { J as Box } from './index-C1EJcibQ.mjs';
 
 function nullifyTransforms(el) {
   const rect = new Box(el);

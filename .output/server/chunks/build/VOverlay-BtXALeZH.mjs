@@ -1,5 +1,5 @@
 import { ref, computed, watch, createElementVNode, Fragment, mergeProps, createVNode, Teleport, withDirectives, vShow, shallowRef, toRef, inject, reactive, provide, toValue, onScopeDispose, toRaw, watchEffect, readonly, nextTick, Transition } from 'vue';
-import { a as useBackgroundColor, l as useDimension, N as useRouter, b as useRender, M as MaybeTransition, q as makeTransitionProps, v as makeDimensionProps, g as makeComponentProps, O as parseAnchor, P as flipSide, Q as flipAlign, S as flipCorner, B as Box, i as deepEqual, T as getTargetBox, U as getElementBox, W as getAxis, X as getOverflow } from './index-C1EJcibQ.mjs';
+import { E as useBackgroundColor, b as useDimension, N as useRouter, j as useRender, M as MaybeTransition, F as makeTransitionProps, s as makeDimensionProps, v as makeComponentProps, O as parseAnchor, P as flipSide, Q as flipAlign, S as flipCorner, J as Box, D as deepEqual, T as getTargetBox, U as getElementBox, W as getAxis, X as getOverflow } from './index-C1EJcibQ.mjs';
 import { g as genericComponent, C as getCurrentInstance, f as useProxiedModel, b as provideTheme, c as useRtl, D as useToggleScope, e as convertToUnit, o as omit, Z as templateRef, p as propsFactory, m as makeThemeProps, q as matchesSelector, U as acceleratedEasing, s as standardEasing, V as deceleratedEasing, W as destructComputed, X as consoleError, z as clamp, Y as CircularBuffer } from './server.mjs';
 import { a as animate, n as nullifyTransforms } from './forwardRefs-CAP5b9ad.mjs';
 import { u as useScopeId, a as useFocusTrap, m as makeFocusTrapProps, b as useDelay, c as makeDelayProps } from './scopeId-DrHQwwj5.mjs';
@@ -1313,5 +1313,5 @@ const VOverlay = genericComponent()({
   }
 });
 
-export { VMenuSymbol as V, VOverlay as a, VDialogTransition as b, makeVOverlayProps as c, makeLazyProps as m, useLazy as u };
+export { VMenuSymbol as V, VOverlay as a, VDialogTransition as b, makeLazyProps as c, makeVOverlayProps as m, useLazy as u };
 //# sourceMappingURL=VOverlay-BtXALeZH.mjs.map

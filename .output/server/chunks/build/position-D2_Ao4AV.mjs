@@ -1,4 +1,4 @@
-import { g as makeComponentProps, m as makeTagProps, r as makeRoundedProps, s as makeLocationProps, o as useLocation, c as useTextColor, a as useBackgroundColor, p as useRounded, x as useResizeObserver, b as useRender } from './index-C1EJcibQ.mjs';
+import { v as makeComponentProps, k as makeTagProps, o as makeRoundedProps, p as makeLocationProps, d as useLocation, z as useTextColor, E as useBackgroundColor, e as useRounded, A as useResizeObserver, j as useRender } from './index-C1EJcibQ.mjs';
 import { toRef, h, capitalize, camelize, ref, computed, shallowRef, watchEffect, createVNode, normalizeStyle, normalizeClass, createElementVNode, Transition, toValue } from 'vue';
 import { P as getCurrentInstanceName, g as genericComponent, p as propsFactory, m as makeThemeProps, f as useProxiedModel, c as useRtl, b as provideTheme, z as clamp, D as useToggleScope, e as convertToUnit } from './server.mjs';
 
@@ -333,5 +333,5 @@ function usePosition(props, name = getCurrentInstanceName()) {
   };
 }
 
-export { LoaderSlot as L, VProgressLinear as V, useLoader as a, makeLoaderProps as b, useIntersectionObserver as c, createSimpleFunctional as d, makePositionProps as m, usePosition as u };
+export { LoaderSlot as L, VProgressLinear as V, usePosition as a, makeLoaderProps as b, useIntersectionObserver as c, createSimpleFunctional as d, makePositionProps as m, useLoader as u };
 //# sourceMappingURL=position-D2_Ao4AV.mjs.map

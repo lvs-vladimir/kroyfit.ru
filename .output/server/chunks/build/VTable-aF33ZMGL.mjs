@@ -1,5 +1,5 @@
 import { createVNode, normalizeStyle, normalizeClass, createElementVNode } from 'vue';
-import { u as useDensity, b as useRender, m as makeTagProps, f as makeDensityProps, g as makeComponentProps } from './index-C1EJcibQ.mjs';
+import { a as useDensity, j as useRender, k as makeTagProps, t as makeDensityProps, v as makeComponentProps } from './index-C1EJcibQ.mjs';
 import { g as genericComponent, b as provideTheme, e as convertToUnit, p as propsFactory, m as makeThemeProps } from './server.mjs';
 
 const makeVTableProps = propsFactory({

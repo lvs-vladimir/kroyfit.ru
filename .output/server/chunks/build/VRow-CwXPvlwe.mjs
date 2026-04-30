@@ -1,4 +1,4 @@
-import { m as makeTagProps, f as makeDensityProps, g as makeComponentProps } from './index-C1EJcibQ.mjs';
+import { k as makeTagProps, t as makeDensityProps, v as makeComponentProps } from './index-C1EJcibQ.mjs';
 import { g as genericComponent, a2 as deprecate, e as convertToUnit, p as propsFactory, k as keys, a1 as breakpoints } from './server.mjs';
 import { computed, h, capitalize } from 'vue';
 

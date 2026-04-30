@@ -1,7 +1,7 @@
 import { shallowRef, watch, createVNode, normalizeStyle, normalizeClass, createElementVNode, Fragment, toDisplayString, withDirectives, mergeProps } from 'vue';
-import { R as Ripple, k as useBorder, D as useVariant, u as useDensity, l as useDimension, n as useElevation, o as useLocation, p as useRounded, C as useLink, b as useRender, E as makeVariantProps, m as makeTagProps, G as makeRouterProps, r as makeRoundedProps, s as makeLocationProps, t as makeElevationProps, v as makeDimensionProps, f as makeDensityProps, g as makeComponentProps, w as makeBorderProps, V as VIcon, j as VDefaultsProvider, J as genOverlays } from './index-C1EJcibQ.mjs';
+import { R as Ripple, u as useBorder, i as useVariant, a as useDensity, b as useDimension, c as useElevation, d as useLocation, e as useRounded, h as useLink, j as useRender, m as makeVariantProps, k as makeTagProps, n as makeRouterProps, o as makeRoundedProps, p as makeLocationProps, r as makeElevationProps, s as makeDimensionProps, t as makeDensityProps, v as makeComponentProps, w as makeBorderProps, V as VIcon, C as VDefaultsProvider, B as genOverlays } from './index-C1EJcibQ.mjs';
 import { g as genericComponent, b as provideTheme, p as propsFactory, I as IconValue, m as makeThemeProps, h as provideDefaults, e as convertToUnit } from './server.mjs';
-import { a as useLoader, u as usePosition, m as makePositionProps, b as makeLoaderProps, d as createSimpleFunctional, L as LoaderSlot } from './position-D2_Ao4AV.mjs';
+import { u as useLoader, a as usePosition, m as makePositionProps, b as makeLoaderProps, d as createSimpleFunctional, L as LoaderSlot } from './position-D2_Ao4AV.mjs';
 import { V as VAvatar, a as VImg } from './VAvatar-DVIor7ga.mjs';
 
 const makeVCardActionsProps = propsFactory({

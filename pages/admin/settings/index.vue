@@ -600,23 +600,61 @@ const editRole = (role: any) => {
 
 const saveRole = async () => {
   roleSaving.value = true
+  console.log('🟡 [Frontend] Сохранение роли...')
   try {
-    await $fetch('/api/admin/settings', {
+    const response = await $fetch('/api/admin/settings', {
       method: 'POST',
-      body: { type: 'role', data: { id: editingRole.value?.id || null, name: newRole.name, description: newRole.description, permissions: newRole } },
-    })
-    if (editingRole.value) Object.assign(editingRole.value, newRole)
-    else roles.value.push({ id: String(Date.now()), ...newRole })
+      body: {
+        type: 'role',
+        data: {
+          id: editingRole.value?.id || null,
+          name: newRole.name,
+          description: newRole.description,
+          permissions: newRole,
+        }
+      },
+    }) as any
+    
+    if (editingRole.value) {
+      Object.assign(editingRole.value, newRole)
+      console.log('✅ [Frontend] Роль обновлена')
+    } else {
+      const newId = response?.id || String(Date.now())
+      roles.value.push({ id: newId, ...newRole })
+      console.log('✅ [Frontend] Роль создана:', newId)
+    }
+    
     showAddRoleDialog.value = false
     editingRole.value = null
     Object.assign(newRole, { name: '', description: '', canViewDashboard: false, canManageCourses: false, canManageUsers: false })
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения роли:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
   } finally {
     roleSaving.value = false
   }
 }
 
-const deleteRole = (id: string) => {
-  if (confirm('Удалить роль?')) roles.value = roles.value.filter(r => r.id !== id)
+const deleteRole = async (id: string) => {
+  if (!confirm('Удалить роль?')) return
+  
+  console.log('🗑️ [Frontend] Удаляю роль:', id)
+  try {
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'role-delete',
+        data: { id }
+      }
+    })
+    
+    // Обновляем локальный список
+    roles.value = roles.value.filter(r => r.id !== id)
+    console.log('✅ [Frontend] Роль удалена из БД и UI')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка удаления роли:', e)
+    alert('Ошибка удаления: ' + (e.data?.message || 'Не удалось удалить'))
+  }
 }
 
 const editAdmin = (admin: any) => {
@@ -627,23 +665,63 @@ const editAdmin = (admin: any) => {
 
 const saveAdmin = async () => {
   adminSaving.value = true
+  console.log('🟡 [Frontend] Сохранение администратора...')
   try {
-    await $fetch('/api/admin/settings', {
+    const response = await $fetch('/api/admin/settings', {
       method: 'POST',
-      body: { type: 'admin', data: { id: editingAdmin.value?.id || null, email: newAdmin.email, name: newAdmin.name, roleId: newAdmin.roleId } },
-    })
-    if (editingAdmin.value) Object.assign(editingAdmin.value, newAdmin)
-    else admins.value.push({ id: String(Date.now()), ...newAdmin })
+      body: {
+        type: 'admin',
+        data: {
+          id: editingAdmin.value?.id || null,
+          email: newAdmin.email,
+          name: newAdmin.name,
+          roleId: newAdmin.roleId,
+          isActive: true,
+        }
+      },
+    }) as any
+    
+    if (editingAdmin.value) {
+      Object.assign(editingAdmin.value, newAdmin)
+      console.log('✅ [Frontend] Администратор обновлен')
+    } else {
+      // Получаем ID из ответа или используем временный
+      const newId = response?.id || String(Date.now())
+      admins.value.push({ id: newId, ...newAdmin, isActive: true })
+      console.log('✅ [Frontend] Администратор создан:', newId)
+    }
+    
     showAddAdminDialog.value = false
     editingAdmin.value = null
     Object.assign(newAdmin, { email: '', name: '', roleId: '1' })
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения администратора:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
   } finally {
     adminSaving.value = false
   }
 }
 
-const deleteAdmin = (id: string) => {
-  if (confirm('Удалить администратора?')) admins.value = admins.value.filter(a => a.id !== id)
+const deleteAdmin = async (id: string) => {
+  if (!confirm('Удалить администратора?')) return
+  
+  console.log('🗑️ [Frontend] Удаляю администратора:', id)
+  try {
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'admin-delete',
+        data: { id }
+      }
+    })
+    
+    // Обновляем локальный список
+    admins.value = admins.value.filter(a => a.id !== id)
+    console.log('✅ [Frontend] Администратор удален из БД и UI')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка удаления администратора:', e)
+    alert('Ошибка удаления: ' + (e.data?.message || 'Не удалось удалить'))
+  }
 }
 
 const openChangePassword = (admin: any) => {
@@ -689,8 +767,23 @@ const savePassword = async () => {
   }
 }
 
-const deleteVkGroup = (id: string) => {
-  if (confirm('Удалить группу?')) vkGroups.value = vkGroups.value.filter(g => g.id !== id)
+const deleteVkGroup = async (id: string) => {
+  if (!confirm('Удалить группу?')) return
+  
+  console.log('🗑️ [Frontend] Удаляю VK группу:', id)
+  try {
+    await $fetch('/api/admin/vk-groups', {
+      method: 'POST',
+      body: { action: 'delete', data: { id } }
+    })
+    
+    // Обновляем локальный список
+    vkGroups.value = vkGroups.value.filter(g => g.id !== id)
+    console.log('✅ [Frontend] VK группа удалена из БД и UI')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка удаления:', e)
+    alert('Ошибка удаления: ' + (e.data?.message || 'Не удалось удалить'))
+  }
 }
 
 const editVkGroup = (group: any) => {
@@ -701,15 +794,54 @@ const editVkGroup = (group: any) => {
 
 const saveVkGroup = async () => {
   vkSaving.value = true
+  console.log('🟡 [Frontend] Сохранение VK группы...')
+  
   try {
     if (editingVkGroup.value) {
+      // Обновление существующей группы
+      await $fetch('/api/admin/vk-groups', {
+        method: 'POST',
+        body: {
+          action: 'update',
+          data: {
+            id: editingVkGroup.value.id,
+            name: newVkGroup.name,
+            vkId: newVkGroup.vkId,
+            courseSlug: newVkGroup.courseSlug,
+            token: newVkGroup.token,
+          }
+        }
+      })
+      
+      // Обновляем локальные данные
       Object.assign(editingVkGroup.value, newVkGroup)
+      console.log('✅ [Frontend] VK группа обновлена в БД')
     } else {
-      vkGroups.value.push({ id: String(Date.now()), ...newVkGroup })
+      // Создание новой группы
+      const response = await $fetch('/api/admin/vk-groups', {
+        method: 'POST',
+        body: {
+          action: 'create',
+          data: {
+            name: newVkGroup.name,
+            vkId: newVkGroup.vkId,
+            courseSlug: newVkGroup.courseSlug,
+            token: newVkGroup.token,
+          }
+        }
+      }) as any
+      
+      // Добавляем в локальный список с ID из БД
+      vkGroups.value.push(response.group)
+      console.log('✅ [Frontend] VK группа создана в БД:', response.group.id)
     }
+    
     showAddVkDialog.value = false
     editingVkGroup.value = null
     Object.assign(newVkGroup, { name: '', vkId: '', courseSlug: '', token: '' })
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
   } finally {
     vkSaving.value = false
   }
@@ -808,6 +940,11 @@ onMounted(async () => {
     profile.value.email = profileData.admin.email
     profile.value.name = profileData.admin.name
     
+    // Загружаем роли
+    const rolesData = await $fetch('/api/admin/roles')
+    console.log('✅ [Frontend] Роли загружены:', rolesData.roles)
+    roles.value = rolesData.roles
+    
     // Загружаем администраторов
     const adminsData = await $fetch('/api/admin/admins')
     console.log('✅ [Frontend] Администраторы загружены:', adminsData.admins)
@@ -845,6 +982,12 @@ onMounted(async () => {
         siteName: allSettings.general.siteName,
         adminEmail: allSettings.general.adminEmail,
       })
+    }
+    
+    // Загружаем VK группы
+    if (allSettings.vkGroups) {
+      vkGroups.value = allSettings.vkGroups
+      console.log('✅ [Frontend] VK группы загружены:', allSettings.vkGroups.length)
     }
     
     console.log('✅ [Frontend] Все данные обновлены в компоненте')

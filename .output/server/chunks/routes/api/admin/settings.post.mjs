@@ -41,20 +41,22 @@ const settings_post = defineEventHandler(async (event) => {
     if (type === "role") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u0440\u043E\u043B\u0438...");
       const { id, name, description, permissions } = data;
+      const perms = permissions || {};
       if (id) {
         console.log("\u{1F504} [API] \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0435\u0439 \u0440\u043E\u043B\u0438:", id);
         await db.update(roles).set({
           name,
           description,
-          canViewDashboard: permissions.canViewDashboard ? 1 : 0,
-          canManageCourses: permissions.canManageCourses ? 1 : 0,
-          canManageUsers: permissions.canManageUsers ? 1 : 0,
-          canManagePurchases: permissions.canManagePurchases ? 1 : 0,
-          canManageSettings: permissions.canManageSettings ? 1 : 0,
-          canManageAdmins: permissions.canManageAdmins ? 1 : 0,
-          canEditPlan: permissions.canEditPlan ? 1 : 0
+          canViewDashboard: perms.canViewDashboard ? 1 : 0,
+          canManageCourses: perms.canManageCourses ? 1 : 0,
+          canManageUsers: perms.canManageUsers ? 1 : 0,
+          canManagePurchases: perms.canManagePurchases ? 1 : 0,
+          canManageSettings: perms.canManageSettings ? 1 : 0,
+          canManageAdmins: perms.canManageAdmins ? 1 : 0,
+          canEditPlan: perms.canEditPlan ? 1 : 0
         }).where(eq(roles.id, id));
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0430");
+        return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id };
       } else {
         console.log("\u2795 [API] \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043D\u043E\u0432\u043E\u0439 \u0440\u043E\u043B\u0438");
         const newId = crypto.randomUUID();
@@ -62,17 +64,23 @@ const settings_post = defineEventHandler(async (event) => {
           id: newId,
           name,
           description,
-          canViewDashboard: permissions.canViewDashboard ? 1 : 0,
-          canManageCourses: permissions.canManageCourses ? 1 : 0,
-          canManageUsers: permissions.canManageUsers ? 1 : 0,
-          canManagePurchases: permissions.canManagePurchases ? 1 : 0,
-          canManageSettings: permissions.canManageSettings ? 1 : 0,
-          canManageAdmins: permissions.canManageAdmins ? 1 : 0,
-          canEditPlan: permissions.canEditPlan ? 1 : 0
+          canViewDashboard: perms.canViewDashboard ? 1 : 0,
+          canManageCourses: perms.canManageCourses ? 1 : 0,
+          canManageUsers: perms.canManageUsers ? 1 : 0,
+          canManagePurchases: perms.canManagePurchases ? 1 : 0,
+          canManageSettings: perms.canManageSettings ? 1 : 0,
+          canManageAdmins: perms.canManageAdmins ? 1 : 0,
+          canEditPlan: perms.canEditPlan ? 1 : 0
         });
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u0441\u043E\u0437\u0434\u0430\u043D\u0430:", newId);
+        return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id: newId };
       }
-      return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430" };
+    }
+    if (type === "role-delete") {
+      console.log("\u{1F5D1}\uFE0F [API] \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u0440\u043E\u043B\u0438:", data.id);
+      await db.delete(roles).where(eq(roles.id, data.id));
+      console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D\u0430");
+      return { success: true, message: "\u0420\u043E\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D\u0430" };
     }
     if (type === "admin") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430...");
@@ -98,8 +106,15 @@ const settings_post = defineEventHandler(async (event) => {
           isActive: isActive ? 1 : 0
         });
         console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0437\u0434\u0430\u043D:", newId);
+        return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D", id: newId };
       }
       return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D" };
+    }
+    if (type === "admin-delete") {
+      console.log("\u{1F5D1}\uFE0F [API] \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430:", data.id);
+      await db.delete(admins).where(eq(admins.id, data.id));
+      console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D");
+      return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D" };
     }
     if (type === "email") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 email \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");

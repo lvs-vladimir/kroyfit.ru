@@ -1,5 +1,5 @@
 import { ref, shallowRef, computed, toRef, watchEffect, createVNode, normalizeStyle, normalizeClass } from 'vue';
-import { a as useBackgroundColor, k as useBorder, n as useElevation, p as useRounded, x as useResizeObserver, b as useRender, m as makeTagProps, r as makeRoundedProps, t as makeElevationProps, g as makeComponentProps, w as makeBorderProps } from './index-C1EJcibQ.mjs';
+import { E as useBackgroundColor, u as useBorder, c as useElevation, e as useRounded, A as useResizeObserver, j as useRender, k as makeTagProps, o as makeRoundedProps, r as makeElevationProps, v as makeComponentProps, w as makeBorderProps } from './index-C1EJcibQ.mjs';
 import { u as useLayoutItem, m as makeLayoutItemProps } from './VMain-_oYNW9Kv.mjs';
 import { g as genericComponent, b as provideTheme, D as useToggleScope, e as convertToUnit, p as propsFactory, m as makeThemeProps } from './server.mjs';
 

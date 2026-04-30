@@ -1,9 +1,9 @@
 import { ref, useId, createVNode, mergeProps } from 'vue';
 import { a as VCheckboxBtn, m as makeVCheckboxBtnProps } from './VSelect-4gYBnRL8.mjs';
-import { u as useFocus, V as VInput, m as makeVInputProps } from './autofocus-DXdUA20R.mjs';
+import { u as useFocus, V as VInput, g as makeVInputProps } from './autofocus-DXdUA20R.mjs';
 import { f as forwardRefs } from './forwardRefs-CAP5b9ad.mjs';
 import { g as genericComponent, f as useProxiedModel, l as filterInputAttrs, p as propsFactory, o as omit } from './server.mjs';
-import { b as useRender } from './index-C1EJcibQ.mjs';
+import { j as useRender } from './index-C1EJcibQ.mjs';
 
 const makeVCheckboxProps = propsFactory({
   ...omit(makeVInputProps(), ["direction"]),
