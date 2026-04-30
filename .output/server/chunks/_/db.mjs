@@ -1,5 +1,6 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
+import { resolve } from 'path';
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
@@ -107,7 +108,9 @@ const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   vkGroups: vkGroups
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const sqlite = new Database("kroyfit.db");
+const DB_PATH = resolve(process.cwd(), "kroyfit.db");
+console.log("\u{1F4C1} [DB] \u041F\u0443\u0442\u044C \u043A \u0411\u0414:", DB_PATH);
+const sqlite = new Database(DB_PATH);
 const db = drizzle(sqlite, { schema });
 
 export { admins as a, courses as c, db as d, emailSettings as e, generalSettings as g, purchases as p, roles as r, seoSettings as s, users as u, vkGroups as v };

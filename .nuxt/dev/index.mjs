@@ -2147,22 +2147,7 @@ const plugins = [
 _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw
 ];
 
-const assets = {
-  "/index.mjs": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"2b4a9-t/yLAR9CBt11zS7WN9hnDGlx7kM\"",
-    "mtime": "2026-04-30T09:27:16.704Z",
-    "size": 177321,
-    "path": "index.mjs"
-  },
-  "/index.mjs.map": {
-    "type": "application/json",
-    "etag": "\"ac45f-598AhdXgZDaGTGy87rmmU9oGH8A\"",
-    "mtime": "2026-04-30T09:27:16.705Z",
-    "size": 705631,
-    "path": "index.mjs.map"
-  }
-};
+const assets = {};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -3108,7 +3093,9 @@ const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   vkGroups: vkGroups
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const sqlite = new Database("kroyfit.db");
+const DB_PATH = resolve(process.cwd(), "kroyfit.db");
+console.log("\u{1F4C1} [DB] \u041F\u0443\u0442\u044C \u043A \u0411\u0414:", DB_PATH);
+const sqlite = new Database(DB_PATH);
 const db = drizzle(sqlite, { schema });
 
 const admins_get = defineEventHandler(async (event) => {

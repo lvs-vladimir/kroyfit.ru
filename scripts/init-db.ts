@@ -1,8 +1,11 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
+import { resolve } from 'path'
 import * as schema from '../server/database/schema'
 
-const sqlite = new Database('kroyfit.db')
+const DB_PATH = resolve(process.cwd(), 'kroyfit.db')
+console.log('📁 [DB] Путь к БД:', DB_PATH)
+const sqlite = new Database(DB_PATH)
 const db = drizzle(sqlite)
 
 console.log('Создание таблиц...')
