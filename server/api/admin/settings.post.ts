@@ -270,6 +270,20 @@ export default defineEventHandler(async (event) => {
       return { success: true, message: 'Пользователь обновлен', user: updatedUser }
     }
 
+    if (type === 'user-delete') {
+      console.log('🗑️ [API] Удаление пользователя:', data.id)
+      
+      // Проверяем что пользователь существует
+      const existing = await db.select().from(users).where(eq(users.id, data.id)).limit(1)
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: 'Пользователь не найден' })
+      }
+      
+      await db.delete(users).where(eq(users.id, data.id))
+      console.log('✅ [API] Пользователь удален:', data.id)
+      return { success: true, message: 'Пользователь удален' }
+    }
+
     if (type === 'email') {
       console.log('🟡 [API] Сохранение email настроек...')
       const { smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom, enableWelcome, enablePurchase, enableVkGroup } = data

@@ -26,6 +26,7 @@
           <th class="text-left text-caption text-grey-darken-1 font-weight-medium">VK</th>
           <th class="text-left text-caption text-grey-darken-1 font-weight-medium">Курсов</th>
           <th class="text-left text-caption text-grey-darken-1 font-weight-medium">Дата</th>
+          <th class="text-left text-caption text-grey-darken-1 font-weight-medium">Действия</th>
         </tr>
       </thead>
       <tbody>
@@ -53,6 +54,30 @@
             </td>
             <td class="text-grey-darken-2">{{ user.coursesCount }}</td>
             <td class="text-grey-darken-2">{{ user.registered }}</td>
+            <td>
+              <div class="d-flex ga-1">
+                <v-btn
+                  icon
+                  size="x-small"
+                  variant="text"
+                  color="blue-darken-2"
+                  @click="editUser(user)"
+                  title="Редактировать"
+                >
+                  <v-icon size="18">mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn
+                  icon
+                  size="x-small"
+                  variant="text"
+                  color="red-darken-2"
+                  @click="confirmDelete(user)"
+                  title="Удалить"
+                >
+                  <v-icon size="18">mdi-trash-can</v-icon>
+                </v-btn>
+              </div>
+            </td>
           </tr>
       </tbody>
     </v-table>
@@ -129,6 +154,104 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+
+    <!-- Edit User Dialog -->
+    <v-dialog v-model="showEditDialog" max-width="500">
+      <v-card style="border-radius: 12px;">
+        <v-card-title class="pa-6 pb-2">
+          <h2 class="text-h6 font-weight-bold" style="color: #020617;">Редактирование пользователя</h2>
+        </v-card-title>
+        <v-card-text class="pa-6 pt-2">
+          <v-form @submit.prevent="saveEditedUser">
+            <div class="mb-4">
+              <label class="text-caption text-grey-darken-1 d-block mb-1">Имя</label>
+              <v-text-field
+                v-model="editingUser.name"
+                placeholder="Имя пользователя"
+                variant="outlined"
+                density="compact"
+                hide-details
+              />
+            </div>
+            <div class="mb-4">
+              <label class="text-caption text-grey-darken-1 d-block mb-1">Email</label>
+              <v-text-field
+                v-model="editingUser.email"
+                type="email"
+                placeholder="email@example.com"
+                variant="outlined"
+                density="compact"
+                hide-details
+              />
+            </div>
+            <div class="mb-4">
+              <label class="text-caption text-grey-darken-1 d-block mb-1">VK ID</label>
+              <v-text-field
+                v-model="editingUser.vk"
+                placeholder="123456789"
+                variant="outlined"
+                density="compact"
+                hide-details
+              />
+            </div>
+            <div class="d-flex ga-2 mt-2">
+              <v-btn
+                type="submit"
+                color="green-darken-3"
+                variant="flat"
+                :loading="saving"
+                style="border-radius: 8px;"
+              >
+                Сохранить
+              </v-btn>
+              <v-btn
+                variant="text"
+                color="grey-darken-2"
+                @click="showEditDialog = false"
+              >
+                Отмена
+              </v-btn>
+            </div>
+          </v-form>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Confirmation Dialog -->
+    <v-dialog v-model="showDeleteDialog" max-width="400">
+      <v-card style="border-radius: 12px;">
+        <v-card-title class="pa-6 pb-2">
+          <h2 class="text-h6 font-weight-bold" style="color: #020617;">Удалить пользователя?</h2>
+        </v-card-title>
+        <v-card-text class="pa-6 pt-2">
+          <p class="text-body-2 text-grey-darken-2 mb-4">
+            Вы уверены, что хотите удалить пользователя <strong>{{ userToDelete?.name }}</strong>?
+          </p>
+          <p class="text-caption text-grey-darken-1">
+            Это действие нельзя отменить.
+          </p>
+        </v-card-text>
+        <v-card-actions class="pa-6 pt-2">
+          <v-spacer />
+          <v-btn
+            variant="text"
+            color="grey-darken-2"
+            @click="showDeleteDialog = false"
+          >
+            Отмена
+          </v-btn>
+          <v-btn
+            color="red-darken-2"
+            variant="flat"
+            :loading="deleting"
+            @click="deleteUser"
+            style="border-radius: 8px;"
+          >
+            Удалить
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -160,7 +283,10 @@ onMounted(async () => {
 })
 
 const showCreateDialog = ref(false)
+const showEditDialog = ref(false)
+const showDeleteDialog = ref(false)
 const saving = ref(false)
+const deleting = ref(false)
 
 const newUser = reactive({
   name: '',
@@ -168,6 +294,15 @@ const newUser = reactive({
   password: '',
   vk: '',
 })
+
+const editingUser = reactive({
+  id: '',
+  name: '',
+  email: '',
+  vk: '',
+})
+
+const userToDelete = ref(null)
 
 const createUser = async () => {
   saving.value = true
@@ -188,6 +323,88 @@ const createUser = async () => {
     newUser.vk = ''
   } finally {
     saving.value = false
+  }
+}
+
+const editUser = (user) => {
+  editingUser.id = user.id
+  editingUser.name = user.name
+  editingUser.email = user.email
+  editingUser.vk = user.vk
+  showEditDialog.value = true
+}
+
+const saveEditedUser = async () => {
+  saving.value = true
+  try {
+    console.log('📝 [Frontend] Сохранение пользователя:', editingUser)
+    
+    const response = await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'user-update',
+        data: {
+          id: editingUser.id,
+          name: editingUser.name,
+          email: editingUser.email,
+          vkId: editingUser.vk,
+        },
+      },
+    })
+    
+    console.log('✅ [Frontend] Пользователь обновлен:', response.user.id)
+    
+    // Обновляем пользователя в списке
+    const index = users.value.findIndex(u => u.id === editingUser.id)
+    if (index !== -1) {
+      users.value[index].name = editingUser.name
+      users.value[index].email = editingUser.email
+      users.value[index].vk = editingUser.vk
+    }
+    
+    showEditDialog.value = false
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить пользователя'))
+  } finally {
+    saving.value = false
+  }
+}
+
+const confirmDelete = (user) => {
+  userToDelete.value = user
+  showDeleteDialog.value = true
+}
+
+const deleteUser = async () => {
+  if (!userToDelete.value) return
+  
+  deleting.value = true
+  try {
+    console.log('🗑️ [Frontend] Удаление пользователя:', userToDelete.value.id)
+    
+    const response = await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'user-delete',
+        data: {
+          id: userToDelete.value.id,
+        },
+      },
+    })
+    
+    console.log('✅ [Frontend] Пользователь удален:', userToDelete.value.id)
+    
+    // Удаляем пользователя из списка
+    users.value = users.value.filter(u => u.id !== userToDelete.value.id)
+    
+    showDeleteDialog.value = false
+    userToDelete.value = null
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка удаления:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось удалить пользователя'))
+  } finally {
+    deleting.value = false
   }
 }
 
