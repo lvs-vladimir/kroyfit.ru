@@ -32,6 +32,19 @@
               density="compact"
               hide-details
               class="mb-4"
+              @input="generateSlug"
+            />
+          </div>
+
+          <div class="mb-6">
+            <label class="text-caption text-grey-darken-1 d-block mb-1">Slug (URL)</label>
+            <v-text-field
+              v-model="form.slug"
+              placeholder="kurs-nazvanie"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-4"
             />
           </div>
 
@@ -186,12 +199,38 @@ const categories = ['Базовый', 'Продвинутый', 'Спецкур�
 const form = reactive({
   title: '',
   description: '',
+  slug: '',
   price: 0,
   category: 'Базовый',
   duration: '',
   lessonsCount: 0,
   isPublished: false,
+  image: '',
 })
+
+const generateSlug = () => {
+  if (!form.title) {
+    form.slug = ''
+    return
+  }
+  
+  // Транслитерация русских букв в латиницу
+  const translitMap: Record<string, string> = {
+    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+    'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+    'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+    'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+    'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+  }
+  
+  form.slug = form.title
+    .toLowerCase()
+    .split('')
+    .map(char => translitMap[char] || char)
+    .join('')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
 
 const saveCourse = async () => {
   saving.value = true
