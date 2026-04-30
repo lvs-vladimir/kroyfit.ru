@@ -6,7 +6,10 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { type, data } = body
 
+  console.log('🔵 [API] /api/admin/settings - Получен запрос:', { type, data })
+
   if (!type || !data) {
+    console.error('❌ [API] Не переданы обязательные параметры')
     throw createError({
       statusCode: 400,
       message: 'Не переданы обязательные параметры',
@@ -15,24 +18,29 @@ export default defineEventHandler(async (event) => {
 
   try {
     if (type === 'profile') {
-      // Сохранение профиля администратора
+      console.log('🟡 [API] Сохранение профиля администратора...')
       const { adminId, email, name, password } = data
+      
+      console.log('📝 [API] Данные для обновления:', { adminId, email, name, hasPassword: !!password })
       
       const updateData: any = { email, name }
       if (password && password.length > 0) {
         updateData.password = password
       }
 
-      await db.update(admins).set(updateData).where(eq(admins.id, adminId))
+      console.log('🔄 [API] Выполняю UPDATE в БД...')
+      const result = await db.update(admins).set(updateData).where(eq(admins.id, adminId))
+      console.log('✅ [API] UPDATE выполнен успешно:', result)
+      
       return { success: true, message: 'Профиль обновлен' }
     }
 
     if (type === 'role') {
-      // Сохранение роли
+      console.log('🟡 [API] Сохранение роли...')
       const { id, name, description, permissions } = data
       
       if (id) {
-        // Обновление существующей роли
+        console.log('🔄 [API] Обновление существующей роли:', id)
         await db.update(roles).set({
           name,
           description,
@@ -44,8 +52,9 @@ export default defineEventHandler(async (event) => {
           canManageAdmins: permissions.canManageAdmins ? 1 : 0,
           canEditPlan: permissions.canEditPlan ? 1 : 0,
         }).where(eq(roles.id, id))
+        console.log('✅ [API] Роль обновлена')
       } else {
-        // Создание новой роли
+        console.log('➕ [API] Создание новой роли')
         const newId = crypto.randomUUID()
         await db.insert(roles).values({
           id: newId,
@@ -59,41 +68,47 @@ export default defineEventHandler(async (event) => {
           canManageAdmins: permissions.canManageAdmins ? 1 : 0,
           canEditPlan: permissions.canEditPlan ? 1 : 0,
         })
+        console.log('✅ [API] Роль создана:', newId)
       }
       return { success: true, message: 'Роль сохранена' }
     }
 
     if (type === 'admin') {
-      // Сохранение администратора
+      console.log('🟡 [API] Сохранение администратора...')
       const { id, email, name, roleId, isActive } = data
       
       if (id) {
+        console.log('🔄 [API] Обновление администратора:', id)
         await db.update(admins).set({
           email,
           name,
           roleId,
           isActive: isActive ? 1 : 0,
         }).where(eq(admins.id, id))
+        console.log('✅ [API] Администратор обновлен')
       } else {
+        console.log('➕ [API] Создание нового администратора')
         const newId = crypto.randomUUID()
         await db.insert(admins).values({
           id: newId,
           email,
           name,
-          password: 'temp_password', // TODO: хешировать
+          password: 'temp_password',
           roleId,
           isActive: isActive ? 1 : 0,
         })
+        console.log('✅ [API] Администратор создан:', newId)
       }
       return { success: true, message: 'Администратор сохранен' }
     }
 
+    console.error('❌ [API] Неизвестный тип сохранения:', type)
     throw createError({
       statusCode: 400,
       message: 'Неизвестный тип сохранения',
     })
   } catch (e) {
-    console.error('Ошибка сохранения:', e)
+    console.error('❌ [API] Ошибка сохранения:', e)
     throw createError({
       statusCode: 500,
       message: 'Ошибка сохранения данных',

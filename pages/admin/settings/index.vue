@@ -505,15 +505,31 @@ const getRoleName = (roleId: string) => roles.value.find(r => r.id === roleId)?.
 
 const saveProfile = async () => {
   profile.saving = true
+  profileMessage.value = null
+  console.log('🟢 [Frontend] Начинаю сохранение профиля...')
+  console.log('📝 [Frontend] Данные:', { email: profile.email, name: profile.name, hasPassword: !!profile.password })
+  
   try {
-    await $fetch('/api/admin/settings', {
+    console.log('🔵 [Frontend] Отправляю запрос на /api/admin/settings...')
+    const response = await $fetch('/api/admin/settings', {
       method: 'POST',
-      body: { type: 'profile', data: { adminId: '1', email: profile.email, name: profile.name, password: profile.password } },
+      body: {
+        type: 'profile',
+        data: {
+          adminId: '1',
+          email: profile.email,
+          name: profile.name,
+          password: profile.password,
+        },
+      },
     })
-    profileMessage.value = { type: 'success', text: 'Профиль обновлен!' }
+
+    console.log('✅ [Frontend] Ответ от сервера:', response)
+    profileMessage.value = { type: 'success', text: 'Профиль успешно обновлен! Данные сохранены в БД.' }
     profile.password = ''
   } catch (e: any) {
-    profileMessage.value = { type: 'error', text: e.data?.message || 'Ошибка' }
+    console.error('❌ [Frontend] Ошибка при сохранении:', e)
+    profileMessage.value = { type: 'error', text: e.data?.message || 'Ошибка сохранения профиля' }
   } finally {
     profile.saving = false
   }
