@@ -395,12 +395,9 @@ const adminSaving = ref(false)
 const vkSaving = ref(false)
 const profileMessage = ref(null)
 
-// Загружаем профиль асинхронно в setup
-const { data: profileData } = await useFetch('/api/admin/profile')
-
 const profile = ref({
-  email: profileData.value?.admin?.email || 'admin@kroyfit.ru',
-  name: profileData.value?.admin?.name || 'Администратор',
+  email: 'admin@kroyfit.ru',
+  name: 'Администратор',
   password: '',
   saving: false,
 })
@@ -658,6 +655,20 @@ const saveGeneral = async () => {
 }
 
 useSeoMeta({ title: 'Настройки — Админка' })
+
+// Загружаем профиль при монтировании компонента
+onMounted(async () => {
+  console.log('🟡 [Frontend] Компонент монтирован, загружаю профиль из БД...')
+  try {
+    const profileData = await $fetch('/api/admin/profile')
+    console.log('✅ [Frontend] Профиль загружен при монтировании:', profileData.admin)
+    profile.value.email = profileData.admin.email
+    profile.value.name = profileData.admin.name
+    console.log('✅ [Frontend] Профиль обновлен в компоненте')
+  } catch (e) {
+    console.error('❌ [Frontend] Ошибка загрузки профиля при монтировании:', e)
+  }
+})
 </script>
 
 <style scoped>
