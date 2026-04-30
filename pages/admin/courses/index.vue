@@ -73,29 +73,28 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'admin', layout: 'admin' })
 
-const courses = ref([
-  {
-    id: '1',
-    title: 'Технология пошива',
-    category: 'Базовый',
-    priceDisplay: '15 000 ₽',
-    isPublished: true,
-  },
-  {
-    id: '2',
-    title: 'Мастер конструирования',
-    category: 'Продвинутый',
-    priceDisplay: '25 000 ₽',
-    isPublished: true,
-  },
-  {
-    id: '3',
-    title: 'Дамское бельё',
-    category: 'Спецкурс',
-    priceDisplay: '12 000 ₽',
-    isPublished: true,
-  },
-])
+const courses = ref([])
+const loading = ref(true)
+
+// Загрузка курсов из БД
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/courses')
+    if (data.success) {
+      courses.value = data.courses.map(c => ({
+        id: c.id,
+        title: c.title,
+        category: c.category || '—',
+        priceDisplay: c.price ? `${c.price.toLocaleString('ru-RU')} ₽` : '—',
+        isPublished: c.isPublished,
+      }))
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки курсов:', e)
+  } finally {
+    loading.value = false
+  }
+})
 
 const deleteCourse = (id: string) => {
   if (confirm('Удалить курс?')) {

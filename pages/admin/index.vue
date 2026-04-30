@@ -80,13 +80,29 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'admin', layout: 'admin' })
 
-const recentPurchases = ref([
-  { id: '1', user: 'Анна Иванова', course: 'Технология пошива', amount: '15 000 ₽', status: 'Оплачено', date: '28.04.2026' },
-  { id: '2', user: 'Мария Петрова', course: 'Дамское бельё', amount: '12 000 ₽', status: 'Оплачено', date: '27.04.2026' },
-  { id: '3', user: 'Елена Сидорова', course: 'Мастер конструирования', amount: '25 000 ₽', status: 'Оплачено', date: '25.04.2026' },
-  { id: '4', user: 'Ольга Козлова', course: 'Технология пошива', amount: '15 000 ₽', status: 'Оплачено', date: '20.04.2026' },
-  { id: '5', user: 'Ирина Новикова', course: 'Дамское бельё', amount: '12 000 ₽', status: 'Оплачено', date: '18.04.2026' },
-])
+const recentPurchases = ref([])
+const loading = ref(true)
+
+// Загрузка последних покупок из БД
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/admin/purchases/recent')
+    if (data.success) {
+      recentPurchases.value = data.purchases.map(p => ({
+        id: p.id,
+        user: p.userName || p.userEmail || 'Неизвестно',
+        course: p.courseTitle || 'Неизвестный курс',
+        amount: p.amount ? `${p.amount.toLocaleString('ru-RU')} ₽` : '—',
+        status: p.status === 'completed' ? 'Оплачено' : 'В обработке',
+        date: p.createdAt ? new Date(p.createdAt).toLocaleDateString('ru-RU') : '—',
+      }))
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки покупок:', e)
+  } finally {
+    loading.value = false
+  }
+})
 
 useSeoMeta({
   title: 'Dashboard — Админка',

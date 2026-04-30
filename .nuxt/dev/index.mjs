@@ -5,7 +5,7 @@ import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
 import { escapeHtml } from 'file:///root/kroyfit/node_modules/@vue/shared/dist/shared.cjs.js';
-import { sql, eq } from 'file:///root/kroyfit/node_modules/drizzle-orm/index.js';
+import { sql, eq, desc, count } from 'file:///root/kroyfit/node_modules/drizzle-orm/index.js';
 import nodemailer from 'file:///root/kroyfit/node_modules/nodemailer/lib/nodemailer.js';
 import { promises, readFileSync, writeFileSync } from 'node:fs';
 import { drizzle } from 'file:///root/kroyfit/node_modules/drizzle-orm/better-sqlite3/index.js';
@@ -2611,17 +2611,22 @@ const _lazy_czidWe = () => Promise.resolve().then(function () { return admins_ge
 const _lazy_A8X4T2 = () => Promise.resolve().then(function () { return login_post$1; });
 const _lazy_EE5Nrq = () => Promise.resolve().then(function () { return profile_get$1; });
 const _lazy_1d2OBt = () => Promise.resolve().then(function () { return profile_post$1; });
+const _lazy_DzDfvp = () => Promise.resolve().then(function () { return recent_get$1; });
 const _lazy_AUXaMQ = () => Promise.resolve().then(function () { return roles_get$1; });
 const _lazy_v2SzUE = () => Promise.resolve().then(function () { return settings_post$1; });
 const _lazy_GxDtRk = () => Promise.resolve().then(function () { return all_get$1; });
 const _lazy_DCkUpC = () => Promise.resolve().then(function () { return vkGroups_post$1; });
+const _lazy_3rED2L = () => Promise.resolve().then(function () { return courses_get$3; });
+const _lazy_Q30N3U = () => Promise.resolve().then(function () { return _id__get$3; });
 const _lazy_iLABVq = () => Promise.resolve().then(function () { return _slug__get$1; });
-const _lazy_KhDoCk = () => Promise.resolve().then(function () { return index_get$3; });
 const _lazy_Bbdfzr = () => Promise.resolve().then(function () { return send_post$1; });
 const _lazy_fgLKdS = () => Promise.resolve().then(function () { return create_post$1; });
 const _lazy_Zk_xh4 = () => Promise.resolve().then(function () { return webhook_post$1; });
 const _lazy_Ec4NS6 = () => Promise.resolve().then(function () { return plan$1; });
-const _lazy_v540NM = () => Promise.resolve().then(function () { return index_get$1; });
+const _lazy_78NPLW = () => Promise.resolve().then(function () { return siteInfo_get$1; });
+const _lazy_o4Lo7s = () => Promise.resolve().then(function () { return courses_get$1; });
+const _lazy_EkXGHc = () => Promise.resolve().then(function () { return users_get$1; });
+const _lazy_sscpne = () => Promise.resolve().then(function () { return _id__get$1; });
 const _lazy_nu2Mqm = () => Promise.resolve().then(function () { return index_post$1; });
 const _lazy_cppSKU = () => Promise.resolve().then(function () { return invite_post$1; });
 const _lazy_j44pum = () => Promise.resolve().then(function () { return resolveId_post$1; });
@@ -2634,17 +2639,22 @@ const handlers = [
   { route: '/api/admin/login', handler: _lazy_A8X4T2, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/profile', handler: _lazy_EE5Nrq, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/profile', handler: _lazy_1d2OBt, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/purchases/recent', handler: _lazy_DzDfvp, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/roles', handler: _lazy_AUXaMQ, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/settings', handler: _lazy_v2SzUE, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/settings/all', handler: _lazy_GxDtRk, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/vk-groups', handler: _lazy_DCkUpC, lazy: true, middleware: false, method: "post" },
+  { route: '/api/courses', handler: _lazy_3rED2L, lazy: true, middleware: false, method: "get" },
+  { route: '/api/courses/:id', handler: _lazy_Q30N3U, lazy: true, middleware: false, method: "get" },
   { route: '/api/courses/:slug', handler: _lazy_iLABVq, lazy: true, middleware: false, method: "get" },
-  { route: '/api/courses', handler: _lazy_KhDoCk, lazy: true, middleware: false, method: "get" },
   { route: '/api/email/send', handler: _lazy_Bbdfzr, lazy: true, middleware: false, method: "post" },
   { route: '/api/payments/create', handler: _lazy_fgLKdS, lazy: true, middleware: false, method: "post" },
   { route: '/api/payments/webhook', handler: _lazy_Zk_xh4, lazy: true, middleware: false, method: "post" },
   { route: '/api/plan', handler: _lazy_Ec4NS6, lazy: true, middleware: false, method: undefined },
-  { route: '/api/users', handler: _lazy_v540NM, lazy: true, middleware: false, method: "get" },
+  { route: '/api/site-info', handler: _lazy_78NPLW, lazy: true, middleware: false, method: "get" },
+  { route: '/api/user/courses', handler: _lazy_o4Lo7s, lazy: true, middleware: false, method: "get" },
+  { route: '/api/users', handler: _lazy_EkXGHc, lazy: true, middleware: false, method: "get" },
+  { route: '/api/users/:id', handler: _lazy_sscpne, lazy: true, middleware: false, method: "get" },
   { route: '/api/users', handler: _lazy_nu2Mqm, lazy: true, middleware: false, method: "post" },
   { route: '/api/vk/invite', handler: _lazy_cppSKU, lazy: true, middleware: false, method: "post" },
   { route: '/api/vk/resolve-id', handler: _lazy_j44pum, lazy: true, middleware: false, method: "post" },
@@ -3021,7 +3031,7 @@ const users = sqliteTable("users", {
   avatar: text("avatar"),
   createdAt: text("created_at").default(sql`(datetime('now'))`)
 });
-const courses$2 = sqliteTable("courses", {
+const courses$1 = sqliteTable("courses", {
   id: text("id").primaryKey(),
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
@@ -3040,7 +3050,7 @@ const courses$2 = sqliteTable("courses", {
 const purchases = sqliteTable("purchases", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id),
-  courseId: text("course_id").notNull().references(() => courses$2.id),
+  courseId: text("course_id").notNull().references(() => courses$1.id),
   amount: integer("amount").notNull(),
   status: text("status").default("pending"),
   paymentId: text("payment_id"),
@@ -3085,7 +3095,7 @@ const generalSettings = sqliteTable("general_settings", {
 const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   admins: admins$1,
-  courses: courses$2,
+  courses: courses$1,
   emailSettings: emailSettings,
   generalSettings: generalSettings,
   purchases: purchases,
@@ -3223,6 +3233,36 @@ const profile_post = defineEventHandler(async (event) => {
 const profile_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: profile_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const recent_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/admin/purchases/recent - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043F\u043E\u0441\u043B\u0435\u0434\u043D\u0438\u0445 \u043F\u043E\u043A\u0443\u043F\u043E\u043A");
+  try {
+    const recentPurchases = await db.select({
+      id: purchases.id,
+      userId: purchases.userId,
+      userName: users.name,
+      userEmail: users.email,
+      courseId: purchases.courseId,
+      courseTitle: courses$1.title,
+      amount: purchases.amount,
+      status: purchases.status,
+      createdAt: purchases.createdAt
+    }).from(purchases).leftJoin(users, eq(purchases.userId, users.id)).leftJoin(courses$1, eq(purchases.courseId, courses$1.id)).orderBy(desc(purchases.createdAt)).limit(10);
+    console.log("\u2705 [API] \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u043E \u043F\u043E\u043A\u0443\u043F\u043E\u043A:", recentPurchases.length);
+    return { success: true, purchases: recentPurchases };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u043E\u043A\u0443\u043F\u043E\u043A:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0441\u043F\u0438\u0441\u043A\u0430 \u043F\u043E\u043A\u0443\u043F\u043E\u043A"
+    });
+  }
+});
+
+const recent_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: recent_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const roles_get = defineEventHandler(async (event) => {
@@ -3477,104 +3517,52 @@ const vkGroups_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePro
   default: vkGroups_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const courses$1 = [
-  {
-    id: "1",
-    title: "\u0422\u0435\u0445\u043D\u043E\u043B\u043E\u0433\u0438\u044F \u043F\u043E\u0448\u0438\u0432\u0430 \u043E\u0434\u0435\u0436\u0434\u044B",
-    slug: "tekhnologiya-poshiva",
-    category: "\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u043A\u0443\u0440\u0441",
-    price: 15e3,
-    priceDisplay: "\u043E\u0442 15 000 \u20BD",
-    description: "\u041E\u0441\u043D\u043E\u0432\u044B \u0448\u0438\u0442\u044C\u044F \u0434\u043B\u044F \u043D\u0430\u0447\u0438\u043D\u0430\u044E\u0449\u0438\u0445. \u041F\u043E\u0448\u0430\u0433\u043E\u0432\u043E\u0435 \u043E\u0431\u0443\u0447\u0435\u043D\u0438\u0435 \u043E\u0442 \u0432\u044B\u0431\u043E\u0440\u0430 \u0442\u043A\u0430\u043D\u0438 \u0434\u043E \u0433\u043E\u0442\u043E\u0432\u043E\u0433\u043E \u0438\u0437\u0434\u0435\u043B\u0438\u044F.",
-    fullDescription: `\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u043A\u0443\u0440\u0441 \xAB\u0422\u0435\u0445\u043D\u043E\u043B\u043E\u0433\u0438\u044F \u043F\u043E\u0448\u0438\u0432\u0430 \u043E\u0434\u0435\u0436\u0434\u044B\xBB \u2014 \u0438\u0434\u0435\u0430\u043B\u044C\u043D\u044B\u0439 \u0441\u0442\u0430\u0440\u0442 \u0434\u043B\u044F \u0442\u0435\u0445, \u043A\u0442\u043E \u0445\u043E\u0447\u0435\u0442 \u043D\u0430\u0443\u0447\u0438\u0442\u044C\u0441\u044F \u0448\u0438\u0442\u044C.
-
-\u0412\u044B \u043D\u0430\u0443\u0447\u0438\u0442\u0435\u0441\u044C \u0448\u0438\u0442\u044C \u044E\u0431\u043A\u0443, \u0431\u0440\u044E\u043A\u0438 \u0438 \u043F\u043B\u0430\u0442\u044C\u0435 \u043F\u043E\u0448\u0430\u0433\u043E\u0432\u043E \u2014 \u043E\u0442 \u043F\u0440\u043E\u0441\u0442\u043E\u0433\u043E \u043A \u0441\u043B\u043E\u0436\u043D\u043E\u043C\u0443.
-
-**\u041F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0430 \u043A\u0443\u0440\u0441\u0430:**
-- \u0412\u044B\u0431\u043E\u0440 \u0442\u043A\u0430\u043D\u0435\u0439 \u0438 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u043E\u0432
-- \u0420\u0430\u0441\u043A\u0440\u043E\u0439 \u0438 \u043F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0430 \u0434\u0435\u0442\u0430\u043B\u0435\u0439
-- \u0422\u0435\u0445\u043D\u043E\u043B\u043E\u0433\u0438\u044F \u043E\u0431\u0440\u0430\u0431\u043E\u0442\u043A\u0438 \u0438\u0437\u0434\u0435\u043B\u0438\u0439
-- \u0421\u0431\u043E\u0440\u043A\u0430 \u0438 \u043E\u043A\u043E\u043D\u0447\u0430\u0442\u0435\u043B\u044C\u043D\u0430\u044F \u043E\u0442\u0434\u0435\u043B\u043A\u0430
-
-**\u0427\u0442\u043E \u0432\u044B \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u0435:**
-- \u041F\u043E\u0448\u0430\u0433\u043E\u0432\u044B\u0435 \u0438\u043D\u0441\u0442\u0440\u0443\u043A\u0446\u0438\u0438
-- \u0412\u0438\u0434\u0435\u043E\u043C\u0430\u0442\u0435\u0440\u0438\u0430\u043B\u044B
-- \u0414\u043E\u0441\u0442\u0443\u043F \u0432 \u0437\u0430\u043A\u0440\u044B\u0442\u044B\u0439 \u0447\u0430\u0442
-- \u041F\u043E\u043C\u043E\u0449\u044C \u043F\u0440\u0435\u043F\u043E\u0434\u0430\u0432\u0430\u0442\u0435\u043B\u044F
-
-\u041C\u0430\u0442\u0435\u0440\u0438\u0430\u043B\u044B \u043E\u0441\u0442\u0430\u044E\u0442\u0441\u044F \u0443 \u0432\u0430\u0441 \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430.`,
-    image: "https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800",
-    includes: ["\u042E\u0431\u043A\u0430", "\u0411\u0440\u044E\u043A\u0438", "\u041F\u043B\u0430\u0442\u044C\u0435", "\u0412\u0438\u0434\u0435\u043E\u043C\u0430\u0442\u0435\u0440\u0438\u0430\u043B\u044B", "\u0417\u0430\u043A\u0440\u044B\u0442\u044B\u0439 \u0447\u0430\u0442", "\u041F\u043E\u043C\u043E\u0449\u044C \u043F\u0440\u0435\u043F\u043E\u0434\u0430\u0432\u0430\u0442\u0435\u043B\u044F"],
-    duration: "2 \u043C\u0435\u0441\u044F\u0446\u0430",
-    lessonsCount: 16,
-    isPublished: true,
-    createdAt: "2024-01-01"
-  },
-  {
-    id: "2",
-    title: "\u041C\u0430\u0441\u0442\u0435\u0440 \u043A\u043E\u043D\u0441\u0442\u0440\u0443\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F",
-    slug: "master-konstruirovaniya",
-    category: "\u041F\u0440\u043E\u0434\u0432\u0438\u043D\u0443\u0442\u044B\u0439 \u043A\u0443\u0440\u0441",
-    price: 25e3,
-    priceDisplay: "\u043E\u0442 25 000 \u20BD",
-    description: "\u041C\u0435\u0442\u043E\u0434\u0438\u043A\u0430 \u0442\u043E\u0447\u043D\u043E\u0433\u043E \u043A\u0440\u043E\u044F \u043F\u043E \u0417\u043B\u0430\u0447\u0435\u0432\u0441\u043A\u043E\u0439. \u041F\u043E \u043E\u043A\u043E\u043D\u0447\u0430\u043D\u0438\u0438 \u2014 \u0434\u0438\u043F\u043B\u043E\u043C \u043E\u0442 \u0430\u0432\u0442\u043E\u0440\u0430 \u043C\u0435\u0442\u043E\u0434\u0438\u043A\u0438.",
-    fullDescription: `\u041A\u0443\u0440\u0441 \xAB\u041C\u0430\u0441\u0442\u0435\u0440 \u043A\u043E\u043D\u0441\u0442\u0440\u0443\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F\xBB \u2014 \u0443\u0433\u043B\u0443\u0431\u043B\u0451\u043D\u043D\u043E\u0435 \u0438\u0437\u0443\u0447\u0435\u043D\u0438\u0435 \u043C\u0435\u0442\u043E\u0434\u0438\u043A\u0438 \u0442\u043E\u0447\u043D\u043E\u0433\u043E \u043A\u0440\u043E\u044F \u043F\u043E \u0417\u043B\u0430\u0447\u0435\u0432\u0441\u043A\u043E\u0439.
-
-\u0412\u044B \u043D\u0430\u0443\u0447\u0438\u0442\u0435\u0441\u044C:
-- \u0421\u0442\u0440\u043E\u0438\u0442\u044C \u0442\u043E\u0447\u043D\u044B\u0435 \u0432\u044B\u043A\u0440\u043E\u0439\u043A\u0438 \u043D\u0430 \u043B\u044E\u0431\u0443\u044E \u0444\u0438\u0433\u0443\u0440\u0443
-- \u041C\u043E\u0434\u0435\u043B\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0438\u0437\u0434\u0435\u043B\u0438\u044F
-- \u0421\u043E\u0437\u0434\u0430\u0432\u0430\u0442\u044C \u0438\u0434\u0435\u0430\u043B\u044C\u043D\u0443\u044E \u043F\u043E\u0441\u0430\u0434\u043A\u0443
-
-**\u041F\u043E \u043E\u043A\u043E\u043D\u0447\u0430\u043D\u0438\u0438 \u043A\u0443\u0440\u0441\u0430 \u0432\u044B \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u0435 \u0434\u0438\u043F\u043B\u043E\u043C** \u043E\u0442 \u0430\u0432\u0442\u043E\u0440\u0430 \u043C\u0435\u0442\u043E\u0434\u0438\u043A\u0438 \u0442\u043E\u0447\u043D\u043E\u0433\u043E \u043A\u0440\u043E\u044F \u043D\u0430 \u043A\u043E\u043D\u043A\u0440\u0435\u0442\u043D\u044B\u0435 \u0444\u0438\u0433\u0443\u0440\u044B \u0417\u043B\u0430\u0447\u0435\u0432\u0441\u043A\u043E\u0439 \u0413\u0430\u043B\u0438\u0438 \u041C\u0430\u043D\u0441\u0443\u0440\u043E\u0432\u043D\u044B.
-
-\u042D\u0442\u043E \u0443\u043D\u0438\u043A\u0430\u043B\u044C\u043D\u044B\u0439 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442, \u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0430\u044E\u0449\u0438\u0439 \u0432\u0430\u0448\u0438 \u043D\u0430\u0432\u044B\u043A\u0438 \u0438 \u043A\u0432\u0430\u043B\u0438\u0444\u0438\u043A\u0430\u0446\u0438\u044E.`,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
-    includes: ["\u0422\u043E\u0447\u043D\u044B\u0435 \u0432\u044B\u043A\u0440\u043E\u0439\u043A\u0438", "\u041C\u043E\u0434\u0435\u043B\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435", "\u0418\u0434\u0435\u0430\u043B\u044C\u043D\u0430\u044F \u043F\u043E\u0441\u0430\u0434\u043A\u0430", "\u0414\u0438\u043F\u043B\u043E\u043C \u0417\u043B\u0430\u0447\u0435\u0432\u0441\u043A\u043E\u0439", "\u0410\u0432\u0442\u043E\u0440\u0441\u043A\u0438\u0435 \u043C\u0430\u0442\u0435\u0440\u0438\u0430\u043B\u044B"],
-    duration: "3 \u043C\u0435\u0441\u044F\u0446\u0430",
-    lessonsCount: 24,
-    isPublished: true,
-    createdAt: "2024-01-15"
-  },
-  {
-    id: "3",
-    title: "\u0414\u0430\u043C\u0441\u043A\u043E\u0435 \u0431\u0435\u043B\u044C\u0451",
-    slug: "damskoe-bele",
-    category: "\u0421\u043F\u0435\u0446\u043A\u0443\u0440\u0441",
-    price: 12e3,
-    priceDisplay: "\u043E\u0442 12 000 \u20BD",
-    description: "\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435 \u0438 \u043F\u043E\u0448\u0438\u0432 \u043A\u0440\u0430\u0441\u0438\u0432\u043E\u0433\u043E \u0438 \u0443\u0434\u043E\u0431\u043D\u043E\u0433\u043E \u043D\u0438\u0436\u043D\u0435\u0433\u043E \u0431\u0435\u043B\u044C\u044F \u0441 \u043F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u043E\u0439 \u043F\u043E\u0441\u0430\u0434\u043A\u043E\u0439.",
-    fullDescription: `\u041A\u0443\u0440\u0441 \xAB\u0414\u0430\u043C\u0441\u043A\u043E\u0435 \u0431\u0435\u043B\u044C\u0451\xBB \u2014 \u043D\u0430\u0443\u0447\u0438\u0442\u0435\u0441\u044C \u0448\u0438\u0442\u044C \u043A\u0440\u0430\u0441\u0438\u0432\u043E\u0435 \u0438 \u043A\u043E\u043C\u0444\u043E\u0440\u0442\u043D\u043E\u0435 \u0431\u0435\u043B\u044C\u0451.
-
-\u0412\u044B \u043E\u0441\u0432\u043E\u0438\u0442\u0435:
-- \u041A\u043E\u043D\u0441\u0442\u0440\u0443\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435 \u0431\u044E\u0441\u0442\u0433\u0430\u043B\u044C\u0442\u0435\u0440\u043E\u0432
-- \u041F\u043E\u0448\u0438\u0432 \u0442\u0440\u0443\u0441\u043E\u0432 \u0438 \u043F\u0430\u043D\u0442\u0438
-- \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043A\u043E\u0440\u0441\u0435\u0442\u043E\u0432
-- \u0420\u0430\u0431\u043E\u0442\u0443 \u0441 \u043A\u0440\u0443\u0436\u0435\u0432\u043E\u043C \u0438 \u044D\u043B\u0430\u0441\u0442\u0438\u0447\u043D\u044B\u043C\u0438 \u0442\u043A\u0430\u043D\u044F\u043C\u0438
-
-\u041E\u0441\u043E\u0431\u043E\u0435 \u0432\u043D\u0438\u043C\u0430\u043D\u0438\u0435 \u0443\u0434\u0435\u043B\u044F\u0435\u0442\u0441\u044F \u043F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u043E\u0439 \u043F\u043E\u0441\u0430\u0434\u043A\u0435 \u0438 \u0443\u0434\u043E\u0431\u0441\u0442\u0432\u0443.`,
-    image: "https://images.unsplash.com/photo-1617331721458-bd3bd1aa1dd8?w=800",
-    includes: ["\u0411\u044E\u0441\u0442\u0433\u0430\u043B\u044C\u0442\u0435\u0440\u044B", "\u0422\u0440\u0443\u0441\u044B", "\u041A\u043E\u0440\u0441\u0435\u0442\u044B", "\u041F\u0440\u0430\u0432\u0438\u043B\u044C\u043D\u0430\u044F \u043F\u043E\u0441\u0430\u0434\u043A\u0430", "\u0420\u0430\u0431\u043E\u0442\u0430 \u0441 \u043A\u0440\u0443\u0436\u0435\u0432\u043E\u043C"],
-    duration: "1.5 \u043C\u0435\u0441\u044F\u0446\u0430",
-    lessonsCount: 12,
-    isPublished: true,
-    createdAt: "2024-02-01"
-  }
-];
-const _slug__get = defineEventHandler((event) => {
-  const slug = getRouterParam(event, "slug");
-  const course = courses$1.find((c) => c.slug === slug);
-  if (!course) {
+const courses_get$2 = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/courses - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0441\u043F\u0438\u0441\u043A\u0430 \u043A\u0443\u0440\u0441\u043E\u0432");
+  try {
+    const coursesList = await db.select().from(courses$1);
+    console.log("\u2705 [API] \u041A\u0443\u0440\u0441\u043E\u0432 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u043E:", coursesList.length);
+    return { success: true, courses: coursesList };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043A\u0443\u0440\u0441\u043E\u0432:", e);
     throw createError({
-      statusCode: 404,
-      statusMessage: "Course not found"
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0441\u043F\u0438\u0441\u043A\u0430 \u043A\u0443\u0440\u0441\u043E\u0432"
     });
   }
-  return course;
 });
 
-const _slug__get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+const courses_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
-  default: _slug__get
+  default: courses_get$2
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const _id__get$2 = defineEventHandler(async (event) => {
+  const id = getRouterParam(event, "id");
+  if (!id) {
+    throw createError({ statusCode: 400, message: "ID \u043A\u0443\u0440\u0441\u0430 \u043D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D" });
+  }
+  console.log("\u{1F535} [API] GET /api/courses/:id - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043A\u0443\u0440\u0441\u0430:", id);
+  try {
+    const [course] = await db.select().from(courses$1).where(eq(courses$1.id, id)).limit(1);
+    if (!course) {
+      throw createError({ statusCode: 404, message: "\u041A\u0443\u0440\u0441 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D" });
+    }
+    console.log("\u2705 [API] \u041A\u0443\u0440\u0441 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D:", course.title);
+    return { success: true, course };
+  } catch (e) {
+    if (e.statusCode) throw e;
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043A\u0443\u0440\u0441\u0430:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043A\u0443\u0440\u0441\u0430"
+    });
+  }
+});
+
+const _id__get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: _id__get$2
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const courses = [
@@ -3660,16 +3648,21 @@ const courses = [
     createdAt: "2024-02-01"
   }
 ];
-const index_get$2 = defineEventHandler(() => {
-  return {
-    courses: courses.filter((c) => c.isPublished),
-    total: courses.filter((c) => c.isPublished).length
-  };
+const _slug__get = defineEventHandler((event) => {
+  const slug = getRouterParam(event, "slug");
+  const course = courses.find((c) => c.slug === slug);
+  if (!course) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Course not found"
+    });
+  }
+  return course;
 });
 
-const index_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+const _slug__get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
-  default: index_get$2
+  default: _slug__get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const transporter = nodemailer.createTransport({
@@ -3833,7 +3826,7 @@ const webhook_post = defineEventHandler(async (event) => {
           where: eq(users.id, purchase.userId)
         });
         const course = await db.query.courses.findFirst({
-          where: eq(courses$2.id, purchase.courseId)
+          where: eq(courses$1.id, purchase.courseId)
         });
         if (user && course) {
           if (user.email) {
@@ -3952,18 +3945,127 @@ const plan$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: plan
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const index_get = defineEventHandler(async () => {
+const siteInfo_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/site-info - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u0438 \u043E \u0441\u0430\u0439\u0442\u0435");
   try {
-    const allUsers = await db.select().from(users);
-    return { success: true, users: allUsers };
+    const [general] = await db.select().from(generalSettings).limit(1);
+    const [seo] = await db.select().from(seoSettings).limit(1);
+    const coursesList = await db.select().from(courses$1);
+    console.log("\u2705 [API] \u0418\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u044F \u043E \u0441\u0430\u0439\u0442\u0435 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u0430");
+    return {
+      success: true,
+      siteName: (general == null ? void 0 : general.siteName) || "\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F",
+      seo: {
+        title: (seo == null ? void 0 : seo.title) || "\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F \u2014 \u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F",
+        description: (seo == null ? void 0 : seo.description) || "\u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F",
+        keywords: (seo == null ? void 0 : seo.keywords) || "\u043A\u0440\u043E\u0439\u043A\u0430, \u0448\u0438\u0442\u044C\u0435, \u043A\u0443\u0440\u0441\u044B"
+      },
+      courses: coursesList
+    };
   } catch (e) {
-    return { success: true, users: [] };
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u0438 \u043E \u0441\u0430\u0439\u0442\u0435:", e);
+    return {
+      success: true,
+      siteName: "\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F",
+      seo: {
+        title: "\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F \u2014 \u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F",
+        description: "\u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F",
+        keywords: "\u043A\u0440\u043E\u0439\u043A\u0430, \u0448\u0438\u0442\u044C\u0435, \u043A\u0443\u0440\u0441\u044B"
+      },
+      courses: []
+    };
   }
 });
 
-const index_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+const siteInfo_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
-  default: index_get
+  default: siteInfo_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const courses_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/user/courses - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043A\u0443\u0440\u0441\u043E\u0432 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F");
+  const userId = "1";
+  try {
+    const userPurchases = await db.select({
+      courseId: purchases.courseId
+    }).from(purchases).where(eq(purchases.userId, userId));
+    const courseIds = userPurchases.map((p) => p.courseId);
+    if (courseIds.length === 0) {
+      return { success: true, courses: [] };
+    }
+    const allCourses = await db.select().from(courses$1);
+    const userCourses = allCourses.filter((c) => courseIds.includes(c.id));
+    console.log("\u2705 [API] \u041A\u0443\u0440\u0441\u043E\u0432 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u043E:", userCourses.length);
+    return { success: true, courses: userCourses };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043A\u0443\u0440\u0441\u043E\u0432 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043A\u0443\u0440\u0441\u043E\u0432"
+    });
+  }
+});
+
+const courses_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: courses_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const users_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/users - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0441\u043F\u0438\u0441\u043A\u0430 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439");
+  try {
+    const usersList = await db.select().from(users);
+    const usersWithCourses = await Promise.all(
+      usersList.map(async (user) => {
+        var _a;
+        const coursesCount = await db.select({ count: count() }).from(purchases).where(eq(purchases.userId, user.id));
+        return {
+          ...user,
+          coursesCount: ((_a = coursesCount[0]) == null ? void 0 : _a.count) || 0
+        };
+      })
+    );
+    console.log("\u2705 [API] \u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439 \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u043E:", usersWithCourses.length);
+    return { success: true, users: usersWithCourses };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0441\u043F\u0438\u0441\u043A\u0430 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0435\u0439"
+    });
+  }
+});
+
+const users_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: users_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const _id__get = defineEventHandler(async (event) => {
+  const id = getRouterParam(event, "id");
+  if (!id) {
+    throw createError({ statusCode: 400, message: "ID \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u043D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D" });
+  }
+  console.log("\u{1F535} [API] GET /api/users/:id - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:", id);
+  try {
+    const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    if (!user) {
+      throw createError({ statusCode: 404, message: "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D" });
+    }
+    console.log("\u2705 [API] \u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D:", user.name);
+    return user;
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"
+    });
+  }
+});
+
+const _id__get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: _id__get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const index_post = defineEventHandler(async (event) => {
@@ -4120,7 +4222,7 @@ const resolveId_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePr
 
 const sitemap_xml = defineEventHandler(async (event) => {
   try {
-    const allCourses = await db.select().from(courses$2);
+    const allCourses = await db.select().from(courses$1);
     const baseUrl = "https://kroyfit.ru";
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';

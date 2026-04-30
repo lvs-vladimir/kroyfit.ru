@@ -209,6 +209,13 @@
 <script setup lang="ts">
 const route = useRoute()
 const router = useRouter()
+const siteName = ref('Генетика Кроя')
+
+// Загрузка названия сайта
+const { data: siteData } = await useFetch('/api/site-info')
+if (siteData.value?.success) {
+  siteName.value = siteData.value.siteName
+}
 
 const { data: course, pending, error } = await useFetch(
   `/api/courses/${route.params.slug}`

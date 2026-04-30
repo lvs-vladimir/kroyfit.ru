@@ -1635,7 +1635,7 @@ const _routes = [
     name: "admin-courses-id",
     path: "/admin/courses/:id()",
     meta: { ...__nuxt_page_meta$8 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./_id_-BKvs0ZKV.mjs')
+    component: () => import('./_id_-Bzkvg96g.mjs')
   },
   {
     name: "admin-users-id",
@@ -1647,7 +1647,7 @@ const _routes = [
     name: "admin-courses",
     path: "/admin/courses",
     meta: { ...__nuxt_page_meta$6 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-CZM2etMD.mjs')
+    component: () => import('./index-DsEfWAPi.mjs')
   },
   {
     name: "admin-login",
@@ -1665,7 +1665,7 @@ const _routes = [
     name: "admin-purchases",
     path: "/admin/purchases",
     meta: { ...__nuxt_page_meta$3 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-DYkve1MQ.mjs')
+    component: () => import('./index-DpybRZXR.mjs')
   },
   {
     name: "admin-settings",
@@ -1677,33 +1677,33 @@ const _routes = [
     name: "admin-users",
     path: "/admin/users",
     meta: { ...__nuxt_page_meta$1 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-BQAPp_Fl.mjs')
+    component: () => import('./index-BhfpeEYF.mjs')
   },
   {
     name: "courses-slug",
     path: "/courses/:slug()",
-    component: () => import('./_slug_-Q3-W4THQ.mjs')
+    component: () => import('./_slug_-Ck_l3lGp.mjs')
   },
   {
     name: "admin",
     path: "/admin",
     meta: { ...__nuxt_page_meta || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-CQmkwJkw.mjs')
+    component: () => import('./index-B1m1CNe7.mjs')
   },
   {
     name: "cabinet",
     path: "/cabinet",
-    component: () => import('./index-DyuYCcfv.mjs')
+    component: () => import('./index-CaW4c-d4.mjs')
   },
   {
     name: "profile",
     path: "/profile",
-    component: () => import('./index-CbLnQrEk.mjs')
+    component: () => import('./index-BOT4qzBx.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-NJZZEOic.mjs')
+    component: () => import('./index-DCEbeN7K.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {

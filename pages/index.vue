@@ -403,6 +403,25 @@
 </template>
 
 <script setup lang="ts">
+// Загружаем данные из БД
+const siteName = ref('Генетика Кроя')
+const courses = ref([])
+const seo = ref({ title: '', description: '' })
+
+// Загрузка данных при монтировании
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/site-info')
+    if (data.success) {
+      siteName.value = data.siteName || 'Генетика Кроя'
+      seo.value = data.seo || {}
+      courses.value = data.courses || []
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки данных сайта:', e)
+  }
+})
+
 const hoveredCourse = ref(null)
 
 const problems = [
@@ -412,47 +431,7 @@ const problems = [
   { icon: 'mdi-image-broken-variant', title: 'Не как на картинке', color: 'secondary' },
 ]
 
-const courses = [
-  {
-    id: 1,
-    title: 'Технология пошива',
-    slug: 'tekhnologiya-poshiva',
-    category: 'Базовый',
-    color: '#6366F1',
-    price: 15000,
-    priceDisplay: 'от 15 000 ₽',
-    description: 'Основы шитья для начинающих. Юбка, брюки, платье.',
-    image: 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800',
-    duration: '2 месяца',
-    lessonsCount: 16,
-  },
-  {
-    id: 2,
-    title: 'Мастер конструирования',
-    slug: 'master-konstruirovaniya',
-    category: 'Продвинутый',
-    color: '#EC4899',
-    price: 25000,
-    priceDisplay: 'от 25 000 ₽',
-    description: 'Методика точного кроя по Злачевской. Диплом.',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800',
-    duration: '3 месяца',
-    lessonsCount: 24,
-  },
-  {
-    id: 3,
-    title: 'Дамское бельё',
-    slug: 'damskoe-bele',
-    category: 'Спецкурс',
-    color: '#06B6D4',
-    price: 12000,
-    priceDisplay: 'от 12 000 ₽',
-    description: 'Конструирование и пошив красивого белья.',
-    image: 'https://images.unsplash.com/photo-1617331721458-bd3bd1aa1dd8?w=800',
-    duration: '1.5 месяца',
-    lessonsCount: 12,
-  },
-]
+// Курсы загружаются из БД в onMounted выше
 
 const results = [
   { icon: 'mdi-hanger', title: 'Гардероб', desc: 'Шьют для себя и семьи' },

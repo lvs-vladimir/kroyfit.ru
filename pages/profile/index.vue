@@ -84,32 +84,56 @@
 
 <script setup lang="ts">
 const user = ref({
-  id: '1',
-  name: 'Анна Иванова',
-  email: 'anna@example.com',
-  vkId: '123456',
+  id: '',
+  name: '',
+  email: '',
+  vkId: '',
   avatar: '',
-  createdAt: '2026-03-15T10:00:00Z',
+  createdAt: '',
 })
 
-const purchases = ref([
-  {
-    id: '1',
-    courseName: 'Технология пошива',
-    courseDescription: 'Основы шитья для начинающих',
-    status: 'paid',
-    createdAt: '2026-03-20T14:30:00Z',
-  },
-  {
-    id: '2',
-    courseName: 'Дамское бельё',
-    courseDescription: 'Конструирование и пошив белья',
-    status: 'paid',
-    createdAt: '2026-04-10T09:15:00Z',
-  },
-])
+const purchases = ref([])
+const loading = ref(true)
+
+// Загрузка данных пользователя
+onMounted(async () => {
+  try {
+    // TODO: Получать реальный userId из сессии
+    const userId = '1'
+    
+    // Загружаем данные пользователя
+    const userData = await $fetch(`/api/users/${userId}`).catch(() => null)
+    if (userData) {
+      user.value = {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        vkId: userData.vkId || '',
+        avatar: userData.avatar || '',
+        createdAt: userData.createdAt,
+      }
+    }
+    
+    // Загружаем покупки
+    const purchasesData = await $fetch(`/api/user/courses`)
+    if (purchasesData.success) {
+      purchases.value = purchasesData.courses.map(c => ({
+        id: c.id,
+        courseName: c.title,
+        courseDescription: c.description || '',
+        status: 'paid',
+        createdAt: c.createdAt,
+      }))
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки профиля:', e)
+  } finally {
+    loading.value = false
+  }
+})
 
 const formatDate = (dateString: string) => {
+  if (!dateString) return '—'
   return new Date(dateString).toLocaleDateString('ru-RU', {
     year: 'numeric',
     month: 'long',

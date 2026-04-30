@@ -182,13 +182,35 @@ const courseId = route.params.id
 const categories = ['Базовый', 'Продвинутый', 'Спецкурс']
 
 const form = reactive({
-  title: 'Технология пошива',
-  description: 'Основы шитья для начинающих. Юбка, брюки, платье.',
-  price: 15000,
+  title: '',
+  description: '',
+  price: 0,
   category: 'Базовый',
-  duration: '2 месяца',
-  lessonsCount: 16,
-  isPublished: true,
+  duration: '',
+  lessonsCount: 0,
+  isPublished: false,
+})
+
+// Загрузка курса из БД
+onMounted(async () => {
+  if (courseId !== 'new') {
+    try {
+      const data = await $fetch(`/api/courses/${courseId}`)
+      if (data.success && data.course) {
+        Object.assign(form, {
+          title: data.course.title,
+          description: data.course.description || '',
+          price: data.course.price || 0,
+          category: data.course.category || 'Базовый',
+          duration: data.course.duration || '',
+          lessonsCount: data.course.lessonsCount || 0,
+          isPublished: data.course.isPublished || false,
+        })
+      }
+    } catch (e) {
+      console.error('Ошибка загрузки курса:', e)
+    }
+  }
 })
 
 const saving = ref(false)

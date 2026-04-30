@@ -98,38 +98,30 @@
 const showCourseDialog = ref(false)
 const selectedCourse = ref(null)
 
-const courses = ref([
-  {
-    id: '1',
-    title: 'Технология пошива',
-    description: 'Основы шитья для начинающих',
-    progress: 65,
-    completedLessons: 13,
-    totalLessons: 20,
-    lessons: [
-      { title: 'Введение в шитье', duration: 15, completed: true, available: true },
-      { title: 'Выбор ткани и инструментов', duration: 20, completed: true, available: true },
-      { title: 'Основные швы', duration: 25, completed: true, available: true },
-      { title: 'Пошив юбки', duration: 30, completed: false, available: true },
-      { title: 'Пошив брюк', duration: 35, completed: false, available: false },
-    ],
-  },
-  {
-    id: '2',
-    title: 'Дамское бельё',
-    description: 'Конструирование и пошив белья',
-    progress: 30,
-    completedLessons: 3,
-    totalLessons: 10,
-    lessons: [
-      { title: 'Основы конструирования', duration: 20, completed: true, available: true },
-      { title: 'Выбор материалов', duration: 15, completed: true, available: true },
-      { title: 'Пошив лифчика', duration: 40, completed: true, available: true },
-      { title: 'Пошив трусиков', duration: 30, completed: false, available: true },
-      { title: 'Отделка и украшение', duration: 25, completed: false, available: false },
-    ],
-  },
-])
+const courses = ref([])
+const loading = ref(true)
+
+// Загрузка курсов пользователя из БД
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/user/courses')
+    if (data.success) {
+      courses.value = data.courses.map(c => ({
+        id: c.id,
+        title: c.title,
+        description: c.description || 'Описание курса',
+        progress: 0,
+        completedLessons: 0,
+        totalLessons: c.lessonsCount || 0,
+        lessons: [],
+      }))
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки курсов:', e)
+  } finally {
+    loading.value = false
+  }
+})
 
 const selectCourse = (course: any) => {
   selectedCourse.value = course

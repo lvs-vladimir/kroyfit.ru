@@ -135,11 +135,29 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'admin', layout: 'admin' })
 
-const users = ref([
-  { id: '1', name: 'Анна Иванова', email: 'anna@example.com', vk: '123456', coursesCount: 2, registered: '15.03.2026' },
-  { id: '2', name: 'Мария Петрова', email: 'maria@example.com', vk: '', coursesCount: 1, registered: '22.03.2026' },
-  { id: '3', name: 'Елена Сидорова', email: 'elena@example.com', vk: '987654', coursesCount: 3, registered: '01.04.2026' },
-])
+const users = ref([])
+const loading = ref(true)
+
+// Загрузка пользователей из БД
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/users')
+    if (data.success) {
+      users.value = data.users.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        vk: u.vkId || '',
+        coursesCount: u.coursesCount || 0,
+        registered: u.createdAt ? new Date(u.createdAt).toLocaleDateString('ru-RU') : '—',
+      }))
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки пользователей:', e)
+  } finally {
+    loading.value = false
+  }
+})
 
 const showCreateDialog = ref(false)
 const saving = ref(false)
