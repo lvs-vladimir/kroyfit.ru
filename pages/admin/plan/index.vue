@@ -150,7 +150,7 @@ const renderMarkdown = (md: string) => {
   if (!md) return ''
   
   let html = md
-    // Заголовки
+    // Заголовки (должны быть до других замен)
     .replace(/^## (.+)$/gm, '<h2 style="color:#020617;font-size:1.25rem;font-weight:700;margin:1.5rem 0 0.5rem;">$1</h2>')
     .replace(/^### (.+)$/gm, '<h3 style="color:#020617;font-size:1.1rem;font-weight:600;margin:1rem 0 0.25rem;">$1</h3>')
     // Жирный
@@ -158,7 +158,7 @@ const renderMarkdown = (md: string) => {
     // Чекбоксы
     .replace(/- \[x\] (.+)/gi, '<span style="color:#00DC82;">✓</span> $1')
     .replace(/- \[ \] (.+)/gi, '<span style="color:#ccc;">○</span> $1')
-    // Списки
+    // Списки (должны быть после чекбоксов)
     .replace(/^- (.+)/gm, '<li style="margin-left:1rem;">$1</li>')
     // Разделитель
     .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #E2E8F0;margin:1.5rem 0;">')
@@ -170,14 +170,14 @@ const renderMarkdown = (md: string) => {
       if (cells.some(c => /^-+$/.test(c.trim()))) return ''
       return `<tr>${cells.map(c => `<td style="padding:8px;border:1px solid #E2E8F0;">${c.trim()}</td>`).join('')}</tr>`
     })
-    // Параграфы
+    // Параграфы (должны быть в конце)
     .replace(/\n\n/g, '</p><p style="margin:0.5rem 0;">')
     // Переносы строк
     .replace(/\n/g, '<br>')
     // Итог
     .replace(/<br><hr/g, '<hr')
   
-  return `<div style="line-height:1.6;">${html}</div>`
+  return `<div style="line-height:1.6;overflow-y:auto;max-height:calc(100vh - 200px);">${html}</div>`
 }
 
 useSeoMeta({
