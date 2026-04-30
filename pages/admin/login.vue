@@ -18,7 +18,7 @@
           <v-text-field
             v-model="email"
             type="email"
-            placeholder="admin@kroyfit.ru"
+            placeholder="Введите email"
             variant="outlined"
             density="compact"
             hide-details
@@ -54,7 +54,7 @@
 
       <div class="text-center">
         <p class="text-caption text-grey-darken-1">
-          Забыли пароль? <a href="mailto:admin@kroyfit.ru" class="text-decoration-none" style="color: #00DC82;">Свяжитесь с администратором</a>
+          Забыли пароль? Обратитесь к главному администратору
         </p>
       </div>
     </div>

@@ -443,8 +443,8 @@ const vkSaving = ref(false)
 const profileMessage = ref(null)
 
 const profile = ref({
-  email: 'admin@kroyfit.ru',
-  name: 'Администратор',
+  email: '',
+  name: '',
   password: '',
   saving: false,
 })
@@ -488,9 +488,7 @@ const roles = ref([
   },
 ])
 
-const admins = ref([
-  { id: '1', email: 'admin@kroyfit.ru', name: 'Администратор', roleId: '1' },
-])
+const admins = ref([])
 
 const vkGroups = ref([
   { id: '1', name: 'Генетика Кроя — Технология пошива', vkId: '', courseSlug: 'tekhnologiya-poshiva' },
@@ -519,7 +517,7 @@ const seo = reactive({
 
 const general = reactive({
   siteName: 'Генетика Кроя',
-  adminEmail: 'admin@kroyfit.ru',
+  adminEmail: '',
   saving: false,
 })
 
