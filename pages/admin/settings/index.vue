@@ -655,6 +655,20 @@ const saveGeneral = async () => {
 }
 
 useSeoMeta({ title: 'Настройки — Админка' })
+
+// Загружаем профиль при монтировании компонента
+onMounted(async () => {
+  console.log('🟡 [Frontend] Компонент монтирован, загружаю профиль из БД...')
+  try {
+    const profileData = await $fetch('/api/admin/profile')
+    console.log('✅ [Frontend] Профиль загружен при монтировании:', profileData.admin)
+    profile.value.email = profileData.admin.email
+    profile.value.name = profileData.admin.name
+    console.log('✅ [Frontend] Профиль обновлен в компоненте')
+  } catch (e) {
+    console.error('❌ [Frontend] Ошибка загрузки профиля при монтировании:', e)
+  }
+})
 </script>
 
 <style scoped>
