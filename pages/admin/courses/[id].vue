@@ -184,11 +184,13 @@ const categories = ['Базовый', 'Продвинутый', 'Спецкур�
 const form = reactive({
   title: '',
   description: '',
+  slug: '',
   price: 0,
   category: 'Базовый',
   duration: '',
   lessonsCount: 0,
   isPublished: false,
+  image: '',
 })
 
 // Загрузка курса из БД
@@ -196,15 +198,17 @@ onMounted(async () => {
   if (courseId !== 'new') {
     try {
       const data = await $fetch(`/api/courses/${courseId}`)
-      if (data.success && data.course) {
+      if (data) {
         Object.assign(form, {
-          title: data.course.title,
-          description: data.course.description || '',
-          price: data.course.price || 0,
-          category: data.course.category || 'Базовый',
-          duration: data.course.duration || '',
-          lessonsCount: data.course.lessonsCount || 0,
-          isPublished: data.course.isPublished || false,
+          title: data.title,
+          description: data.description || '',
+          slug: data.slug || '',
+          price: data.price || 0,
+          category: data.category || 'Базовый',
+          duration: data.duration || '',
+          lessonsCount: data.lessonsCount || 0,
+          isPublished: data.isPublished || false,
+          image: data.image || '',
         })
       }
     } catch (e) {

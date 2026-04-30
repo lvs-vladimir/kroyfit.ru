@@ -8,6 +8,16 @@
         </v-btn>
         <span class="text-h5 font-weight-bold" style="color: #8B5A6B;">{{ siteName }}</span>
         <v-spacer />
+        <v-btn 
+          v-if="isAdmin" 
+          icon 
+          variant="text" 
+          color="blue-darken-2"
+          :to="`/admin/courses/${course.id}`"
+          title="Редактировать курс"
+        >
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
         <v-btn variant="text" href="tel:89132101662">Позвонить</v-btn>
       </v-container>
     </v-app-bar>
@@ -210,6 +220,20 @@
 const route = useRoute()
 const router = useRouter()
 const siteName = ref('Генетика Кроя')
+const isAdmin = ref(false)
+
+// Проверяем, авторизован ли пользователь как администратор
+onMounted(async () => {
+  try {
+    const token = useCookie('admin-token')
+    if (token.value) {
+      const response = await $fetch('/api/admin/verify-token')
+      isAdmin.value = !!response?.user
+    }
+  } catch (e) {
+    isAdmin.value = false
+  }
+})
 
 // Загрузка названия сайта
 const { data: siteData } = await useFetch('/api/site-info')
