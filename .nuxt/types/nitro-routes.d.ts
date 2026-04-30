@@ -50,6 +50,9 @@ declare module "nitropack/types" {
     '/api/vk/invite': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/vk/invite.post').default>>>>
     }
+    '/api/vk/resolve-id': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/vk/resolve-id.post').default>>>>
+    }
     '/sitemap.xml': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/routes/sitemap.xml').default>>>>
     }

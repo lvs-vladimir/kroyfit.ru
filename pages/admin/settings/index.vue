@@ -297,7 +297,12 @@
                   </v-btn>
                 </div>
                 <div class="mb-3">
-                  <p class="text-caption text-grey-darken-1 mb-1">ID группы: {{ group.vkId }}</p>
+                  <p class="text-caption text-grey-darken-1 mb-1">
+                    <a :href="`https://vk.com/${group.vkId}`" target="_blank" class="text-decoration-none" style="color: #1976d2;">
+                      <v-icon size="14" color="blue">mdi-vk</v-icon>
+                      vk.com/{{ group.vkId }}
+                    </a>
+                  </p>
                   <p class="text-caption text-grey-darken-1">Курс: {{ group.courseSlug }}</p>
                 </div>
               </v-card>
@@ -314,8 +319,27 @@
                   <v-text-field v-model="newVkGroup.name" variant="outlined" density="compact" hide-details />
                 </div>
                 <div class="mb-4">
-                  <label class="text-caption text-grey-darken-1 d-block mb-1">ID группы ВК</label>
-                  <v-text-field v-model="newVkGroup.vkId" variant="outlined" density="compact" hide-details />
+                  <label class="text-caption text-grey-darken-1 d-block mb-1">Ссылка на группу ВК</label>
+                  <v-text-field 
+                    v-model="newVkGroup.vkUrl" 
+                    variant="outlined" 
+                    density="compact" 
+                    hide-details 
+                    placeholder="https://vk.com/club123456 или https://vk.com/название"
+                    @blur="extractVkId"
+                    :loading="vkIdLoading"
+                  />
+                  <v-progress-linear v-if="vkIdLoading" indeterminate color="green-darken-3" class="mt-1" />
+                  <div v-if="newVkGroup.vkId && !vkIdLoading" class="text-caption text-green-darken-3 mt-1">
+                    <v-icon size="16" color="green-darken-3">mdi-check-circle</v-icon>
+                    ID группы: {{ newVkGroup.vkId }}
+                  </div>
+                  <div v-if="vkIdError" class="text-caption text-red mt-1" v-html="vkIdError" />
+                  <div class="text-caption text-grey-darken-1 mt-1">
+                    <v-icon size="14">mdi-information-outline</v-icon>
+                    Поддерживаются: club123456, public123456, vk.com/название
+                    <a href="https://regvk.com/id/" target="_blank" class="text-decoration-none" style="color: #1976d2;">regvk.com</a>
+                  </div>
                 </div>
                 <div class="mb-4">
                   <label class="text-caption text-grey-darken-1 d-block mb-1">Курс</label>
@@ -440,6 +464,8 @@ const passwordSaving = ref(false)
 const roleSaving = ref(false)
 const adminSaving = ref(false)
 const vkSaving = ref(false)
+const vkIdError = ref('')
+const vkIdLoading = ref(false)
 const profileMessage = ref(null)
 
 const profile = ref({
@@ -502,10 +528,79 @@ const newAdmin = reactive({
 
 const newVkGroup = reactive({
   name: '',
+  vkUrl: '',
   vkId: '',
   courseSlug: '',
   token: '',
 })
+
+const extractVkId = async () => {
+  const url = newVkGroup.vkUrl.trim()
+  if (!url) return
+  
+  console.log('🔍 [Frontend] Извлекаю ID из ссылки:', url)
+  vkIdError.value = ''
+  
+  // Убираем протокол и www
+  let cleanUrl = url.replace(/^https?:\/\//, '').replace(/^www\./, '')
+  
+  // Форматы:
+  // vk.com/club123456 → 123456
+  // vk.com/public123456 → 123456  
+  // vk.com/ledstairs → ledstairs (короткое имя, нужно получить ID через API)
+  // @club123456 → 123456
+  
+  let screenName = ''
+  
+  const match = cleanUrl.match(/(?:vk\.com\/)?(?:club|public|event)?(\d+)$/) ||
+                cleanUrl.match(/(?:vk\.com\/)?([^\/\s]+)$/) ||
+                cleanUrl.match(/^(@)?(club|public|event)?(\d+)$/) ||
+                cleanUrl.match(/^(@)?(.+)$/)
+  
+  if (match) {
+    if (match[1] && /^\d+$/.test(match[1])) {
+      // Числовой ID найден сразу
+      newVkGroup.vkId = match[1]
+      console.log('✅ [Frontend] Извлечен числовой ID:', newVkGroup.vkId)
+      return
+    } else if (match[1]) {
+      // Короткое имя - нужно получить ID через API
+      screenName = match[1]
+      console.log('🔄 [Frontend] Найдено короткое имя:', screenName)
+    } else if (/^\d+$/.test(cleanUrl)) {
+      newVkGroup.vkId = cleanUrl
+      console.log('✅ [Frontend] ID из чисел:', newVkGroup.vkId)
+      return
+    }
+  }
+  
+  // Если это короткое имя - пробуем получить ID через API
+  if (screenName && !/^\d+$/.test(screenName)) {
+    vkIdLoading.value = true
+    try {
+      const response = await $fetch('/api/vk/resolve-id', {
+        method: 'POST',
+        body: { screenName }
+      }) as any
+      
+      if (response.success) {
+        newVkGroup.vkId = response.id
+        console.log('✅ [Frontend] Получен ID через API:', newVkGroup.vkId)
+      } else {
+        // API не смог получить ID
+        newVkGroup.vkId = screenName
+        vkIdError.value = `Не удалось автоматически определить ID. Получите ID вручную: <a href="https://regvk.com/id/${screenName}" target="_blank" style="color: #1976d2;">regvk.com/id/${screenName}</a>`
+        console.log('⚠️ [Frontend] Используем короткое имя:', screenName)
+      }
+    } catch (e) {
+      console.error('❌ [Frontend] Ошибка API:', e)
+      newVkGroup.vkId = screenName
+      vkIdError.value = `Ошибка определения ID. Получите вручную: <a href="https://regvk.com/id/${screenName}" target="_blank" style="color: #1976d2;">regvk.com/id/${screenName}</a>`
+    } finally {
+      vkIdLoading.value = false
+    }
+  }
+}
 
 const getRoleName = (roleId: string) => roles.value.find(r => r.id === roleId)?.name || 'Неизвестная роль'
 
@@ -749,13 +844,31 @@ const deleteVkGroup = async (id: string) => {
 
 const editVkGroup = (group: any) => {
   editingVkGroup.value = group
-  Object.assign(newVkGroup, group)
+  Object.assign(newVkGroup, {
+    name: group.name,
+    vkUrl: group.vkId ? `https://vk.com/${group.vkId}` : '',
+    vkId: group.vkId,
+    courseSlug: group.courseSlug,
+    token: group.token,
+  })
   showAddVkDialog.value = true
 }
 
 const saveVkGroup = async () => {
   vkSaving.value = true
   console.log('🟡 [Frontend] Сохранение VK группы...')
+  
+  // Авто-извлечение ID если заполнена ссылка
+  if (newVkGroup.vkUrl && !newVkGroup.vkId) {
+    extractVkId()
+  }
+  
+  // Проверяем что ID извлечен
+  if (!newVkGroup.vkId) {
+    alert('Введите ссылку на группу ВК или ID группы')
+    vkSaving.value = false
+    return
+  }
   
   try {
     if (editingVkGroup.value) {
@@ -799,7 +912,8 @@ const saveVkGroup = async () => {
     
     showAddVkDialog.value = false
     editingVkGroup.value = null
-    Object.assign(newVkGroup, { name: '', vkId: '', courseSlug: '', token: '' })
+    Object.assign(newVkGroup, { name: '', vkUrl: '', vkId: '', courseSlug: '', token: '' })
+    vkIdError.value = ''
   } catch (e: any) {
     console.error('❌ [Frontend] Ошибка сохранения:', e)
     alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
