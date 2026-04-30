@@ -71,7 +71,13 @@ const settings_post = defineEventHandler(async (event) => {
           canManagePurchases: perms.canManagePurchases ? 1 : 0,
           canManageSettings: perms.canManageSettings ? 1 : 0,
           canManageAdmins: perms.canManageAdmins ? 1 : 0,
-          canEditPlan: perms.canEditPlan ? 1 : 0
+          canEditPlan: perms.canEditPlan ? 1 : 0,
+          canManageProfile: perms.canManageProfile ? 1 : 0,
+          canManageRoles: perms.canManageRoles ? 1 : 0,
+          canManageVkGroups: perms.canManageVkGroups ? 1 : 0,
+          canManageEmail: perms.canManageEmail ? 1 : 0,
+          canManageSeo: perms.canManageSeo ? 1 : 0,
+          canManageGeneralSettings: perms.canManageGeneralSettings ? 1 : 0
         }).where(eq(roles.id, id));
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0430");
         return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id };
@@ -88,7 +94,13 @@ const settings_post = defineEventHandler(async (event) => {
           canManagePurchases: perms.canManagePurchases ? 1 : 0,
           canManageSettings: perms.canManageSettings ? 1 : 0,
           canManageAdmins: perms.canManageAdmins ? 1 : 0,
-          canEditPlan: perms.canEditPlan ? 1 : 0
+          canEditPlan: perms.canEditPlan ? 1 : 0,
+          canManageProfile: perms.canManageProfile ? 1 : 0,
+          canManageRoles: perms.canManageRoles ? 1 : 0,
+          canManageVkGroups: perms.canManageVkGroups ? 1 : 0,
+          canManageEmail: perms.canManageEmail ? 1 : 0,
+          canManageSeo: perms.canManageSeo ? 1 : 0,
+          canManageGeneralSettings: perms.canManageGeneralSettings ? 1 : 0
         });
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u0441\u043E\u0437\u0434\u0430\u043D\u0430:", newId);
         return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id: newId };

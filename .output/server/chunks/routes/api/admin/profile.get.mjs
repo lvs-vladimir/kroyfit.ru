@@ -45,7 +45,8 @@ const profile_get = defineEventHandler(async (event) => {
       });
     }
     console.log("\u2705 [API] \u041F\u0440\u043E\u0444\u0438\u043B\u044C \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D:", { email: admin.email, name: admin.name });
-    return { success: true, admin };
+    const { password, ...adminWithoutPassword } = admin;
+    return { success: true, admin: adminWithoutPassword };
   } catch (e) {
     console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u0444\u0438\u043B\u044F:", e);
     throw createError({

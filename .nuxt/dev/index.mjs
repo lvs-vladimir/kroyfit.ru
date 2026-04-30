@@ -2147,22 +2147,7 @@ const plugins = [
 _wH6JrtIxmaSoA8lCPWFnE9z4lQeXW6H5z3l5aymEQw
 ];
 
-const assets = {
-  "/index.mjs": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"2f653-xw35J+ICd5PKsyyPWjVLnwvFAJc\"",
-    "mtime": "2026-04-30T12:23:45.804Z",
-    "size": 194131,
-    "path": "index.mjs"
-  },
-  "/index.mjs.map": {
-    "type": "application/json",
-    "etag": "\"b7244-Jbodtx1CLiCx/molHofMUNXPfGg\"",
-    "mtime": "2026-04-30T12:23:45.806Z",
-    "size": 750148,
-    "path": "index.mjs.map"
-  }
-};
+const assets = {};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -2624,6 +2609,7 @@ async function getIslandContext(event) {
 
 const _lazy_czidWe = () => Promise.resolve().then(function () { return admins_get$1; });
 const _lazy_A8X4T2 = () => Promise.resolve().then(function () { return login_post$1; });
+const _lazy_HYrLtl = () => Promise.resolve().then(function () { return me_get$1; });
 const _lazy_EE5Nrq = () => Promise.resolve().then(function () { return profile_get$1; });
 const _lazy_1d2OBt = () => Promise.resolve().then(function () { return profile_post$1; });
 const _lazy_DzDfvp = () => Promise.resolve().then(function () { return recent_get$1; });
@@ -2655,6 +2641,7 @@ const handlers = [
   { route: '', handler: _ocHbsM, lazy: false, middleware: true, method: undefined },
   { route: '/api/admin/admins', handler: _lazy_czidWe, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/login', handler: _lazy_A8X4T2, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/me', handler: _lazy_HYrLtl, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/profile', handler: _lazy_EE5Nrq, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/profile', handler: _lazy_1d2OBt, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/purchases/recent', handler: _lazy_DzDfvp, lazy: true, middleware: false, method: "get" },
@@ -3033,6 +3020,13 @@ const roles = sqliteTable("roles", {
   canManageSettings: integer("can_manage_settings", { mode: "boolean" }).default(false),
   canManageAdmins: integer("can_manage_admins", { mode: "boolean" }).default(false),
   canEditPlan: integer("can_edit_plan", { mode: "boolean" }).default(false),
+  // Детальные права на вкладки настроек
+  canManageProfile: integer("can_manage_profile", { mode: "boolean" }).default(false),
+  canManageRoles: integer("can_manage_roles", { mode: "boolean" }).default(false),
+  canManageVkGroups: integer("can_manage_vk_groups", { mode: "boolean" }).default(false),
+  canManageEmail: integer("can_manage_email", { mode: "boolean" }).default(false),
+  canManageSeo: integer("can_manage_seo", { mode: "boolean" }).default(false),
+  canManageGeneralSettings: integer("can_manage_general_settings", { mode: "boolean" }).default(false),
   createdAt: text("created_at").default(sql`(datetime('now'))`)
 });
 const admins = sqliteTable("admins", {
@@ -3208,6 +3202,60 @@ const login_post = defineEventHandler(async (event) => {
 const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: login_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const getAdminIdFromToken$2 = (event) => {
+  const token = getCookie(event, "admin-token");
+  if (!token) return null;
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    return decoded.split(":")[0];
+  } catch (e) {
+    return null;
+  }
+};
+const me_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/admin/me - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0442\u0435\u043A\u0443\u0449\u0435\u0433\u043E \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F");
+  const adminId = getAdminIdFromToken$2(event);
+  if (!adminId) {
+    throw createError({
+      statusCode: 401,
+      message: "\u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D"
+    });
+  }
+  try {
+    const [admin] = await db.select().from(admins).where(eq(admins.id, adminId)).limit(1);
+    if (!admin || !admin.isActive) {
+      throw createError({
+        statusCode: 401,
+        message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D \u0438\u043B\u0438 \u0434\u0435\u0430\u043A\u0442\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u043D"
+      });
+    }
+    let role = null;
+    if (admin.roleId) {
+      const [roleData] = await db.select().from(roles).where(eq(roles.id, admin.roleId)).limit(1);
+      role = roleData;
+    }
+    const { password, ...adminWithoutPassword } = admin;
+    console.log("\u2705 [API] \u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D:", admin.name);
+    return {
+      success: true,
+      admin: adminWithoutPassword,
+      role
+    };
+  } catch (e) {
+    if (e.statusCode) throw e;
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F"
+    });
+  }
+});
+
+const me_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: me_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const profile_get = defineEventHandler(async (event) => {
@@ -3414,7 +3462,13 @@ const settings_post = defineEventHandler(async (event) => {
           canManagePurchases: perms.canManagePurchases ? 1 : 0,
           canManageSettings: perms.canManageSettings ? 1 : 0,
           canManageAdmins: perms.canManageAdmins ? 1 : 0,
-          canEditPlan: perms.canEditPlan ? 1 : 0
+          canEditPlan: perms.canEditPlan ? 1 : 0,
+          canManageProfile: perms.canManageProfile ? 1 : 0,
+          canManageRoles: perms.canManageRoles ? 1 : 0,
+          canManageVkGroups: perms.canManageVkGroups ? 1 : 0,
+          canManageEmail: perms.canManageEmail ? 1 : 0,
+          canManageSeo: perms.canManageSeo ? 1 : 0,
+          canManageGeneralSettings: perms.canManageGeneralSettings ? 1 : 0
         }).where(eq(roles.id, id));
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0430");
         return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id };
@@ -3431,7 +3485,13 @@ const settings_post = defineEventHandler(async (event) => {
           canManagePurchases: perms.canManagePurchases ? 1 : 0,
           canManageSettings: perms.canManageSettings ? 1 : 0,
           canManageAdmins: perms.canManageAdmins ? 1 : 0,
-          canEditPlan: perms.canEditPlan ? 1 : 0
+          canEditPlan: perms.canEditPlan ? 1 : 0,
+          canManageProfile: perms.canManageProfile ? 1 : 0,
+          canManageRoles: perms.canManageRoles ? 1 : 0,
+          canManageVkGroups: perms.canManageVkGroups ? 1 : 0,
+          canManageEmail: perms.canManageEmail ? 1 : 0,
+          canManageSeo: perms.canManageSeo ? 1 : 0,
+          canManageGeneralSettings: perms.canManageGeneralSettings ? 1 : 0
         });
         console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u0441\u043E\u0437\u0434\u0430\u043D\u0430:", newId);
         return { success: true, message: "\u0420\u043E\u043B\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430", id: newId };

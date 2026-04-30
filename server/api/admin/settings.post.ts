@@ -77,6 +77,12 @@ export default defineEventHandler(async (event) => {
           canManageSettings: perms.canManageSettings ? 1 : 0,
           canManageAdmins: perms.canManageAdmins ? 1 : 0,
           canEditPlan: perms.canEditPlan ? 1 : 0,
+          canManageProfile: perms.canManageProfile ? 1 : 0,
+          canManageRoles: perms.canManageRoles ? 1 : 0,
+          canManageVkGroups: perms.canManageVkGroups ? 1 : 0,
+          canManageEmail: perms.canManageEmail ? 1 : 0,
+          canManageSeo: perms.canManageSeo ? 1 : 0,
+          canManageGeneralSettings: perms.canManageGeneralSettings ? 1 : 0,
         }).where(eq(roles.id, id))
         console.log('✅ [API] Роль обновлена')
         return { success: true, message: 'Роль сохранена', id }
@@ -94,6 +100,12 @@ export default defineEventHandler(async (event) => {
           canManageSettings: perms.canManageSettings ? 1 : 0,
           canManageAdmins: perms.canManageAdmins ? 1 : 0,
           canEditPlan: perms.canEditPlan ? 1 : 0,
+          canManageProfile: perms.canManageProfile ? 1 : 0,
+          canManageRoles: perms.canManageRoles ? 1 : 0,
+          canManageVkGroups: perms.canManageVkGroups ? 1 : 0,
+          canManageEmail: perms.canManageEmail ? 1 : 0,
+          canManageSeo: perms.canManageSeo ? 1 : 0,
+          canManageGeneralSettings: perms.canManageGeneralSettings ? 1 : 0,
         })
         console.log('✅ [API] Роль создана:', newId)
         return { success: true, message: 'Роль сохранена', id: newId }

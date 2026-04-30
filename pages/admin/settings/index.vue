@@ -7,13 +7,13 @@
 
     <v-card class="settings-card" elevation="0">
       <v-tabs v-model="activeTab" color="green-darken-3" grow>
-        <v-tab value="profile">Профиль</v-tab>
-        <v-tab value="roles">Роли</v-tab>
-        <v-tab value="admins">Администраторы</v-tab>
-        <v-tab value="vk">ВКонтакте</v-tab>
-        <v-tab value="email">Email</v-tab>
-        <v-tab value="seo">SEO</v-tab>
-        <v-tab value="general">Общие</v-tab>
+        <v-tab v-if="canManageProfile" value="profile">Профиль</v-tab>
+        <v-tab v-if="canManageRoles" value="roles">Роли</v-tab>
+        <v-tab v-if="canManageAdmins" value="admins">Администраторы</v-tab>
+        <v-tab v-if="canManageVkGroups" value="vk">ВКонтакте</v-tab>
+        <v-tab v-if="canManageEmail" value="email">Email</v-tab>
+        <v-tab v-if="canManageSeo" value="seo">SEO</v-tab>
+        <v-tab v-if="canManageGeneralSettings" value="general">Общие</v-tab>
       </v-tabs>
 
       <v-divider />
@@ -118,6 +118,49 @@
                     </v-icon>
                     <span class="text-caption">План</span>
                   </div>
+                  <v-divider class="my-1" />
+                  <div class="permission-item">
+                    <v-icon :color="role.canManageProfile ? 'green-darken-3' : 'grey-lighten-1'" size="18">
+                      {{ role.canManageProfile ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+                    <span class="text-caption">Профиль</span>
+                  </div>
+                  <div class="permission-item">
+                    <v-icon :color="role.canManageRoles ? 'green-darken-3' : 'grey-lighten-1'" size="18">
+                      {{ role.canManageRoles ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+                    <span class="text-caption">Роли</span>
+                  </div>
+                  <div class="permission-item">
+                    <v-icon :color="role.canManageAdmins ? 'green-darken-3' : 'grey-lighten-1'" size="18">
+                      {{ role.canManageAdmins ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+                    <span class="text-caption">Администраторы</span>
+                  </div>
+                  <div class="permission-item">
+                    <v-icon :color="role.canManageVkGroups ? 'green-darken-3' : 'grey-lighten-1'" size="18">
+                      {{ role.canManageVkGroups ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+                    <span class="text-caption">ВКонтакте</span>
+                  </div>
+                  <div class="permission-item">
+                    <v-icon :color="role.canManageEmail ? 'green-darken-3' : 'grey-lighten-1'" size="18">
+                      {{ role.canManageEmail ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+                    <span class="text-caption">Email</span>
+                  </div>
+                  <div class="permission-item">
+                    <v-icon :color="role.canManageSeo ? 'green-darken-3' : 'grey-lighten-1'" size="18">
+                      {{ role.canManageSeo ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+                    <span class="text-caption">SEO</span>
+                  </div>
+                  <div class="permission-item">
+                    <v-icon :color="role.canManageGeneralSettings ? 'green-darken-3' : 'grey-lighten-1'" size="18">
+                      {{ role.canManageGeneralSettings ? 'mdi-check-circle' : 'mdi-circle-outline' }}
+                    </v-icon>
+                    <span class="text-caption">Общие</span>
+                  </div>
                 </div>
               </v-card>
             </v-col>
@@ -144,7 +187,16 @@
                 <v-checkbox v-model="newRole.canManagePurchases" label="Покупки" hide-details class="mb-2" color="green-darken-3" />
                 <v-checkbox v-model="newRole.canManageSettings" label="Настройки" hide-details class="mb-2" color="green-darken-3" />
                 <v-checkbox v-model="newRole.canManageAdmins" label="Администраторы" hide-details class="mb-2" color="green-darken-3" />
-                <v-checkbox v-model="newRole.canEditPlan" label="План" hide-details class="mb-6" color="green-darken-3" />
+                <v-checkbox v-model="newRole.canEditPlan" label="План" hide-details class="mb-2" color="green-darken-3" />
+                <v-divider class="my-2" />
+                <p class="text-caption text-grey-darken-1 mb-2">Вкладки настроек:</p>
+                <v-checkbox v-model="newRole.canManageProfile" label="Профиль" hide-details class="mb-2" color="green-darken-3" />
+                <v-checkbox v-model="newRole.canManageRoles" label="Роли" hide-details class="mb-2" color="green-darken-3" />
+                <v-checkbox v-model="newRole.canManageAdmins" label="Администраторы" hide-details class="mb-2" color="green-darken-3" />
+                <v-checkbox v-model="newRole.canManageVkGroups" label="ВКонтакте" hide-details class="mb-2" color="green-darken-3" />
+                <v-checkbox v-model="newRole.canManageEmail" label="Email" hide-details class="mb-2" color="green-darken-3" />
+                <v-checkbox v-model="newRole.canManageSeo" label="SEO" hide-details class="mb-2" color="green-darken-3" />
+                <v-checkbox v-model="newRole.canManageGeneralSettings" label="Общие настройки" hide-details class="mb-6" color="green-darken-3" />
                 <div class="d-flex ga-2">
                   <v-btn color="green-darken-3" variant="flat" @click="saveRole" :loading="roleSaving">
                     {{ editingRole ? 'Обновить' : 'Создать' }}
@@ -557,6 +609,33 @@ const showChangePasswordDialog = ref(false)
 const editingRole = ref(null)
 const editingAdmin = ref(null)
 const editingVkGroup = ref(null)
+
+// Права текущего пользователя
+const currentUser = ref({
+  id: '',
+  email: '',
+  name: '',
+  roleId: '',
+})
+const currentRole = ref({
+  canManageProfile: false,
+  canManageRoles: false,
+  canManageAdmins: false,
+  canManageVkGroups: false,
+  canManageEmail: false,
+  canManageSeo: false,
+  canManageGeneralSettings: false,
+  canManageSettings: false,
+})
+
+// Вычисляемые свойства для проверки прав на вкладки
+const canManageProfile = computed(() => currentRole.value.canManageProfile || currentRole.value.canManageSettings)
+const canManageRoles = computed(() => currentRole.value.canManageRoles || currentRole.value.canManageSettings)
+const canManageAdmins = computed(() => currentRole.value.canManageAdmins || currentRole.value.canManageSettings)
+const canManageVkGroups = computed(() => currentRole.value.canManageVkGroups || currentRole.value.canManageSettings)
+const canManageEmail = computed(() => currentRole.value.canManageEmail || currentRole.value.canManageSettings)
+const canManageSeo = computed(() => currentRole.value.canManageSeo || currentRole.value.canManageSettings)
+const canManageGeneralSettings = computed(() => currentRole.value.canManageGeneralSettings || currentRole.value.canManageSettings)
 const selectedAdminForPassword = ref(null)
 const newPassword = ref('')
 const passwordSaving = ref(false)
@@ -636,6 +715,12 @@ const newRole = reactive({
   canManageSettings: false,
   canManageAdmins: false,
   canEditPlan: false,
+  canManageProfile: false,
+  canManageRoles: false,
+  canManageVkGroups: false,
+  canManageEmail: false,
+  canManageSeo: false,
+  canManageGeneralSettings: false,
 })
 
 const newAdmin = reactive({
@@ -871,7 +956,23 @@ const saveRole = async () => {
     
     showAddRoleDialog.value = false
     editingRole.value = null
-    Object.assign(newRole, { name: '', description: '', canViewDashboard: false, canManageCourses: false, canManageUsers: false })
+    Object.assign(newRole, { 
+      name: '', 
+      description: '', 
+      canViewDashboard: false, 
+      canManageCourses: false, 
+      canManageUsers: false,
+      canManagePurchases: false,
+      canManageSettings: false,
+      canManageAdmins: false,
+      canEditPlan: false,
+      canManageProfile: false,
+      canManageRoles: false,
+      canManageVkGroups: false,
+      canManageEmail: false,
+      canManageSeo: false,
+      canManageGeneralSettings: false,
+    })
   } catch (e: any) {
     console.error('❌ [Frontend] Ошибка сохранения роли:', e)
     alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
@@ -1206,6 +1307,15 @@ useSeoMeta({ title: 'Настройки — Админка' })
 onMounted(async () => {
   console.log('🟡 [Frontend] Компонент монтирован, загружаю данные из БД...')
   try {
+    // Загружаем текущего пользователя с правами
+    const meData = await $fetch('/api/admin/me')
+    console.log('✅ [Frontend] Текущий пользователь загружен:', meData.admin)
+    currentUser.value = meData.admin
+    if (meData.role) {
+      currentRole.value = meData.role
+      console.log('✅ [Frontend] Права роли загружены:', meData.role.name)
+    }
+    
     // Загружаем профиль
     const profileData = await $fetch('/api/admin/profile')
     console.log('✅ [Frontend] Профиль загружен:', profileData.admin)

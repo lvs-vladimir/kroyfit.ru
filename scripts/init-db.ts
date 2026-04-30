@@ -23,9 +23,41 @@ sqlite.exec(`
     can_manage_settings INTEGER DEFAULT 0,
     can_manage_admins INTEGER DEFAULT 0,
     can_edit_plan INTEGER DEFAULT 0,
+    can_manage_profile INTEGER DEFAULT 0,
+    can_manage_roles INTEGER DEFAULT 0,
+    can_manage_vk_groups INTEGER DEFAULT 0,
+    can_manage_email INTEGER DEFAULT 0,
+    can_manage_seo INTEGER DEFAULT 0,
+    can_manage_general_settings INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now'))
   )
 `)
+
+// Добавляем новые колонки если таблица уже существует (миграция)
+try {
+  sqlite.exec(`ALTER TABLE roles ADD COLUMN can_manage_profile INTEGER DEFAULT 0`)
+  console.log('✅ Колонка can_manage_profile добавлена')
+} catch (e) { /* уже существует */ }
+try {
+  sqlite.exec(`ALTER TABLE roles ADD COLUMN can_manage_roles INTEGER DEFAULT 0`)
+  console.log('✅ Колонка can_manage_roles добавлена')
+} catch (e) { /* уже существует */ }
+try {
+  sqlite.exec(`ALTER TABLE roles ADD COLUMN can_manage_vk_groups INTEGER DEFAULT 0`)
+  console.log('✅ Колонка can_manage_vk_groups добавлена')
+} catch (e) { /* уже существует */ }
+try {
+  sqlite.exec(`ALTER TABLE roles ADD COLUMN can_manage_email INTEGER DEFAULT 0`)
+  console.log('✅ Колонка can_manage_email добавлена')
+} catch (e) { /* уже существует */ }
+try {
+  sqlite.exec(`ALTER TABLE roles ADD COLUMN can_manage_seo INTEGER DEFAULT 0`)
+  console.log('✅ Колонка can_manage_seo добавлена')
+} catch (e) { /* уже существует */ }
+try {
+  sqlite.exec(`ALTER TABLE roles ADD COLUMN can_manage_general_settings INTEGER DEFAULT 0`)
+  console.log('✅ Колонка can_manage_general_settings добавлена')
+} catch (e) { /* уже существует */ }
 
 // Администраторы
 sqlite.exec(`
@@ -142,10 +174,10 @@ console.log('Добавление тестовых данных...')
 const existingRoles = sqlite.prepare('SELECT COUNT(*) as count FROM roles').get() as any
 if (existingRoles.count === 0) {
   sqlite.exec(`
-    INSERT INTO roles (id, name, description, can_view_dashboard, can_manage_courses, can_manage_users, can_manage_purchases, can_manage_settings, can_manage_admins, can_edit_plan) VALUES
-    ('1', 'Администратор', 'Полный доступ ко всем функциям', 1, 1, 1, 1, 1, 1, 1),
-    ('2', 'Модератор', 'Управление курсами и пользователями', 1, 1, 1, 1, 0, 0, 0),
-    ('3', 'Редактор', 'Редактирование контента', 1, 1, 0, 0, 0, 0, 1)
+    INSERT INTO roles (id, name, description, can_view_dashboard, can_manage_courses, can_manage_users, can_manage_purchases, can_manage_settings, can_manage_admins, can_edit_plan, can_manage_profile, can_manage_roles, can_manage_vk_groups, can_manage_email, can_manage_seo, can_manage_general_settings) VALUES
+    ('1', 'Администратор', 'Полный доступ ко всем функциям', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+    ('2', 'Модератор', 'Управление курсами и пользователями', 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0),
+    ('3', 'Редактор', 'Редактирование контента', 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1)
   `)
   console.log('Роли добавлены')
 }

@@ -13,6 +13,13 @@ export const roles = sqliteTable('roles', {
   canManageSettings: integer('can_manage_settings', { mode: 'boolean' }).default(false),
   canManageAdmins: integer('can_manage_admins', { mode: 'boolean' }).default(false),
   canEditPlan: integer('can_edit_plan', { mode: 'boolean' }).default(false),
+  // Детальные права на вкладки настроек
+  canManageProfile: integer('can_manage_profile', { mode: 'boolean' }).default(false),
+  canManageRoles: integer('can_manage_roles', { mode: 'boolean' }).default(false),
+  canManageVkGroups: integer('can_manage_vk_groups', { mode: 'boolean' }).default(false),
+  canManageEmail: integer('can_manage_email', { mode: 'boolean' }).default(false),
+  canManageSeo: integer('can_manage_seo', { mode: 'boolean' }).default(false),
+  canManageGeneralSettings: integer('can_manage_general_settings', { mode: 'boolean' }).default(false),
   createdAt: text('created_at').default(sql`(datetime('now'))`),
 })
 
