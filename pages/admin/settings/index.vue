@@ -354,9 +354,43 @@
                     placeholder="Выберите курс"
                   />
                 </div>
-                <div class="mb-6">
+                <div class="mb-4">
                   <label class="text-caption text-grey-darken-1 d-block mb-1">Токен сообщества</label>
-                  <v-text-field v-model="newVkGroup.token" type="password" variant="outlined" density="compact" hide-details />
+                  <div class="d-flex ga-2">
+                    <v-text-field 
+                      v-model="newVkGroup.token" 
+                      type="password" 
+                      variant="outlined" 
+                      density="compact" 
+                      hide-details 
+                      class="flex-grow-1"
+                    />
+                    <v-btn 
+                      color="blue-darken-3" 
+                      variant="flat" 
+                      @click="testVkConnection"
+                      :loading="vkTesting"
+                      :disabled="!newVkGroup.token || !newVkGroup.vkId"
+                      size="small"
+                      style="height: 40px;"
+                    >
+                      <v-icon start>mdi-connection</v-icon>
+                      Тест
+                    </v-btn>
+                  </div>
+                  <div v-if="vkTestResult" class="mt-2">
+                    <v-alert
+                      :type="vkTestResult.success ? 'success' : 'error'"
+                      variant="tonal"
+                      density="compact"
+                      class="text-caption"
+                    >
+                      {{ vkTestResult.message }}
+                      <div v-if="vkTestResult.details" class="mt-1 text-grey-darken-1">
+                        {{ vkTestResult.details }}
+                      </div>
+                    </v-alert>
+                  </div>
                 </div>
                 <div class="d-flex ga-2">
                   <v-btn color="green-darken-3" variant="flat" @click="saveVkGroup" :loading="vkSaving">
@@ -492,6 +526,8 @@ onMounted(async () => {
 const vkSaving = ref(false)
 const vkIdError = ref('')
 const vkIdLoading = ref(false)
+const vkTesting = ref(false)
+const vkTestResult = ref<{success: boolean, message: string, details?: string} | null>(null)
 const profileMessage = ref(null)
 
 const profile = ref({
@@ -559,6 +595,57 @@ const newVkGroup = reactive({
   courseSlug: '',
   token: '',
 })
+
+const testVkConnection = async () => {
+  if (!newVkGroup.vkId || !newVkGroup.token) {
+    vkTestResult.value = {
+      success: false,
+      message: 'Заполните ID группы и токен'
+    }
+    return
+  }
+  
+  vkTesting.value = true
+  vkTestResult.value = null
+  
+  console.log('🧪 [Frontend] Тестирование подключения к VK API...')
+  
+  try {
+    const response = await $fetch('/api/vk/test-connection', {
+      method: 'POST',
+      body: {
+        vkId: newVkGroup.vkId,
+        token: newVkGroup.token
+      }
+    }) as any
+    
+    if (response.success) {
+      vkTestResult.value = {
+        success: true,
+        message: '✅ Подключение успешно!',
+        details: `Группа: ${response.groupName || newVkGroup.vkId}`
+      }
+      console.log('✅ [Frontend] Тест подключения пройден')
+    } else {
+      vkTestResult.value = {
+        success: false,
+        message: '❌ Ошибка подключения',
+        details: response.error || 'Не удалось подключиться к VK API'
+      }
+      console.log('❌ [Frontend] Тест подключения не пройден:', response.error)
+    }
+  } catch (e: any) {
+    const errorMsg = e.data?.message || e.message || 'Неизвестная ошибка'
+    vkTestResult.value = {
+      success: false,
+      message: '❌ Ошибка тестирования',
+      details: errorMsg
+    }
+    console.error('❌ [Frontend] Ошибка тестирования:', e)
+  } finally {
+    vkTesting.value = false
+  }
+}
 
 const extractVkId = async () => {
   const url = newVkGroup.vkUrl.trim()
@@ -940,6 +1027,7 @@ const saveVkGroup = async () => {
     editingVkGroup.value = null
     Object.assign(newVkGroup, { name: '', vkUrl: '', vkId: '', courseSlug: '', token: '' })
     vkIdError.value = ''
+    vkTestResult.value = null
   } catch (e: any) {
     console.error('❌ [Frontend] Ошибка сохранения:', e)
     alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить'))
