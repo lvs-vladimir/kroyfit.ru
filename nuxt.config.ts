@@ -2,6 +2,17 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   devtools: { enabled: false },
   
+  nitro: {
+    preset: 'node-server',
+    publicAssets: [
+      {
+        dir: 'public',
+        baseURL: '/',
+        maxAge: 60 * 60 * 24 * 365
+      }
+    ]
+  },
+  
   modules: [
     'vuetify-nuxt-module',
   ],
