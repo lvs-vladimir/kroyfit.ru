@@ -1,6 +1,6 @@
 import { toRef, createVNode, normalizeStyle, normalizeClass, createElementVNode, mergeProps, computed } from 'vue';
 import { u as usePosition, d as createSimpleFunctional, m as makePositionProps } from './position-D2_Ao4AV.mjs';
-import { O as useVariant, u as useDensity, l as useDimension, n as useElevation, o as useLocation, p as useRounded, c as useTextColor, U as genOverlays, V as VIcon, j as VDefaultsProvider, P as makeVariantProps, m as makeTagProps, r as makeRoundedProps, s as makeLocationProps, t as makeElevationProps, v as makeDimensionProps, f as makeDensityProps, g as makeComponentProps } from './index-C1EJcibQ.mjs';
+import { D as useVariant, u as useDensity, l as useDimension, n as useElevation, o as useLocation, p as useRounded, c as useTextColor, J as genOverlays, V as VIcon, j as VDefaultsProvider, E as makeVariantProps, m as makeTagProps, r as makeRoundedProps, s as makeLocationProps, t as makeElevationProps, v as makeDimensionProps, f as makeDensityProps, g as makeComponentProps } from './index-C1EJcibQ.mjs';
 import { g as genericComponent, f as useProxiedModel, b as provideTheme, d as useLocale, p as propsFactory, I as IconValue, m as makeThemeProps } from './server.mjs';
 import { V as VBtn } from './VBtn-p5cu1pGV.mjs';
 

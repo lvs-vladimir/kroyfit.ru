@@ -525,8 +525,18 @@ const saveProfile = async () => {
     })
 
     console.log('✅ [Frontend] Ответ от сервера:', response)
-    profileMessage.value = { type: 'success', text: 'Профиль успешно обновлен! Данные сохранены в БД.' }
+    
+    // Загружаем обновленный профиль из БД
+    console.log('🔄 [Frontend] Загружаю обновленный профиль из БД...')
+    const profileData = await $fetch('/api/admin/profile')
+    console.log('✅ [Frontend] Профиль загружен из БД:', profileData.admin)
+    
+    // Обновляем локальные данные
+    profile.email = profileData.admin.email
+    profile.name = profileData.admin.name
     profile.password = ''
+    
+    profileMessage.value = { type: 'success', text: 'Профиль успешно обновлен! Данные сохранены в БД.' }
   } catch (e: any) {
     console.error('❌ [Frontend] Ошибка при сохранении:', e)
     profileMessage.value = { type: 'error', text: e.data?.message || 'Ошибка сохранения профиля' }

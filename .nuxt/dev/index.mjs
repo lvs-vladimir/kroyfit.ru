@@ -2608,6 +2608,7 @@ async function getIslandContext(event) {
 }
 
 const _lazy_A8X4T2 = () => Promise.resolve().then(function () { return login_post$1; });
+const _lazy_EE5Nrq = () => Promise.resolve().then(function () { return profile_get$1; });
 const _lazy_1d2OBt = () => Promise.resolve().then(function () { return profile_post$1; });
 const _lazy_v2SzUE = () => Promise.resolve().then(function () { return settings_post$1; });
 const _lazy_iLABVq = () => Promise.resolve().then(function () { return _slug__get$1; });
@@ -2625,6 +2626,7 @@ const _lazy_nqijRZ = () => Promise.resolve().then(function () { return renderer;
 const handlers = [
   { route: '', handler: _ocHbsM, lazy: false, middleware: true, method: undefined },
   { route: '/api/admin/login', handler: _lazy_A8X4T2, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/profile', handler: _lazy_EE5Nrq, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/profile', handler: _lazy_1d2OBt, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/settings', handler: _lazy_v2SzUE, lazy: true, middleware: false, method: "post" },
   { route: '/api/courses/:slug', handler: _lazy_iLABVq, lazy: true, middleware: false, method: "get" },
@@ -3098,6 +3100,35 @@ const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
 
 const sqlite = new Database("kroyfit.db");
 const db = drizzle(sqlite, { schema });
+
+const profile_get = defineEventHandler(async (event) => {
+  console.log("\u{1F535} [API] GET /api/admin/profile - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430");
+  try {
+    const admin = await db.query.admins.findFirst({
+      where: eq(admins.id, "1")
+    });
+    if (!admin) {
+      console.error("\u274C [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D");
+      throw createError({
+        statusCode: 404,
+        message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D"
+      });
+    }
+    console.log("\u2705 [API] \u041F\u0440\u043E\u0444\u0438\u043B\u044C \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D:", { email: admin.email, name: admin.name });
+    return { success: true, admin };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u0444\u0438\u043B\u044F:", e);
+    throw createError({
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u0444\u0438\u043B\u044F"
+    });
+  }
+});
+
+const profile_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: profile_get
+}, Symbol.toStringTag, { value: 'Module' }));
 
 const profile_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
