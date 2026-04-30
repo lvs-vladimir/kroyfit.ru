@@ -176,7 +176,7 @@ if (existingRoles.count === 0) {
   sqlite.exec(`
     INSERT INTO roles (id, name, description, can_view_dashboard, can_manage_courses, can_manage_users, can_manage_purchases, can_manage_settings, can_manage_admins, can_edit_plan, can_manage_profile, can_manage_roles, can_manage_vk_groups, can_manage_email, can_manage_seo, can_manage_general_settings) VALUES
     ('1', 'Администратор', 'Полный доступ ко всем функциям', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-    ('2', 'Модератор', 'Управление курсами и пользователями', 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0),
+    ('2', 'Модератор', 'Управление курсами и пользователями', 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0),
     ('3', 'Редактор', 'Редактирование контента', 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1)
   `)
   console.log('Роли добавлены')
