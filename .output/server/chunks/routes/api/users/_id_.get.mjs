@@ -1,4 +1,4 @@
-import { d as defineEventHandler, g as getRouterParam, c as createError } from '../../../nitro/nitro.mjs';
+import { d as defineEventHandler, a as getRouterParam, c as createError } from '../../../nitro/nitro.mjs';
 import { d as db, u as users } from '../../../_/db.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';

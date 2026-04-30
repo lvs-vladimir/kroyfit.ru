@@ -1,5 +1,5 @@
 import { ref, customRef } from 'vue';
-import { z as klona, A as parse, B as getRequestHeader, C as isEqual, D as setCookie, E as getCookie, F as deleteCookie } from '../nitro/nitro.mjs';
+import { A as klona, B as parse, C as getRequestHeader, D as isEqual, E as setCookie, g as getCookie, F as deleteCookie } from '../nitro/nitro.mjs';
 import { L as useNuxtApp } from './server.mjs';
 import { u as useRequestEvent } from './ssr-BEZSE_YS.mjs';
 

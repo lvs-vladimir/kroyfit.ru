@@ -1,5 +1,5 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, createError, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, setHeader, getResponseStatusText } from 'file:///root/kroyfit/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, createError, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, getCookie, setHeader, getResponseStatusText } from 'file:///root/kroyfit/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
@@ -2615,6 +2615,7 @@ const _lazy_DzDfvp = () => Promise.resolve().then(function () { return recent_ge
 const _lazy_AUXaMQ = () => Promise.resolve().then(function () { return roles_get$1; });
 const _lazy_v2SzUE = () => Promise.resolve().then(function () { return settings_post$1; });
 const _lazy_GxDtRk = () => Promise.resolve().then(function () { return all_get$1; });
+const _lazy_VIk7lY = () => Promise.resolve().then(function () { return verifyToken_get$1; });
 const _lazy_DCkUpC = () => Promise.resolve().then(function () { return vkGroups_post$1; });
 const _lazy_3rED2L = () => Promise.resolve().then(function () { return courses_get$3; });
 const _lazy_Q30N3U = () => Promise.resolve().then(function () { return _id__get$3; });
@@ -2645,6 +2646,7 @@ const handlers = [
   { route: '/api/admin/roles', handler: _lazy_AUXaMQ, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/settings', handler: _lazy_v2SzUE, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/settings/all', handler: _lazy_GxDtRk, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/verify-token', handler: _lazy_VIk7lY, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/vk-groups', handler: _lazy_DCkUpC, lazy: true, middleware: false, method: "post" },
   { route: '/api/courses', handler: _lazy_3rED2L, lazy: true, middleware: false, method: "get" },
   { route: '/api/courses/:id', handler: _lazy_Q30N3U, lazy: true, middleware: false, method: "get" },
@@ -3018,7 +3020,7 @@ const roles = sqliteTable("roles", {
   canEditPlan: integer("can_edit_plan", { mode: "boolean" }).default(false),
   createdAt: text("created_at").default(sql`(datetime('now'))`)
 });
-const admins$1 = sqliteTable("admins", {
+const admins = sqliteTable("admins", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
@@ -3098,7 +3100,7 @@ const generalSettings = sqliteTable("general_settings", {
 
 const schema = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
-  admins: admins$1,
+  admins: admins,
   courses: courses$1,
   emailSettings: emailSettings,
   generalSettings: generalSettings,
@@ -3117,7 +3119,7 @@ const db = drizzle(sqlite, { schema });
 const admins_get = defineEventHandler(async (event) => {
   console.log("\u{1F535} [API] GET /api/admin/admins - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0441\u043F\u0438\u0441\u043A\u0430 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u043E\u0432");
   try {
-    const adminsList = await db.select().from(admins$1);
+    const adminsList = await db.select().from(admins);
     console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u044B \u0437\u0430\u0433\u0440\u0443\u0436\u0435\u043D\u044B:", adminsList.length);
     return { success: true, admins: adminsList };
   } catch (e) {
@@ -3134,16 +3136,6 @@ const admins_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProper
   default: admins_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const admins = [
-  {
-    id: "1",
-    email: "admin@kroyfit.ru",
-    password: "admin123456",
-    // В реальности должен быть хеш
-    name: "Admin",
-    role: "admin"
-  }
-];
 const login_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { email, password } = body;
@@ -3153,23 +3145,49 @@ const login_post = defineEventHandler(async (event) => {
       message: "Email \u0438 \u043F\u0430\u0440\u043E\u043B\u044C \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B"
     });
   }
-  const admin = admins.find((a) => a.email === email && a.password === password);
-  if (!admin) {
+  console.log("\u{1F535} [API] Login attempt:", email);
+  try {
+    const [admin] = await db.select().from(admins).where(eq(admins.email, email)).limit(1);
+    if (!admin) {
+      console.log("\u274C [API] Admin not found:", email);
+      throw createError({
+        statusCode: 401,
+        message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u0432\u0445\u043E\u0434\u0430"
+      });
+    }
+    if (admin.password !== password) {
+      console.log("\u274C [API] Invalid password for:", email);
+      throw createError({
+        statusCode: 401,
+        message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u0432\u0445\u043E\u0434\u0430"
+      });
+    }
+    if (!admin.isActive) {
+      console.log("\u274C [API] Admin account disabled:", email);
+      throw createError({
+        statusCode: 401,
+        message: "\u0410\u043A\u043A\u0430\u0443\u043D\u0442 \u0434\u0435\u0430\u043A\u0442\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u043D"
+      });
+    }
+    console.log("\u2705 [API] Login successful:", admin.name);
+    const token = Buffer.from(`${admin.id}:${admin.email}:${Date.now()}`).toString("base64");
+    return {
+      token,
+      user: {
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        roleId: admin.roleId
+      }
+    };
+  } catch (e) {
+    if (e.statusCode) throw e;
+    console.error("\u274C [API] Login error:", e);
     throw createError({
-      statusCode: 401,
-      message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u0432\u0445\u043E\u0434\u0430"
+      statusCode: 500,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u0438 \u0432\u0445\u043E\u0434\u0435"
     });
   }
-  const token = Buffer.from(`${admin.id}:${admin.email}:${Date.now()}`).toString("base64");
-  return {
-    token,
-    user: {
-      id: admin.id,
-      email: admin.email,
-      name: admin.name,
-      role: admin.role
-    }
-  };
 });
 
 const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
@@ -3181,7 +3199,7 @@ const profile_get = defineEventHandler(async (event) => {
   console.log("\u{1F535} [API] GET /api/admin/profile - \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u043F\u0440\u043E\u0444\u0438\u043B\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430");
   try {
     const admin = await db.query.admins.findFirst({
-      where: eq(admins$1.id, "1")
+      where: eq(admins.id, "1")
     });
     if (!admin) {
       console.error("\u274C [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D");
@@ -3223,7 +3241,7 @@ const profile_post = defineEventHandler(async (event) => {
     if (password && password.length > 0) {
       updateData.password = password;
     }
-    await db.update(admins$1).set(updateData).where(eq(admins$1.id, adminId));
+    await db.update(admins).set(updateData).where(eq(admins.id, adminId));
     return { success: true, message: "\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D" };
   } catch (e) {
     console.error("\u041E\u0448\u0438\u0431\u043A\u0430 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u0444\u0438\u043B\u044F:", e);
@@ -3310,7 +3328,7 @@ const settings_post = defineEventHandler(async (event) => {
         updateData.password = password;
       }
       console.log("\u{1F504} [API] \u0412\u044B\u043F\u043E\u043B\u043D\u044F\u044E UPDATE \u0432 \u0411\u0414...");
-      const result = await db.update(admins$1).set(updateData).where(eq(admins$1.id, adminId));
+      const result = await db.update(admins).set(updateData).where(eq(admins.id, adminId));
       console.log("\u2705 [API] UPDATE \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D \u0443\u0441\u043F\u0435\u0448\u043D\u043E:", result);
       return { success: true, message: "\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D" };
     }
@@ -3363,17 +3381,17 @@ const settings_post = defineEventHandler(async (event) => {
       const { id, email, name, roleId, isActive } = data;
       if (id) {
         console.log("\u{1F504} [API] \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430:", id);
-        await db.update(admins$1).set({
+        await db.update(admins).set({
           email,
           name,
           roleId,
           isActive: isActive ? 1 : 0
-        }).where(eq(admins$1.id, id));
+        }).where(eq(admins.id, id));
         console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D");
       } else {
         console.log("\u2795 [API] \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043D\u043E\u0432\u043E\u0433\u043E \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430");
         const newId = crypto.randomUUID();
-        await db.insert(admins$1).values({
+        await db.insert(admins).values({
           id: newId,
           email,
           name,
@@ -3388,7 +3406,7 @@ const settings_post = defineEventHandler(async (event) => {
     }
     if (type === "admin-delete") {
       console.log("\u{1F5D1}\uFE0F [API] \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430:", data.id);
-      await db.delete(admins$1).where(eq(admins$1.id, data.id));
+      await db.delete(admins).where(eq(admins.id, data.id));
       console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D");
       return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D" };
     }
@@ -3482,6 +3500,56 @@ const all_get = defineEventHandler(async (event) => {
 const all_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: all_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const verifyToken_get = defineEventHandler(async (event) => {
+  const token = getCookie(event, "admin-token");
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      message: "\u0422\u043E\u043A\u0435\u043D \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D"
+    });
+  }
+  console.log("\u{1F535} [API] Token verification");
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf-8");
+    const [adminId] = decoded.split(":");
+    if (!adminId) {
+      throw createError({
+        statusCode: 401,
+        message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0439 \u0442\u043E\u043A\u0435\u043D"
+      });
+    }
+    const [admin] = await db.select().from(admins).where(eq(admins.id, adminId)).limit(1);
+    if (!admin || !admin.isActive) {
+      throw createError({
+        statusCode: 401,
+        message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D \u0438\u043B\u0438 \u0434\u0435\u0430\u043A\u0442\u0438\u0432\u0438\u0440\u043E\u0432\u0430\u043D"
+      });
+    }
+    console.log("\u2705 [API] Token valid for admin:", admin.name);
+    return {
+      success: true,
+      admin: {
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        roleId: admin.roleId
+      }
+    };
+  } catch (e) {
+    if (e.statusCode) throw e;
+    console.error("\u274C [API] Token verification error:", e);
+    throw createError({
+      statusCode: 401,
+      message: "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0438 \u0442\u043E\u043A\u0435\u043D\u0430"
+    });
+  }
+});
+
+const verifyToken_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: verifyToken_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const vkGroups_post = defineEventHandler(async (event) => {

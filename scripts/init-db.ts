@@ -155,7 +155,7 @@ const existingAdmins = sqlite.prepare('SELECT COUNT(*) as count FROM admins').ge
 if (existingAdmins.count === 0) {
   sqlite.exec(`
     INSERT INTO admins (id, email, password, name, role_id, is_active) VALUES
-    ('1', 'admin@kroyfit.ru', 'hashed_password_here', 'Администратор', '1', 1)
+    ('1', 'ch32v003@gmail.com', 'admin123', 'Vova', '1', 1)
   `)
   console.log('Администраторы добавлены')
 }

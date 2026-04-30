@@ -1,5 +1,5 @@
 import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { inject as inject$1, toRef, getCurrentInstance as getCurrentInstance$1, watch, onScopeDispose, camelize, isVNode, Comment, Fragment, warn, reactive, watchEffect, shallowRef, computed, toValue, capitalize, provide, ref, unref, defineComponent as defineComponent$1, toRaw, hasInjectionContext, effectScope, createVNode, mergeProps, createElementVNode, normalizeClass, defineAsyncComponent, h, shallowReactive, createElementBlock, Suspense, createApp, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, getCurrentScope, withCtx, nextTick, isReadonly, useSSRContext, isRef, isShallow, isReactive, toRefs } from 'vue';
-import { p as parseURL, m as encodePath, n as decodePath, w as withQuery, c as createError$1, o as hasProtocol, q as isScriptProtocol, k as joinURL, t as sanitizeStatusCode, v as getContext, $ as $fetch, x as defu, y as executeAsync } from '../nitro/nitro.mjs';
+import { p as parseURL, n as encodePath, o as decodePath, w as withQuery, c as createError$1, q as hasProtocol, t as isScriptProtocol, l as joinURL, v as sanitizeStatusCode, x as getContext, $ as $fetch, y as defu, z as executeAsync } from '../nitro/nitro.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
 import { ssrRenderSuspense, ssrRenderComponent, ssrRenderVNode } from 'vue/server-renderer';
@@ -1849,7 +1849,7 @@ const globalMiddleware = [
   manifest_45route_45rule
 ];
 const namedMiddleware = {
-  admin: () => import('./admin-o4siUiWx.mjs')
+  admin: () => import('./admin-BNgJsls_.mjs')
 };
 const plugin$1 = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:router",
