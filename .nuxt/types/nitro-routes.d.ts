@@ -62,6 +62,9 @@ declare module "nitropack/types" {
     '/api/users/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/users/[id].get').default>>>>
     }
+    '/api/vk/group-info': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/vk/group-info.post').default>>>>
+    }
     '/api/vk/invite': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/vk/invite.post').default>>>>
     }

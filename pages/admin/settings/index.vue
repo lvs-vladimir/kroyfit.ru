@@ -335,11 +335,51 @@
                     ID группы: {{ newVkGroup.vkId }}
                   </div>
                   <div v-if="vkIdError" class="text-caption text-red mt-1" v-html="vkIdError" />
-                  <div class="text-caption text-grey-darken-1 mt-1">
-                    <v-icon size="14">mdi-information-outline</v-icon>
-                    Поддерживаются: club123456, public123456, vk.com/название
-                    <a href="https://regvk.com/id/" target="_blank" class="text-decoration-none" style="color: #1976d2;">regvk.com</a>
-                  </div>
+                  
+                  <!-- Инструкция по добавлению группы -->
+                  <v-expansion-panels variant="accordion" class="mt-3" style="border-radius: 8px;">
+                    <v-expansion-panel>
+                      <v-expansion-panel-title class="text-caption font-weight-medium" style="min-height: 40px;">
+                        <template v-slot:default="{ expanded }">
+                          <v-row no-gutters>
+                            <v-col cols="12" class="d-flex align-center">
+                              <v-icon size="16" class="mr-2" color="green-darken-3">mdi-help-circle-outline</v-icon>
+                              Как правильно добавить группу?
+                            </v-col>
+                          </v-row>
+                        </template>
+                      </v-expansion-panel-title>
+                      <v-expansion-panel-text>
+                        <div class="text-caption text-grey-darken-1 py-2">
+                          <p class="font-weight-medium mb-2">1. Вставьте ссылку на группу ВК</p>
+                          <p class="mb-2 pl-4">Поддерживаются форматы:<br>
+                          - vk.com/club123456<br>
+                          - vk.com/public123456<br>
+                          - vk.com/название_группы<br>
+                          - Только ID: 123456</p>
+                          
+                          <p class="font-weight-medium mb-2">2. Получите токен сообщества (ключ доступа)</p>
+                          <p class="mb-2 pl-4">
+                            <a href="https://vk.com/dev/access_token" target="_blank" style="color: #1976d2;">Инструкция от VK →</a><br>
+                            Или: Управление → Работа с API → Ключи доступа → Создать ключ
+                          </p>
+                          <p class="mb-2 pl-4 text-red-darken-2">
+                            <v-icon size="14" color="red">mdi-alert</v-icon>
+                            <strong>Важно:</strong> Токен должен иметь права:<br>
+                            - Доступ к управлению сообществом<br>
+                            - Доступ к приглашениям в группу
+                          </p>
+                          
+                          <p class="font-weight-medium mb-2">3. Нажмите кнопку "Тест"</p>
+                          <p class="mb-2 pl-4">Проверьте, что подключение работает.<br>
+                          Если ошибка — проверьте токен и права доступа.</p>
+                          
+                          <p class="font-weight-medium mb-2">4. Выберите курс</p>
+                          <p class="pl-4">После покупки этого курса, клиент автоматически получит приглашение в эту группу.</p>
+                        </div>
+                      </v-expansion-panel-text>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
                 </div>
                 <div class="mb-4">
                   <label class="text-caption text-grey-darken-1 d-block mb-1">Курс</label>
@@ -620,6 +660,12 @@ const testVkConnection = async () => {
     }) as any
     
     if (response.success) {
+      // Автоматически заполняем название группы, если оно пустое
+      if (!newVkGroup.name && response.groupName) {
+        newVkGroup.name = response.groupName
+        console.log('✅ [Frontend] Название группы автоматически заполнено:', response.groupName)
+      }
+      
       vkTestResult.value = {
         success: true,
         message: '✅ Подключение успешно!',
@@ -675,6 +721,8 @@ const extractVkId = async () => {
       // Числовой ID найден сразу
       newVkGroup.vkId = match[1]
       console.log('✅ [Frontend] Извлечен числовой ID:', newVkGroup.vkId)
+      // Пробуем получить название группы
+      await fetchGroupName(match[1])
       return
     } else if (match[1]) {
       // Короткое имя - нужно получить ID через API
@@ -683,11 +731,13 @@ const extractVkId = async () => {
     } else if (/^\d+$/.test(cleanUrl)) {
       newVkGroup.vkId = cleanUrl
       console.log('✅ [Frontend] ID из чисел:', newVkGroup.vkId)
+      // Пробуем получить название группы
+      await fetchGroupName(cleanUrl)
       return
     }
   }
   
-  // Если это короткое имя - пробуем получить ID через API
+  // Если это короткое имя - пробуем получить ID и название через API
   if (screenName && !/^\d+$/.test(screenName)) {
     vkIdLoading.value = true
     try {
@@ -699,6 +749,8 @@ const extractVkId = async () => {
       if (response.success) {
         newVkGroup.vkId = response.id
         console.log('✅ [Frontend] Получен ID через API:', newVkGroup.vkId)
+        // Пробуем получить название группы
+        await fetchGroupName(response.id)
       } else {
         // API не смог получить ID
         newVkGroup.vkId = screenName
@@ -712,6 +764,33 @@ const extractVkId = async () => {
     } finally {
       vkIdLoading.value = false
     }
+  }
+}
+
+// Получение названия группы через VK API (используем тестовое подключение)
+const fetchGroupName = async (groupId: string) => {
+  // Пока не введен токен — не можем получить название
+  if (!newVkGroup.token) {
+    console.log('⚠️ [Frontend] Токен не введен — название группы не получено')
+    return
+  }
+  
+  try {
+    console.log('🔍 [Frontend] Получение названия группы:', groupId)
+    const response = await $fetch('/api/vk/test-connection', {
+      method: 'POST',
+      body: { 
+        vkId: groupId,
+        token: newVkGroup.token 
+      }
+    }) as any
+    
+    if (response.success && response.groupName) {
+      newVkGroup.name = response.groupName
+      console.log('✅ [Frontend] Название группы получено:', response.groupName)
+    }
+  } catch (e) {
+    console.log('⚠️ [Frontend] Не удалось получить название группы:', e)
   }
 }
 

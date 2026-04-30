@@ -2628,6 +2628,7 @@ const _lazy_o4Lo7s = () => Promise.resolve().then(function () { return courses_g
 const _lazy_EkXGHc = () => Promise.resolve().then(function () { return users_get$1; });
 const _lazy_sscpne = () => Promise.resolve().then(function () { return _id__get$1; });
 const _lazy_nu2Mqm = () => Promise.resolve().then(function () { return index_post$1; });
+const _lazy_i9pius = () => Promise.resolve().then(function () { return groupInfo_post$1; });
 const _lazy_cppSKU = () => Promise.resolve().then(function () { return invite_post$1; });
 const _lazy_j44pum = () => Promise.resolve().then(function () { return resolveId_post$1; });
 const _lazy_0xU0gg = () => Promise.resolve().then(function () { return testConnection_post$1; });
@@ -2657,6 +2658,7 @@ const handlers = [
   { route: '/api/users', handler: _lazy_EkXGHc, lazy: true, middleware: false, method: "get" },
   { route: '/api/users/:id', handler: _lazy_sscpne, lazy: true, middleware: false, method: "get" },
   { route: '/api/users', handler: _lazy_nu2Mqm, lazy: true, middleware: false, method: "post" },
+  { route: '/api/vk/group-info', handler: _lazy_i9pius, lazy: true, middleware: false, method: "post" },
   { route: '/api/vk/invite', handler: _lazy_cppSKU, lazy: true, middleware: false, method: "post" },
   { route: '/api/vk/resolve-id', handler: _lazy_j44pum, lazy: true, middleware: false, method: "post" },
   { route: '/api/vk/test-connection', handler: _lazy_0xU0gg, lazy: true, middleware: false, method: "post" },
@@ -4101,6 +4103,48 @@ const index_post = defineEventHandler(async (event) => {
 const index_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: index_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const groupInfo_post = defineEventHandler(async (event) => {
+  const { groupId } = await readBody(event);
+  if (!groupId) {
+    throw createError({ statusCode: 400, message: "\u041D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D ID \u0433\u0440\u0443\u043F\u043F\u044B" });
+  }
+  console.log("\u{1F50D} [API] \u041F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u0435 \u0438\u043D\u0444\u043E\u0440\u043C\u0430\u0446\u0438\u0438 \u043E \u0433\u0440\u0443\u043F\u043F\u0435:", groupId);
+  try {
+    const params = new URLSearchParams();
+    params.append("group_id", groupId);
+    params.append("v", "5.131");
+    const vkResponse = await $fetch("https://api.vk.com/method/groups.getById", {
+      method: "POST",
+      body: params.toString(),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
+    if (vkResponse.error) {
+      console.error("\u274C [API] VK API \u0432\u0435\u0440\u043D\u0443\u043B \u043E\u0448\u0438\u0431\u043A\u0443:", vkResponse.error);
+      return {
+        success: false,
+        error: vkResponse.error.error_msg,
+        code: vkResponse.error.error_code
+      };
+    }
+    if (vkResponse.response && vkResponse.response.length > 0) {
+      const group = vkResponse.response[0];
+      console.log("\u2705 [API] \u0413\u0440\u0443\u043F\u043F\u0430 \u043D\u0430\u0439\u0434\u0435\u043D\u0430:", group.name);
+      return { success: true, name: group.name, id: group.id };
+    }
+    return { success: false, error: "\u0413\u0440\u0443\u043F\u043F\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u0430" };
+  } catch (e) {
+    console.error("\u274C [API] \u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0433\u0440\u0443\u043F\u043F\u044B:", e);
+    return { success: false, error: "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u043F\u0440\u043E\u0441\u0430: " + (e.message || "\u041D\u0435\u0438\u0437\u0432\u0435\u0441\u0442\u043D\u0430\u044F \u043E\u0448\u0438\u0431\u043A\u0430") };
+  }
+});
+
+const groupInfo_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: groupInfo_post
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const invite_post = defineEventHandler(async (event) => {

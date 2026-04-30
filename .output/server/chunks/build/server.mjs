@@ -1,4 +1,4 @@
-import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { inject as inject$1, toRef, getCurrentInstance as getCurrentInstance$1, watch, onScopeDispose, camelize, isVNode, Comment, Fragment, warn, reactive, watchEffect, shallowRef, computed, toValue, capitalize, provide, ref, toRaw, defineComponent as defineComponent$1, unref, hasInjectionContext, effectScope, createVNode, mergeProps, createElementVNode, normalizeClass, defineAsyncComponent, h, shallowReactive, createElementBlock, Suspense, createApp, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, getCurrentScope, withCtx, nextTick, isReadonly, useSSRContext, isRef, isShallow, isReactive, toRefs } from 'vue';
+import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { inject as inject$1, toRef, getCurrentInstance as getCurrentInstance$1, watch, onScopeDispose, camelize, isVNode, Comment, Fragment, warn, reactive, watchEffect, shallowRef, computed, toValue, capitalize, provide, ref, unref, defineComponent as defineComponent$1, toRaw, hasInjectionContext, effectScope, createVNode, mergeProps, createElementVNode, normalizeClass, defineAsyncComponent, h, shallowReactive, createElementBlock, Suspense, createApp, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, getCurrentScope, withCtx, nextTick, isReadonly, useSSRContext, isRef, isShallow, isReactive, toRefs } from 'vue';
 import { p as parseURL, m as encodePath, n as decodePath, w as withQuery, c as createError$1, o as hasProtocol, q as isScriptProtocol, k as joinURL, t as sanitizeStatusCode, v as getContext, $ as $fetch, x as defu, y as executeAsync } from '../nitro/nitro.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
@@ -1629,81 +1629,81 @@ const _routes = [
     name: "admin-courses-new",
     path: "/admin/courses/new",
     meta: { ...__nuxt_page_meta$9 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./new-BNV_780P.mjs')
+    component: () => import('./new-BWxfClDP.mjs')
   },
   {
     name: "admin-courses-id",
     path: "/admin/courses/:id()",
     meta: { ...__nuxt_page_meta$8 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./_id_-Bzkvg96g.mjs')
+    component: () => import('./_id_-V09Giuro.mjs')
   },
   {
     name: "admin-users-id",
     path: "/admin/users/:id()",
     meta: { ...__nuxt_page_meta$7 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./_id_-Dk-O-blu.mjs')
+    component: () => import('./_id_-48zJgh99.mjs')
   },
   {
     name: "admin-courses",
     path: "/admin/courses",
     meta: { ...__nuxt_page_meta$6 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-DsEfWAPi.mjs')
+    component: () => import('./index-BrNoHVvC.mjs')
   },
   {
     name: "admin-login",
     path: "/admin/login",
     meta: __nuxt_page_meta$5 || {},
-    component: () => import('./login-BIiEAk2m.mjs')
+    component: () => import('./login-Dl0VUY8C.mjs')
   },
   {
     name: "admin-plan",
     path: "/admin/plan",
     meta: { ...__nuxt_page_meta$4 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-ssmWnw2v.mjs')
+    component: () => import('./index-ZSHME3Yl.mjs')
   },
   {
     name: "admin-purchases",
     path: "/admin/purchases",
     meta: { ...__nuxt_page_meta$3 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-DpybRZXR.mjs')
+    component: () => import('./index-CaAoB1QG.mjs')
   },
   {
     name: "admin-settings",
     path: "/admin/settings",
     meta: { ...__nuxt_page_meta$2 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-CBZgr08y.mjs')
+    component: () => import('./index-BszdmpH1.mjs')
   },
   {
     name: "admin-users",
     path: "/admin/users",
     meta: { ...__nuxt_page_meta$1 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-BhfpeEYF.mjs')
+    component: () => import('./index-ClMf_w5Z.mjs')
   },
   {
     name: "courses-slug",
     path: "/courses/:slug()",
-    component: () => import('./_slug_-Ck_l3lGp.mjs')
+    component: () => import('./_slug_-CmETwZwH.mjs')
   },
   {
     name: "admin",
     path: "/admin",
     meta: { ...__nuxt_page_meta || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-B1m1CNe7.mjs')
+    component: () => import('./index-0sHwVBlb.mjs')
   },
   {
     name: "cabinet",
     path: "/cabinet",
-    component: () => import('./index-CaW4c-d4.mjs')
+    component: () => import('./index-jh_WE-Tm.mjs')
   },
   {
     name: "profile",
     path: "/profile",
-    component: () => import('./index-BOT4qzBx.mjs')
+    component: () => import('./index-WGrr_Hjy.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-DCEbeN7K.mjs')
+    component: () => import('./index-BPRaAfao.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {
@@ -3985,7 +3985,7 @@ const plugins = [
   vuetify_nuxt_plugin_server_9oTjuJUolTgCRp3b2GI8HpSG5efgavDBj_liwzqFHbg
 ];
 const layouts = {
-  admin: defineAsyncComponent(() => import('./admin-CW8jGbMs.mjs').then((m) => m.default || m))
+  admin: defineAsyncComponent(() => import('./admin-xOpsdd7D.mjs').then((m) => m.default || m))
 };
 const routeRulesMatcher = _routeRulesMatcher;
 const LayoutLoader = defineComponent$1({
@@ -4358,5 +4358,5 @@ let entry;
 }
 const entry_default = ((ssrContext) => entry(ssrContext));
 
-export { useGoTo as $, getPropertyFromItem as A, debounce as B, getCurrentInstance as C, useToggleScope as D, camelizeProps as E, ensureValidVNode as F, checkPrintable as G, callEvent as H, IconValue as I, encodeRoutePath as J, resolveRouteObject as K, useNuxtApp as L, useRuntimeConfig as M, nuxtLinkDefaults as N, EventProp as O, getCurrentInstanceName as P, consoleWarn as Q, asyncDataDefaults as R, createError as S, fetchDefaults as T, acceleratedEasing as U, deceleratedEasing as V, destructComputed as W, consoleError as X, CircularBuffer as Y, templateRef as Z, _export_sfc as _, useRouter as a, makeDisplayProps as a0, breakpoints as a1, deprecate as a2, PREFERS_REDUCED_MOTION as a3, includes as a4, isPrimitive as a5, isCssColor as a6, isParsableColor as a7, parseColor as a8, hasLightForeground as a9, findChildrenWithProvide as aa, useTheme as ab, useIcon as ac, flattenFragments as ad, hasEvent as ae, onlyDefinedProps as af, defineComponent as ag, pickWithRest as ah, defer as ai, defineNuxtRouteMiddleware as aj, provideTheme as b, useRtl as c, useLocale as d, entry_default as default, convertToUnit as e, useProxiedModel as f, genericComponent as g, provideDefaults as h, isObject as i, pick as j, keys as k, filterInputAttrs as l, makeThemeProps as m, navigateTo as n, omit as o, propsFactory as p, matchesSelector as q, isClickInsideElement as r, standardEasing as s, focusChild as t, useRoute as u, getNextElement as v, wrapInArray as w, focusableChildren as x, useDisplay as y, clamp as z };
+export { useGoTo as $, getPropertyFromItem as A, debounce as B, getCurrentInstance as C, useToggleScope as D, camelizeProps as E, ensureValidVNode as F, checkPrintable as G, callEvent as H, IconValue as I, encodeRoutePath as J, resolveRouteObject as K, useNuxtApp as L, useRuntimeConfig as M, nuxtLinkDefaults as N, EventProp as O, getCurrentInstanceName as P, consoleWarn as Q, asyncDataDefaults as R, createError as S, fetchDefaults as T, acceleratedEasing as U, deceleratedEasing as V, destructComputed as W, consoleError as X, CircularBuffer as Y, templateRef as Z, _export_sfc as _, useRouter as a, makeDisplayProps as a0, breakpoints as a1, deprecate as a2, PREFERS_REDUCED_MOTION as a3, includes as a4, isPrimitive as a5, isCssColor as a6, isParsableColor as a7, parseColor as a8, hasLightForeground as a9, findChildrenWithProvide as aa, useTheme as ab, useIcon as ac, flattenFragments as ad, hasEvent as ae, onlyDefinedProps as af, defineComponent as ag, pickWithRest as ah, defer as ai, defineNuxtRouteMiddleware as aj, provideTheme as b, provideDefaults as c, pick as d, entry_default as default, useRtl as e, useLocale as f, genericComponent as g, convertToUnit as h, useProxiedModel as i, isObject as j, keys as k, filterInputAttrs as l, makeThemeProps as m, navigateTo as n, omit as o, propsFactory as p, matchesSelector as q, isClickInsideElement as r, standardEasing as s, focusChild as t, useRoute as u, getNextElement as v, wrapInArray as w, focusableChildren as x, useDisplay as y, clamp as z };
 //# sourceMappingURL=server.mjs.map
