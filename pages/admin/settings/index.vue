@@ -187,6 +187,9 @@
                   </v-chip>
                 </td>
                 <td>
+                  <v-btn icon size="small" variant="text" color="orange-darken-2" @click="openChangePassword(admin)" title="Изменить пароль">
+                    <v-icon size="18">mdi-key</v-icon>
+                  </v-btn>
                   <v-btn icon size="small" variant="text" color="grey-darken-2" @click="editAdmin(admin)">
                     <v-icon size="18">mdi-pencil</v-icon>
                   </v-btn>
@@ -220,6 +223,46 @@
                     {{ editingAdmin ? 'Обновить' : 'Создать' }}
                   </v-btn>
                   <v-btn variant="text" color="grey-darken-2" @click="showAddAdminDialog = false">
+                    Отмена
+                  </v-btn>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+          
+          <!-- Change Password Dialog -->
+          <v-dialog v-model="showChangePasswordDialog" max-width="500">
+            <v-card style="border-radius: 12px;">
+              <v-card-title class="pa-6 pb-2">
+                <h2 class="text-h6 font-weight-bold">Изменение пароля</h2>
+              </v-card-title>
+              <v-card-text class="pa-6">
+                <div class="mb-4">
+                  <label class="text-caption text-grey-darken-1 d-block mb-1">Администратор</label>
+                  <v-text-field 
+                    :model-value="selectedAdminForPassword?.email" 
+                    variant="outlined" 
+                    density="compact" 
+                    hide-details 
+                    disabled 
+                  />
+                </div>
+                <div class="mb-6">
+                  <label class="text-caption text-grey-darken-1 d-block mb-1">Новый пароль</label>
+                  <v-text-field 
+                    v-model="newPassword" 
+                    type="password" 
+                    variant="outlined" 
+                    density="compact" 
+                    hide-details 
+                    placeholder="Минимум 6 символов"
+                  />
+                </div>
+                <div class="d-flex ga-2">
+                  <v-btn color="green-darken-3" variant="flat" @click="savePassword" :loading="passwordSaving">
+                    Сохранить пароль
+                  </v-btn>
+                  <v-btn variant="text" color="grey-darken-2" @click="showChangePasswordDialog = false">
                     Отмена
                   </v-btn>
                 </div>
@@ -387,9 +430,13 @@ const activeTab = ref('profile')
 const showAddRoleDialog = ref(false)
 const showAddAdminDialog = ref(false)
 const showAddVkDialog = ref(false)
+const showChangePasswordDialog = ref(false)
 const editingRole = ref(null)
 const editingAdmin = ref(null)
 const editingVkGroup = ref(null)
+const selectedAdminForPassword = ref(null)
+const newPassword = ref('')
+const passwordSaving = ref(false)
 const roleSaving = ref(false)
 const adminSaving = ref(false)
 const vkSaving = ref(false)
@@ -599,6 +646,49 @@ const saveAdmin = async () => {
 
 const deleteAdmin = (id: string) => {
   if (confirm('Удалить администратора?')) admins.value = admins.value.filter(a => a.id !== id)
+}
+
+const openChangePassword = (admin: any) => {
+  console.log('🔑 [Frontend] Открываю диалог изменения пароля для:', admin.email)
+  selectedAdminForPassword.value = admin
+  newPassword.value = ''
+  showChangePasswordDialog.value = true
+}
+
+const savePassword = async () => {
+  if (!newPassword.value || newPassword.value.length < 6) {
+    alert('Пароль должен содержать минимум 6 символов')
+    return
+  }
+  
+  passwordSaving.value = true
+  console.log('🔐 [Frontend] Сохраняю новый пароль для:', selectedAdminForPassword.value?.email)
+  
+  try {
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'profile',
+        data: {
+          adminId: selectedAdminForPassword.value.id,
+          email: selectedAdminForPassword.value.email,
+          name: selectedAdminForPassword.value.name,
+          password: newPassword.value,
+        },
+      },
+    })
+    
+    console.log('✅ [Frontend] Пароль успешно изменен')
+    showChangePasswordDialog.value = false
+    selectedAdminForPassword.value = null
+    newPassword.value = ''
+    alert('Пароль успешно изменен!')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка изменения пароля:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось изменить пароль'))
+  } finally {
+    passwordSaving.value = false
+  }
 }
 
 const deleteVkGroup = (id: string) => {
