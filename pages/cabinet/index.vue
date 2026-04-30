@@ -146,6 +146,6 @@ const logout = () => {
 }
 
 useSeoMeta({
-  title: 'Личный кабинет — Генетика Кроя',
+  title: 'Личный кабинет',
 })
 </script>

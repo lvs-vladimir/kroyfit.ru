@@ -449,50 +449,11 @@ const profile = ref({
   saving: false,
 })
 
-const roles = ref([
-  { 
-    id: '1', 
-    name: 'Администратор', 
-    description: 'Полный доступ ко всем функциям',
-    canViewDashboard: true,
-    canManageCourses: true,
-    canManageUsers: true,
-    canManagePurchases: true,
-    canManageSettings: true,
-    canManageAdmins: true,
-    canEditPlan: true,
-  },
-  { 
-    id: '2', 
-    name: 'Модератор', 
-    description: 'Управление курсами и пользователями',
-    canViewDashboard: true,
-    canManageCourses: true,
-    canManageUsers: true,
-    canManagePurchases: true,
-    canManageSettings: false,
-    canManageAdmins: false,
-    canEditPlan: false,
-  },
-  { 
-    id: '3', 
-    name: 'Редактор', 
-    description: 'Редактирование контента',
-    canViewDashboard: true,
-    canManageCourses: true,
-    canManageUsers: false,
-    canManagePurchases: false,
-    canManageSettings: false,
-    canManageAdmins: false,
-    canEditPlan: true,
-  },
-])
+const roles = ref([])
 
 const admins = ref([])
 
-const vkGroups = ref([
-  { id: '1', name: 'Генетика Кроя — Технология пошива', vkId: '', courseSlug: 'tekhnologiya-poshiva' },
-])
+const vkGroups = ref([])
 
 const email = reactive({
   smtpHost: 'smtp.gmail.com',
@@ -507,7 +468,7 @@ const email = reactive({
 })
 
 const seo = reactive({
-  title: 'Генетика Кроя',
+  title: siteName,
   description: 'Курсы кройки и шитья',
   keywords: 'кройка, шитье, курсы',
   enableSitemap: true,
@@ -516,7 +477,7 @@ const seo = reactive({
 })
 
 const general = reactive({
-  siteName: 'Генетика Кроя',
+  siteName: '',
   adminEmail: '',
   saving: false,
 })

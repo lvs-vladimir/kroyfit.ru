@@ -6,7 +6,7 @@
         <v-btn icon to="/" class="mr-4">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
-        <span class="text-h5 font-weight-bold" style="color: #8B5A6B;">Генетика Кроя</span>
+        <span class="text-h5 font-weight-bold" style="color: #8B5A6B;">{{ siteName }}</span>
         <v-spacer />
         <v-btn variant="text" href="tel:89132101662">Позвонить</v-btn>
       </v-container>
@@ -170,7 +170,7 @@
         <v-container>
           <v-row>
             <v-col cols="12" md="4">
-              <h4 class="text-h6 font-weight-bold mb-2">Генетика Кроя</h4>
+              <h4 class="text-h6 font-weight-bold mb-2">{{ siteName }}</h4>
               <p class="text-body-2 text-grey-lighten-2">
                 Курсы кройки и шитья в Барнауле<br>
                 с 2014 года
@@ -198,7 +198,7 @@
           </v-row>
           <v-divider class="my-4" />
           <p class="text-center text-caption text-grey-lighten-3">
-            © {{ new Date().getFullYear() }} Генетика Кроя. Все права защищены.
+            © {{ new Date().getFullYear() }} {{ siteName }}. Все права защищены.
           </p>
         </v-container>
       </v-footer>
@@ -242,7 +242,7 @@ const formatDescription = (text: string) => {
 }
 
 useSeoMeta({
-  title: () => `${course.value?.title} — Генетика Кроя`,
+  title: () => `${course.value?.title} — {{ siteName }}`,
   description: () => course.value?.description,
 })
 </script>

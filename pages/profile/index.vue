@@ -6,7 +6,7 @@
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <div class="text-h6 font-weight-bold" style="color: #00DC82;">
-          ✂️ Генетика Кроя
+          ✂️ {{ siteName }}
         </div>
         <v-spacer />
         <v-btn variant="text" @click="logout">Выйти</v-btn>
@@ -123,6 +123,6 @@ const logout = () => {
 }
 
 useSeoMeta({
-  title: 'Мой профиль — Генетика Кроя',
+  title: 'Мой профиль',
 })
 </script>

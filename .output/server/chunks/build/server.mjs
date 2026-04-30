@@ -1653,7 +1653,7 @@ const _routes = [
     name: "admin-login",
     path: "/admin/login",
     meta: __nuxt_page_meta$5 || {},
-    component: () => import('./login-IZlzpPr2.mjs')
+    component: () => import('./login-BIiEAk2m.mjs')
   },
   {
     name: "admin-plan",
@@ -1671,7 +1671,7 @@ const _routes = [
     name: "admin-settings",
     path: "/admin/settings",
     meta: { ...__nuxt_page_meta$2 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-BzvDhvEF.mjs')
+    component: () => import('./index-CN6T3xsi.mjs')
   },
   {
     name: "admin-users",
@@ -1682,7 +1682,7 @@ const _routes = [
   {
     name: "courses-slug",
     path: "/courses/:slug()",
-    component: () => import('./_slug_-DM4gNtGT.mjs')
+    component: () => import('./_slug_-Q3-W4THQ.mjs')
   },
   {
     name: "admin",
@@ -1693,17 +1693,17 @@ const _routes = [
   {
     name: "cabinet",
     path: "/cabinet",
-    component: () => import('./index-C7Fp0jdC.mjs')
+    component: () => import('./index-DyuYCcfv.mjs')
   },
   {
     name: "profile",
     path: "/profile",
-    component: () => import('./index-BquGKNjP.mjs')
+    component: () => import('./index-CbLnQrEk.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-BBDjCUtF.mjs')
+    component: () => import('./index-NJZZEOic.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {

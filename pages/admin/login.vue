@@ -3,7 +3,7 @@
     <div class="login-card">
       <div class="mb-8">
         <div class="text-h6 font-weight-bold mb-1" style="color: #020617;">
-          ✂️ Генетика Кроя
+          ✂️ {{ siteName }}
         </div>
         <p class="text-body-2 text-grey-darken-1">Вход в админку</p>
       </div>
@@ -95,7 +95,7 @@ const handleLogin = async () => {
 }
 
 useSeoMeta({
-  title: 'Вход в админку — Генетика Кроя',
+  title: 'Вход в админку',
 })
 </script>
 

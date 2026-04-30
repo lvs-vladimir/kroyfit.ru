@@ -4,7 +4,7 @@
     <v-app-bar color="white" elevation="0" class="border-b">
       <v-container class="d-flex align-center">
         <div class="text-h6 font-weight-bold" style="color: #6366F1;">
-          ✂️ Генетика Кроя
+          ✂️ {{ siteName }}
         </div>
         <v-spacer />
         <v-btn variant="text" href="#courses" class="text-body-2">Курсы</v-btn>
@@ -363,7 +363,7 @@
         <v-container>
           <v-row>
             <v-col cols="12" md="4" class="mb-6 mb-md-0">
-              <h4 class="text-h6 font-weight-800 mb-3">Генетика Кроя</h4>
+              <h4 class="text-h6 font-weight-800 mb-3">{{ siteName }}</h4>
               <p class="text-body-2 text-grey-lighten-2">
                 Курсы кройки и шитья в Барнауле с 2014 года. Методика точного кроя по Злачевской.
               </p>
@@ -394,7 +394,7 @@
           </v-row>
           <v-divider class="my-6" />
           <p class="text-center text-caption text-grey-lighten-3">
-            © {{ new Date().getFullYear() }} Генетика Кроя. Все права защищены.
+            © {{ new Date().getFullYear() }} {{ siteName }}. Все права защищены.
           </p>
         </v-container>
       </v-footer>
@@ -462,7 +462,7 @@ const results = [
 ]
 
 useSeoMeta({
-  title: 'Генетика Кроя — Курсы кройки и шитья в Барнауле',
+  title: '{{ siteName }} — Курсы кройки и шитья в Барнауле',
   description: 'Курсы кройки и шитья в Барнауле. Методика точного кроя по Злачевской. С 2014 года.',
 })
 
