@@ -395,7 +395,7 @@ const adminSaving = ref(false)
 const vkSaving = ref(false)
 const profileMessage = ref(null)
 
-const profile = reactive({
+const profile = ref({
   email: 'admin@kroyfit.ru',
   name: 'Администратор',
   password: '',
@@ -504,10 +504,10 @@ const newVkGroup = reactive({
 const getRoleName = (roleId: string) => roles.value.find(r => r.id === roleId)?.name || 'Неизвестная роль'
 
 const saveProfile = async () => {
-  profile.saving = true
+  profile.value.saving = true
   profileMessage.value = null
   console.log('🟢 [Frontend] Начинаю сохранение профиля...')
-  console.log('📝 [Frontend] Данные:', { email: profile.email, name: profile.name, hasPassword: !!profile.password })
+  console.log('📝 [Frontend] Данные:', { email: profile.value.email, name: profile.value.name, hasPassword: !!profile.value.password })
   
   try {
     console.log('🔵 [Frontend] Отправляю запрос на /api/admin/settings...')
@@ -517,9 +517,9 @@ const saveProfile = async () => {
         type: 'profile',
         data: {
           adminId: '1',
-          email: profile.email,
-          name: profile.name,
-          password: profile.password,
+          email: profile.value.email,
+          name: profile.value.name,
+          password: profile.value.password,
         },
       },
     })
@@ -531,21 +531,19 @@ const saveProfile = async () => {
     const profileData = await $fetch('/api/admin/profile')
     console.log('✅ [Frontend] Профиль загружен из БД:', profileData.admin)
     
-    // Обновляем локальные данные реактивно
+    // Обновляем локальные данные реактивно через ref
     console.log('🔄 [Frontend] Обновляю локальные данные реактивно...')
-    Object.assign(profile, {
-      email: profileData.admin.email,
-      name: profileData.admin.name,
-      password: '',
-    })
-    console.log('✅ [Frontend] Локальные данные обновлены:', { email: profile.email, name: profile.name })
+    profile.value.email = profileData.admin.email
+    profile.value.name = profileData.admin.name
+    profile.value.password = ''
+    console.log('✅ [Frontend] Локальные данные обновлены:', { email: profile.value.email, name: profile.value.name })
     
     profileMessage.value = { type: 'success', text: 'Профиль успешно обновлен! Данные сохранены в БД.' }
   } catch (e: any) {
     console.error('❌ [Frontend] Ошибка при сохранении:', e)
     profileMessage.value = { type: 'error', text: e.data?.message || 'Ошибка сохранения профиля' }
   } finally {
-    profile.saving = false
+    profile.value.saving = false
   }
 }
 
