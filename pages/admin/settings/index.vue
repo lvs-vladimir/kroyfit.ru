@@ -343,7 +343,16 @@
                 </div>
                 <div class="mb-4">
                   <label class="text-caption text-grey-darken-1 d-block mb-1">Курс</label>
-                  <v-select v-model="newVkGroup.courseSlug" :items="['tekhnologiya-poshiva', 'master-konstruirovaniya', 'damskoe-bele']" variant="outlined" density="compact" hide-details />
+                  <v-select 
+                    v-model="newVkGroup.courseSlug" 
+                    :items="availableCourses" 
+                    item-title="title" 
+                    item-value="slug"
+                    variant="outlined" 
+                    density="compact" 
+                    hide-details 
+                    placeholder="Выберите курс"
+                  />
                 </div>
                 <div class="mb-6">
                   <label class="text-caption text-grey-darken-1 d-block mb-1">Токен сообщества</label>
@@ -463,6 +472,23 @@ const newPassword = ref('')
 const passwordSaving = ref(false)
 const roleSaving = ref(false)
 const adminSaving = ref(false)
+const availableCourses = ref([])
+
+// Загрузка курсов для выбора
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/courses')
+    if (data.success) {
+      availableCourses.value = data.courses.map(c => ({
+        title: c.title,
+        slug: c.slug,
+      }))
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки курсов:', e)
+  }
+})
+
 const vkSaving = ref(false)
 const vkIdError = ref('')
 const vkIdLoading = ref(false)
