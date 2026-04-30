@@ -1,5 +1,5 @@
 import { db } from '../../database/db'
-import { roles, admins, courses, emailSettings, seoSettings, generalSettings } from '../../database/schema'
+import { roles, admins, users, courses, purchases, emailSettings, seoSettings, generalSettings } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 
 // Получение adminId из токена
@@ -241,6 +241,33 @@ export default defineEventHandler(async (event) => {
       await db.delete(admins).where(eq(admins.id, data.id))
       console.log('✅ [API] Администратор удален')
       return { success: true, message: 'Администратор удален' }
+    }
+    
+    if (type === 'user-update') {
+      console.log('🟡 [API] Обновление пользователя...')
+      const { id: userId, name, email, vkId, avatar } = data
+      
+      if (!userId) {
+        throw createError({ statusCode: 400, message: 'ID пользователя обязателен' })
+      }
+      
+      // Проверяем что пользователь существует
+      const existing = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: 'Пользователь не найден' })
+      }
+      
+      const updateData: any = {}
+      if (name !== undefined) updateData.name = name
+      if (email !== undefined) updateData.email = email
+      if (vkId !== undefined) updateData.vkId = vkId
+      if (avatar !== undefined) updateData.avatar = avatar
+      
+      await db.update(users).set(updateData).where(eq(users.id, userId))
+      
+      const [updatedUser] = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+      console.log('✅ [API] Пользователь обновлен:', userId)
+      return { success: true, message: 'Пользователь обновлен', user: updatedUser }
     }
 
     if (type === 'email') {

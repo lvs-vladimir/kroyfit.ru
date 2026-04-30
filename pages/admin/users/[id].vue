@@ -49,11 +49,22 @@
           </div>
 
           <div class="mb-4">
-            <label class="text-caption text-grey-darken-1 d-block mb-1">Пароль</label>
+            <label class="text-caption text-grey-darken-1 d-block mb-1">VK ID</label>
             <v-text-field
-              v-model="form.password"
-              type="password"
-              placeholder="Оставьте пустым, чтобы не менять"
+              v-model="form.vkId"
+              placeholder="123456789"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="mb-4"
+            />
+          </div>
+
+          <div class="mb-4">
+            <label class="text-caption text-grey-darken-1 d-block mb-1">Аватар URL</label>
+            <v-text-field
+              v-model="form.avatar"
+              placeholder="https://..."
               variant="outlined"
               density="compact"
               hide-details
@@ -126,23 +137,23 @@
             </p>
           </div>
           <div class="mb-4">
-            <p class="text-caption text-grey-darken-1">VK</p>
+            <p class="text-caption text-grey-darken-1">VK ID</p>
             <p class="text-body-2" style="color: #020617;">
               <a
-                v-if="form.vk"
-                :href="`https://vk.com/id${form.vk}`"
+                v-if="form.vkId"
+                :href="`https://vk.com/id${form.vkId}`"
                 target="_blank"
                 class="text-decoration-none"
               >
-                VK {{ form.vk }}
+                VK {{ form.vkId }}
               </a>
               <span v-else class="text-grey-lighten-1">—</span>
             </p>
           </div>
           <div class="mb-4">
-            <p class="text-caption text-grey-darken-1">Курсов</p>
-            <p class="text-h6 font-weight-bold" style="color: #020617;">
-              {{ form.courses?.length || 0 }}
+            <p class="text-caption text-grey-darken-1">ID</p>
+            <p class="text-body-2" style="color: #020617;">
+              {{ userId }}
             </p>
           </div>
         </div>
@@ -160,36 +171,65 @@ const route = useRoute()
 const router = useRouter()
 const userId = route.params.id
 
-const courses = [
-  { title: 'Технология пошива', slug: 'tekhnologiya-poshiva' },
-  { title: 'Мастер конструирования', slug: 'master-konstruirovaniya' },
-  { title: 'Дамское бельё', slug: 'damskoe-bele' },
-]
-
+const loading = ref(true)
 const saving = ref(false)
 
 const form = reactive({
-  name: 'Анна Иванова',
-  email: 'anna@example.com',
-  password: '',
-  vk: '123456',
-  courses: ['tekhnologiya-poshiva'],
+  name: '',
+  email: '',
+  vkId: '',
+  avatar: '',
 })
 
 const saveUser = async () => {
   saving.value = true
   try {
-    console.log('Сохранение пользователя:', form)
-    await new Promise(resolve => setTimeout(resolve, 500))
+    console.log('📝 [Frontend] Сохранение пользователя:', form)
+    
+    await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'user-update',
+        data: {
+          id: userId,
+          name: form.name,
+          email: form.email,
+          vkId: form.vkId,
+          avatar: form.avatar,
+        },
+      },
+    })
+    
+    console.log('✅ [Frontend] Пользователь сохранен')
     await router.push('/admin/users')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось сохранить пользователя'))
   } finally {
     saving.value = false
   }
 }
 
-onMounted(() => {
-  // В реальности здесь будет загрузка данных пользователя по ID
-  console.log('Загрузка пользователя с ID:', userId)
+onMounted(async () => {
+  try {
+    console.log('🔵 [Frontend] Загрузка пользователя:', userId)
+    
+    // Загружаем данные пользователя
+    const userResponse = await $fetch(`/api/users/${userId}`)
+    const userData = userResponse.user
+    
+    form.name = userData.name || ''
+    form.email = userData.email || ''
+    form.vkId = userData.vkId || ''
+    form.avatar = userData.avatar || ''
+    
+    console.log('✅ [Frontend] Данные загружены')
+  } catch (e) {
+    console.error('❌ [Frontend] Ошибка загрузки:', e)
+    alert('Ошибка загрузки пользователя')
+  } finally {
+    loading.value = false
+  }
 })
 
 useSeoMeta({

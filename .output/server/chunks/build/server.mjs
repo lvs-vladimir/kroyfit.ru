@@ -1641,7 +1641,7 @@ const _routes = [
     name: "admin-users-id",
     path: "/admin/users/:id()",
     meta: { ...__nuxt_page_meta$7 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./_id_-48zJgh99.mjs')
+    component: () => import('./_id_-gJ0J8QVy.mjs')
   },
   {
     name: "admin-courses",
