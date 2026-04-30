@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   
   nitro: {
     preset: 'node-server',
+    serverAddress: '0.0.0.0',
     publicAssets: [
       {
         dir: 'public',
@@ -20,6 +21,7 @@ export default defineNuxtConfig({
   css: [
     'vuetify/styles',
     '@mdi/font/css/materialdesignicons.css',
+    '~/assets/css/design.css',
   ],
 
   vuetify: {
@@ -58,16 +60,16 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Курсы кройки и шитья в Барнауле. Методика точного кроя по Злачевской. С 2014 года.' },
-        { name: 'theme-color', content: '#6366F1' },
+        { name: 'theme-color', content: '#1C1917' },
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap' },
-        ],
-        script: [
-          { src: 'https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js', nonce: 'csp_nonce' },
-        ],
-      },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700;1,800&family=DM+Sans:wght@400;500;600;700&display=swap' },
+      ],
+      script: [
+        { src: 'https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js', nonce: 'csp_nonce' },
+      ],
     },
-  })
+  }
+})
