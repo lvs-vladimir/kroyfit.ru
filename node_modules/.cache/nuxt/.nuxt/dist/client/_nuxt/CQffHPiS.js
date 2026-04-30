@@ -1,1 +1,0 @@
-import{b7 as t,v as n}from"./B_O6geX6.js";import{u as e}from"./BNBdGR9Z.js";import"./BJ2ClxiI.js";const d=t(a=>{const i=e("admin-token");if(!i.value&&a.path.startsWith("/admin")&&a.path!=="/admin/login")return n("/admin/login");if(i.value&&a.path==="/admin/login")return n("/admin")});export{d as default};
