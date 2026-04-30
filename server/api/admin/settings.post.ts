@@ -1,5 +1,5 @@
 import { db } from '../../database/db'
-import { roles, admins, emailSettings, seoSettings, generalSettings } from '../../database/schema'
+import { roles, admins, courses, emailSettings, seoSettings, generalSettings } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 
 // Получение adminId из токена
@@ -117,6 +117,79 @@ export default defineEventHandler(async (event) => {
       await db.delete(roles).where(eq(roles.id, data.id))
       console.log('✅ [API] Роль удалена')
       return { success: true, message: 'Роль удалена' }
+    }
+
+    if (type === 'course') {
+      console.log('🟡 [API] Создание курса...')
+      const { title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data
+      
+      if (!title || !slug) {
+        throw createError({ statusCode: 400, message: 'Название и slug обязательны' })
+      }
+      
+      // Проверяем уникальность slug
+      const existing = await db.select().from(courses).where(eq(courses.slug, slug)).limit(1)
+      if (existing.length > 0) {
+        throw createError({ statusCode: 400, message: 'Курс с таким slug уже существует' })
+      }
+      
+      const newCourse = {
+        id: crypto.randomUUID(),
+        title,
+        description: description || '',
+        slug,
+        price: price || 0,
+        category: category || 'Базовый',
+        duration: duration || '',
+        lessonsCount: lessonsCount || 0,
+        isPublished: isPublished ? 1 : 0,
+        image: image || '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      
+      await db.insert(courses).values(newCourse)
+      console.log('✅ [API] Курс создан:', newCourse.id)
+      return { success: true, message: 'Курс создан', course: newCourse }
+    }
+    
+    if (type === 'course-update') {
+      console.log('🟡 [API] Обновление курса...')
+      const { id: courseId, title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data
+      
+      if (!courseId) {
+        throw createError({ statusCode: 400, message: 'ID курса обязателен' })
+      }
+      
+      const existing = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1)
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: 'Курс не найден' })
+      }
+      
+      // Проверяем slug если изменился
+      if (slug && slug !== existing[0].slug) {
+        const slugExists = await db.select().from(courses).where(eq(courses.slug, slug)).limit(1)
+        if (slugExists.length > 0 && slugExists[0].id !== courseId) {
+          throw createError({ statusCode: 400, message: 'Курс с таким slug уже существует' })
+        }
+      }
+      
+      const updateData: any = { updatedAt: new Date().toISOString() }
+      if (title !== undefined) updateData.title = title
+      if (description !== undefined) updateData.description = description
+      if (slug !== undefined) updateData.slug = slug
+      if (price !== undefined) updateData.price = price
+      if (category !== undefined) updateData.category = category
+      if (duration !== undefined) updateData.duration = duration
+      if (lessonsCount !== undefined) updateData.lessonsCount = lessonsCount
+      if (isPublished !== undefined) updateData.isPublished = isPublished ? 1 : 0
+      if (image !== undefined) updateData.image = image
+      
+      await db.update(courses).set(updateData).where(eq(courses.id, courseId))
+      
+      const [updatedCourse] = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1)
+      console.log('✅ [API] Курс обновлен:', courseId)
+      return { success: true, message: 'Курс обновлен', course: updatedCourse }
     }
 
     if (type === 'admin') {

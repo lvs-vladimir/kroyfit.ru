@@ -218,9 +218,34 @@ const saving = ref(false)
 const saveCourse = async () => {
   saving.value = true
   try {
-    console.log('Сохранение курса:', form)
-    await new Promise(resolve => setTimeout(resolve, 500))
+    console.log('📝 [Frontend] Сохранение курса:', form)
+    
+    const courseId = route.params.id as string
+    
+    const response = await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'course-update',
+        data: {
+          id: courseId,
+          title: form.title,
+          description: form.description,
+          slug: form.slug,
+          price: form.price,
+          category: form.category,
+          duration: form.duration,
+          lessonsCount: form.lessonsCount,
+          isPublished: form.isPublished,
+          image: form.image,
+        },
+      },
+    })
+    
+    console.log('✅ [Frontend] Курс обновлен:', response.course.id)
     await router.push('/admin/courses')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось обновить курс'))
   } finally {
     saving.value = false
   }

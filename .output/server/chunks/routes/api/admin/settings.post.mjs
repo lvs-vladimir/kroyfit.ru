@@ -1,5 +1,5 @@
 import { d as defineEventHandler, r as readBody, c as createError, g as getCookie } from '../../../nitro/nitro.mjs';
-import { d as db, a as admins, r as roles, e as emailSettings, s as seoSettings, g as generalSettings } from '../../../_/db.mjs';
+import { d as db, a as admins, r as roles, c as courses, e as emailSettings, s as seoSettings, g as generalSettings } from '../../../_/db.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
 import 'node:https';
@@ -111,6 +111,65 @@ const settings_post = defineEventHandler(async (event) => {
       await db.delete(roles).where(eq(roles.id, data.id));
       console.log("\u2705 [API] \u0420\u043E\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D\u0430");
       return { success: true, message: "\u0420\u043E\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D\u0430" };
+    }
+    if (type === "course") {
+      console.log("\u{1F7E1} [API] \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043A\u0443\u0440\u0441\u0430...");
+      const { title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data;
+      if (!title || !slug) {
+        throw createError({ statusCode: 400, message: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 slug \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B" });
+      }
+      const existing = await db.select().from(courses).where(eq(courses.slug, slug)).limit(1);
+      if (existing.length > 0) {
+        throw createError({ statusCode: 400, message: "\u041A\u0443\u0440\u0441 \u0441 \u0442\u0430\u043A\u0438\u043C slug \u0443\u0436\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442" });
+      }
+      const newCourse = {
+        id: crypto.randomUUID(),
+        title,
+        description: description || "",
+        slug,
+        price: price || 0,
+        category: category || "\u0411\u0430\u0437\u043E\u0432\u044B\u0439",
+        duration: duration || "",
+        lessonsCount: lessonsCount || 0,
+        isPublished: isPublished ? 1 : 0,
+        image: image || "",
+        createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+        updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+      };
+      await db.insert(courses).values(newCourse);
+      console.log("\u2705 [API] \u041A\u0443\u0440\u0441 \u0441\u043E\u0437\u0434\u0430\u043D:", newCourse.id);
+      return { success: true, message: "\u041A\u0443\u0440\u0441 \u0441\u043E\u0437\u0434\u0430\u043D", course: newCourse };
+    }
+    if (type === "course-update") {
+      console.log("\u{1F7E1} [API] \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u043A\u0443\u0440\u0441\u0430...");
+      const { id: courseId, title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data;
+      if (!courseId) {
+        throw createError({ statusCode: 400, message: "ID \u043A\u0443\u0440\u0441\u0430 \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u0435\u043D" });
+      }
+      const existing = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1);
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: "\u041A\u0443\u0440\u0441 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D" });
+      }
+      if (slug && slug !== existing[0].slug) {
+        const slugExists = await db.select().from(courses).where(eq(courses.slug, slug)).limit(1);
+        if (slugExists.length > 0 && slugExists[0].id !== courseId) {
+          throw createError({ statusCode: 400, message: "\u041A\u0443\u0440\u0441 \u0441 \u0442\u0430\u043A\u0438\u043C slug \u0443\u0436\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442" });
+        }
+      }
+      const updateData = { updatedAt: (/* @__PURE__ */ new Date()).toISOString() };
+      if (title !== void 0) updateData.title = title;
+      if (description !== void 0) updateData.description = description;
+      if (slug !== void 0) updateData.slug = slug;
+      if (price !== void 0) updateData.price = price;
+      if (category !== void 0) updateData.category = category;
+      if (duration !== void 0) updateData.duration = duration;
+      if (lessonsCount !== void 0) updateData.lessonsCount = lessonsCount;
+      if (isPublished !== void 0) updateData.isPublished = isPublished ? 1 : 0;
+      if (image !== void 0) updateData.image = image;
+      await db.update(courses).set(updateData).where(eq(courses.id, courseId));
+      const [updatedCourse] = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1);
+      console.log("\u2705 [API] \u041A\u0443\u0440\u0441 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D:", courseId);
+      return { success: true, message: "\u041A\u0443\u0440\u0441 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D", course: updatedCourse };
     }
     if (type === "admin") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430...");

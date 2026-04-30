@@ -196,8 +196,31 @@ const form = reactive({
 const saveCourse = async () => {
   saving.value = true
   try {
-    console.log('Сохранение курса:', form)
+    console.log('📝 [Frontend] Сохранение нового курса:', form)
+    
+    const response = await $fetch('/api/admin/settings', {
+      method: 'POST',
+      body: {
+        type: 'course',
+        data: {
+          title: form.title,
+          description: form.description,
+          slug: form.slug,
+          price: form.price,
+          category: form.category,
+          duration: form.duration,
+          lessonsCount: form.lessonsCount,
+          isPublished: form.isPublished,
+          image: form.image,
+        },
+      },
+    })
+    
+    console.log('✅ [Frontend] Курс создан:', response.course.id)
     await router.push('/admin/courses')
+  } catch (e: any) {
+    console.error('❌ [Frontend] Ошибка сохранения:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось создать курс'))
   } finally {
     saving.value = false
   }

@@ -1629,13 +1629,13 @@ const _routes = [
     name: "admin-courses-new",
     path: "/admin/courses/new",
     meta: { ...__nuxt_page_meta$9 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./new-BWxfClDP.mjs')
+    component: () => import('./new-BNeNo-ln.mjs')
   },
   {
     name: "admin-courses-id",
     path: "/admin/courses/:id()",
     meta: { ...__nuxt_page_meta$8 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./_id_-V09Giuro.mjs')
+    component: () => import('./_id_-zEJGmu7P.mjs')
   },
   {
     name: "admin-users-id",
