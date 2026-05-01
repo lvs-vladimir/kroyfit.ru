@@ -65,8 +65,12 @@
                 >
                   {{ purchasing ? 'Создание платежа...' : 'Купить курс' }}
                 </button>
-                <div v-else class="btn-success">
-                  ✓ Курс приобретен
+                <div v-else class="purchased-badge">
+                  <div class="purchased-badge__icon">✓</div>
+                  <div class="purchased-badge__text">
+                    <span class="purchased-badge__title">Курс приобретён</span>
+                    <span class="purchased-badge__sub">Вы уже записаны на этот курс</span>
+                  </div>
                 </div>
                 <a href="tel:89132101662" class="btn-outline">
                   Позвонить
@@ -897,18 +901,61 @@ useSeoMeta({
   width: 100%;
 }
 
-.btn-success {
-  background-color: #10B981;
+.purchased-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, rgba(196, 98, 45, 0.08) 0%, rgba(232, 213, 196, 0.15) 100%);
+  border: 1px solid var(--color-copper);
+  padding: 0.875rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.purchased-badge::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-copper);
+}
+
+.purchased-badge__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-copper);
   color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.purchased-badge__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.purchased-badge__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  letter-spacing: -0.01em;
+}
+
+.purchased-badge__sub {
   font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--color-copper);
+  font-weight: 500;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  display: inline-block;
 }
 
 /* Modal overlay */
