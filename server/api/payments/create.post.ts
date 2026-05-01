@@ -59,7 +59,7 @@ export default defineEventHandler(async (event) => {
        capture: true,
        confirmation: {
          type: 'redirect',
-         return_url: returnUrl || 'https://kroyfit.ru/courses/' + course.slug
+         return_url: 'https://kroyfit.ru/payment-success'
        },
        description: `Оплата курса: ${course.title}`,
        metadata: {
