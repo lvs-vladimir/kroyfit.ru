@@ -2,65 +2,55 @@ import { db } from '../../database/db'
 import { users } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 import crypto from 'crypto'
-
-const VK_APP_ID = process.env.VK_APP_ID || '54572308'
-const VK_APP_SECRET = process.env.VK_APP_SECRET || ''
-const VK_REDIRECT_URL = process.env.VK_REDIRECT_URL || 'https://kroyfit.ru'
+import { writeFileSync, mkdirSync } from 'fs'
+import { resolve } from 'path'
+import fetch from 'node-fetch'
 
 export default defineEventHandler(async (event) => {
   console.log('🟡 [API] POST /api/auth/vk - Авторизация через VK ID')
   
   try {
     const body = await readBody(event)
-    const { code, deviceId, state } = body
+    const { vkId, name, email, avatar } = body
     
-    if (!code || !deviceId) {
-      throw createError({ statusCode: 400, message: 'code и deviceId обязательны' })
+    // Проверяем, что пришли данные пользователя
+    if (!vkId) {
+      throw createError({ statusCode: 400, message: 'vkId обязателен' })
     }
     
-    // Обмен code на access_token через VK API
-    console.log('🟡 [API] Обмен code на access_token...')
+    console.log('🟡 [API] Данные пользователя:', { vkId, name })
     
-    const tokenResponse = await $fetch('https://id.vk.com/oauth2/auth', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: VK_APP_ID,
-        client_secret: VK_APP_SECRET,
-        redirect_uri: VK_REDIRECT_URL,
-        code: code,
-        device_id: deviceId,
-      }).toString(),
-    })
-    
-    if (!tokenResponse.access_token) {
-      throw createError({ statusCode: 400, message: 'Ошибка получения токена VK' })
+    // Загружаем аватарку локально если она есть
+    let localAvatarPath = null
+    if (avatar) {
+      try {
+        console.log('🟡 [API] Загружаем аватарку:', avatar)
+        
+        // Создаём директорию для аватарок если её нет
+        const avatarsDir = resolve('/root/kroyfit/public/avatars')
+        mkdirSync(avatarsDir, { recursive: true })
+        
+        // Скачиваем аватарку
+        const response = await fetch(avatar)
+        const buffer = await response.buffer()
+        
+        // Сохраняем с уникальным именем
+        const filename = `${vkId}-${Date.now()}.jpg`
+        const filepath = resolve(avatarsDir, filename)
+        writeFileSync(filepath, buffer)
+        
+        localAvatarPath = `/avatars/${filename}`
+        console.log('✅ [API] Аватарка сохранена:', localAvatarPath)
+      } catch (e: any) {
+        console.error('❌ [API] Ошибка загрузки аватарки:', e.message)
+        // Продолжаем без аватарки
+      }
     }
     
-    // Получаем данные пользователя из VK API
-    const vkUserData = await $fetch('https://api.vk.com/method/users.get', {
-      params: {
-        access_token: tokenResponse.access_token,
-        v: '5.131',
-        fields: 'photo_200',
-      },
-    })
-    
-    if (!vkUserData.response || !vkUserData.response[0]) {
-      throw createError({ statusCode: 400, message: 'Ошибка получения данных пользователя VK' })
-    }
-    
-    const vkUser = vkUserData.response[0]
-    
-    console.log('✅ [API] Данные пользователя VK получены:', vkUser.id)
-    
-    // Проверяем, существует ли пользователь с таким vkId
+    // Проверяем, существует ли пользователь
     const existingUsers = await db.select()
       .from(users)
-      .where(eq(users.vkId, vkUser.id.toString()))
+      .where(eq(users.vkId, vkId.toString()))
       .limit(1)
     
     let user
@@ -74,19 +64,19 @@ export default defineEventHandler(async (event) => {
       const userId = crypto.randomUUID()
       await db.insert(users).values({
         id: userId,
-        vkId: vkUser.id.toString(),
-        name: vkUser.first_name + (vkUser.last_name ? ' ' + vkUser.last_name : ''),
-        email: null,
-        avatar: vkUser.photo_200 || null,
+        vkId: vkId.toString(),
+        name: name || 'VK Пользователь',
+        email: email || null,
+        avatar: localAvatarPath || null,
         createdAt: new Date().toISOString(),
       })
       
       user = {
         id: userId,
-        vkId: vkUser.id.toString(),
-        name: vkUser.first_name + (vkUser.last_name ? ' ' + vkUser.last_name : ''),
-        email: null,
-        avatar: vkUser.photo_200 || null,
+        vkId: vkId.toString(),
+        name: name || 'VK Пользователь',
+        email: email || null,
+        avatar: localAvatarPath || null,
       }
       
       console.log('✅ [API] Новый пользователь создан:', userId)
@@ -116,7 +106,7 @@ export default defineEventHandler(async (event) => {
     }
     
   } catch (error: any) {
-    console.error('❌ [API] Ошибка авторизации VK:', error)
+    console.error('❌ [API] Ошибка авторизации VK:', error.message)
     throw createError({
       statusCode: error.statusCode || 500,
       message: error.message || 'Ошибка авторизации'

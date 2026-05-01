@@ -32,16 +32,16 @@
       <tbody>
           <tr v-for="user in users" :key="user.id">
             <td>
-              <div class="d-flex align-center gap-2">
+              <div class="d-flex align-center" style="gap: 12px;">
                 <v-avatar 
                   v-if="user.avatar" 
                   :image="user.avatar" 
-                  size="32"
+                  size="36"
                 />
                 <v-avatar 
                   v-else 
-                  size="32"
-                  style="background: #e0e0e0; color: #666;"
+                  size="36"
+                  style="background: #e0e0e0; color: #666; font-weight: 600;"
                 >
                   {{ user.name?.charAt(0) || '?' }}
                 </v-avatar>
