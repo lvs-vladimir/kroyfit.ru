@@ -4,7 +4,6 @@ import { eq } from 'drizzle-orm'
 import crypto from 'crypto'
 import { writeFileSync, mkdirSync } from 'fs'
 import { resolve } from 'path'
-import fetch from 'node-fetch'
 
 export default defineEventHandler(async (event) => {
   console.log('🟡 [API] POST /api/auth/vk - Авторизация через VK ID')
@@ -30,14 +29,14 @@ export default defineEventHandler(async (event) => {
         const avatarsDir = resolve('/root/kroyfit/public/avatars')
         mkdirSync(avatarsDir, { recursive: true })
         
-        // Скачиваем аватарку
+        // Скачиваем аватарку используя встроенный fetch
         const response = await fetch(avatar)
-        const buffer = await response.buffer()
+        const buffer = await response.arrayBuffer()
         
         // Сохраняем с уникальным именем
         const filename = `${vkId}-${Date.now()}.jpg`
         const filepath = resolve(avatarsDir, filename)
-        writeFileSync(filepath, buffer)
+        writeFileSync(filepath, Buffer.from(buffer))
         
         localAvatarPath = `/avatars/${filename}`
         console.log('✅ [API] Аватарка сохранена:', localAvatarPath)
