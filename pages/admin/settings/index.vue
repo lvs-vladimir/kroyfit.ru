@@ -408,18 +408,15 @@
                           
                            <p class="font-weight-medium mb-2">2. Получите токен пользователя-администратора</p>
                            <p class="mb-2 pl-4">
-                             Метод <code>groups.invite</code> требует токен <strong>пользователя</strong>, а не группы.<br>
-                             Перейдите по ссылке и авторизуйтесь как администратор группы:
+                             Нажмите кнопку ниже — откроется окно авторизации VK.<br>
+                             Войдите как администратор группы, токен будет скопирован автоматически.
                            </p>
                            <p class="mb-2 pl-4">
                              <a 
-                               :href="`https://oauth.vk.com/authorize?client_id=54572308&display=page&redirect_uri=https://kroyfit.ru&scope=groups,manage&response_type=token&v=5.131`"
+                               href="https://oauth.vk.com/authorize?client_id=54572308&display=page&redirect_uri=https://kroyfit.ru/vk-token&scope=groups,manage&response_type=token&v=5.131"
                                target="_blank" 
-                               style="color: #1976d2;"
-                             >Получить токен администратора →</a>
-                           </p>
-                           <p class="mb-2 pl-4 text-caption text-grey">
-                             После авторизации скопируйте значение <code>access_token</code> из URL адресной строки.
+                               style="color: #1976d2; font-weight: 600;"
+                             >🔑 Получить токен администратора →</a>
                            </p>
                            <p class="mb-2 pl-4 text-red-darken-2">
                              <v-icon size="14" color="red">mdi-alert</v-icon>
