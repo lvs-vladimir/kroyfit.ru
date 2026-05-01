@@ -399,30 +399,33 @@
                       </v-expansion-panel-title>
                       <v-expansion-panel-text>
                         <div class="text-caption text-grey-darken-1 py-2">
-                          <p class="font-weight-medium mb-2">1. Вставьте ссылку на группу ВК</p>
-                          <p class="mb-2 pl-4">Поддерживаются форматы:<br>
-                          - vk.com/club123456<br>
-                          - vk.com/public123456<br>
-                          - vk.com/название_группы<br>
-                          - Только ID: 123456</p>
-                          
-                           <p class="font-weight-medium mb-2">2. Получите токен пользователя-администратора</p>
+                           <p class="font-weight-medium mb-2">1. Вставьте ссылку на группу ВК</p>
+                           <p class="mb-2 pl-4">Поддерживаются форматы:<br>
+                           - vk.com/club123456<br>
+                           - vk.com/public123456<br>
+                           - vk.com/название_группы<br>
+                           - Только ID: 123456</p>
+                           
+                           <p class="font-weight-medium mb-2">2. Создайте VK Standalone приложение (бесплатно, 2 минуты)</p>
                            <p class="mb-2 pl-4">
-                             Нажмите кнопку ниже — откроется окно авторизации VK.<br>
-                             Войдите как администратор группы, токен будет скопирован автоматически.
+                             Ключ группы <strong>не подходит</strong> для отправки приглашений — нужен токен пользователя.<br>
+                             Для этого нужно создать VK приложение типа <strong>Standalone</strong>:
                            </p>
-                           <p class="mb-2 pl-4">
-                             <a 
-                               href="https://oauth.vk.com/authorize?client_id=54572308&display=page&redirect_uri=https://kroyfit.ru/vk-token&scope=groups,manage&response_type=token&v=5.131"
-                               target="_blank" 
-                               style="color: #1976d2; font-weight: 600;"
-                             >🔑 Получить токен администратора →</a>
-                           </p>
+                           <ol class="mb-2 pl-8 text-caption" style="line-height: 2;">
+                             <li>Перейдите на <a href="https://vk.com/editapp?act=create" target="_blank" style="color:#1976d2">vk.com/editapp?act=create</a></li>
+                             <li>Название: любое (например "KroyFit Admin")</li>
+                             <li>Платформа: <strong>Standalone-приложение</strong></li>
+                             <li>Нажмите «Подключить приложение»</li>
+                             <li>Скопируйте <strong>ID приложения</strong> (например: 12345678)</li>
+                             <li>В настройках приложения → «Настройки» → адрес сайта: <code>https://kroyfit.ru</code></li>
+                             <li>Сохраните и перейдите по ссылке:<br>
+                               <code style="word-break:break-all; font-size:10px">https://oauth.vk.com/authorize?client_id=ВАШ_ID&display=page&redirect_uri=https://kroyfit.ru/vk-token&scope=groups,manage&response_type=token&v=5.131</code>
+                             </li>
+                             <li>Скопируйте токен со страницы /vk-token и вставьте сюда</li>
+                           </ol>
                            <p class="mb-2 pl-4 text-red-darken-2">
                              <v-icon size="14" color="red">mdi-alert</v-icon>
-                             <strong>Важно:</strong> Нужен токен пользователя (не группы) с правами:<br>
-                             - groups (доступ к группам)<br>
-                             - manage (управление сообществом)
+                             <strong>Почему так?</strong> VK API метод <code>groups.invite</code> работает только с токеном пользователя-администратора, не с ключом группы.
                            </p>
                           
                           <p class="font-weight-medium mb-2">3. Нажмите кнопку "Тест"</p>
