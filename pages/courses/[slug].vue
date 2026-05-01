@@ -210,6 +210,84 @@ onMounted(async () => {
   }
 })
 
+// Инициализация VK ID виджета в модальном окне
+const initVkModalWidget = () => {
+  if (!('VKIDSDK' in window)) return
+  
+  const VKID = (window as any).VKIDSDK
+  const container = document.getElementById('vk-login-modal')
+  
+  if (!container) return
+  
+  // Очищаем контейнер перед инициализацией
+  container.innerHTML = ''
+  
+  VKID.Config.init({
+    app: parseInt(import.meta.env.VK_APP_ID || '54572308'),
+    redirectUrl: import.meta.env.VK_REDIRECT_URL || 'https://kroyfit.ru',
+    responseMode: VKID.ConfigResponseMode.Callback,
+    source: VKID.ConfigSource.LOWCODE,
+    scope: '',
+  })
+
+  const oneTap = new VKID.OneTap()
+
+  oneTap.render({
+    container: container,
+    showAlternativeLogin: true
+  })
+  .on(VKID.WidgetEvents.ERROR, (error: any) => {
+    console.error('VK ID Error:', error)
+  })
+  .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, async function (payload: any) {
+    console.log('✅ [VK] Получены данные:', JSON.stringify(payload))
+
+    try {
+      // Используем SDK для обмена кода на токены
+      const VKID = (window as any).VKIDSDK
+      const tokenResponse = await VKID.Auth.exchangeCode(payload.code, payload.device_id)
+      
+      if (tokenResponse.access_token) {
+        // Получаем данные пользователя
+        const userInfo = await VKID.Auth.userInfo(tokenResponse.access_token)
+        
+        // Данные находятся внутри user объекта
+        const userData = userInfo.user || userInfo
+        
+        // Отправляем данные на сервер
+        const response = await $fetch('/api/auth/vk', {
+          method: 'POST',
+          body: { 
+            vkId: userData.user_id,
+            name: userData.first_name + (userData.last_name ? ' ' + userData.last_name : ''),
+            avatar: userData.avatar || null,
+          }
+        })
+        
+        if (response.success) {
+          currentUser.value = response.user
+          isLoggedIn.value = true
+          showLoginModal.value = false
+          window.location.reload()
+        }
+      }
+    } catch (e: any) {
+      console.error('❌ [VK] Ошибка авторизации:', e)
+      alert('Ошибка авторизации: ' + (e.message || 'Неизвестная ошибка'))
+    }
+  })
+}
+
+// Следим за изменением showLoginModal и инициализируем виджет
+watch(showLoginModal, (newVal) => {
+  if (newVal) {
+    // Используем nextTick чтобы дождаться рендеринга DOM
+    nextTick(() => {
+      initVkModalWidget()
+    })
+  }
+})
+
 // Обработка покупки
 const handlePurchase = async () => {
   if (!course.value) return
