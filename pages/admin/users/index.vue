@@ -284,6 +284,7 @@ onMounted(async () => {
         id: u.id,
         name: u.name,
         email: u.email,
+        avatar: u.avatar || null,
         vk: u.vkId || '',
         coursesCount: u.coursesCount || 0,
         registered: u.createdAt ? new Date(u.createdAt).toLocaleDateString('ru-RU') : '—',
