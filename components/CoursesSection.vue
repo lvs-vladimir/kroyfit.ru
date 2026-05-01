@@ -301,7 +301,7 @@ const generateSkills = (title: string, category: string): string[] => {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-copper);
+  color: white;
 }
 
 .btn-course {

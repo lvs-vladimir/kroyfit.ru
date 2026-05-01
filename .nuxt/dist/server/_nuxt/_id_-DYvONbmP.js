@@ -1,0 +1,1084 @@
+import { defineComponent, reactive, ref, withCtx, createTextVNode, createVNode, unref, withModifiers, toDisplayString, useSSRContext } from "vue";
+import { ssrRenderAttrs, ssrRenderComponent, ssrRenderStyle, ssrInterpolate } from "vue/server-renderer";
+import { u as useRoute, a as useRouter, _ as _export_sfc } from "../server.mjs";
+import { a as useSeoMeta } from "./composables-CzQ6E5OB.js";
+import { V as VBtn } from "./VBtn-B_84wQjp.js";
+import { V as VIcon } from "./index-CXrZw6YX.js";
+import { V as VRow, a as VCol } from "./VRow-Dwdmr-Zo.js";
+import { V as VForm } from "./VForm-CAy4CCZm.js";
+import { V as VTextField } from "./VTextField-B_sJgnT5.js";
+import { V as VTextarea } from "./VTextarea-BaZmaSwV.js";
+import { V as VSelect } from "./VSelect-BvAFqGO_.js";
+import { V as VCheckbox } from "./VCheckbox-fIdFexQI.js";
+import { V as VChip } from "./VChip-BKWvdyEX.js";
+import { V as VDivider } from "./VDivider-Dk5F695k.js";
+import "/root/kroyfit/node_modules/ofetch/dist/node.mjs";
+import "#internal/nuxt/paths";
+import "/root/kroyfit/node_modules/hookable/dist/index.mjs";
+import "/root/kroyfit/node_modules/unctx/dist/index.mjs";
+import "/root/kroyfit/node_modules/@nuxt/nitro-server/dist/runtime/h3-compat.mjs";
+import "vue-router";
+import "/root/kroyfit/node_modules/defu/dist/defu.mjs";
+import "/root/kroyfit/node_modules/ufo/dist/index.mjs";
+import "/root/kroyfit/node_modules/@unhead/vue/dist/index.mjs";
+import "./position-BO6_vXaU.js";
+import "./autofocus-BmpXWPzV.js";
+import "./forwardRefs-sHFik_ks.js";
+import "./VList-CiUrlnV7.js";
+import "./ssrBoot-ZQn7gOuX.js";
+import "./VAvatar-U7n8Lc6d.js";
+import "./VOverlay-Cv1Oq8N7.js";
+import "./scopeId-nQs070UW.js";
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "[id]",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const route = useRoute();
+    const router = useRouter();
+    route.params.id;
+    const categories = ["Базовый", "Продвинутый", "Спецкурс"];
+    const form = reactive({
+      title: "",
+      description: "",
+      slug: "",
+      price: 0,
+      category: "Базовый",
+      duration: "",
+      lessonsCount: 0,
+      isPublished: false,
+      image: ""
+    });
+    const saving = ref(false);
+    const saveCourse = async () => {
+      saving.value = true;
+      try {
+        console.log("📝 [Frontend] Сохранение курса:", form);
+        const courseId2 = route.params.id;
+        const response = await $fetch("/api/admin/settings", {
+          method: "POST",
+          body: {
+            type: "course-update",
+            data: {
+              id: courseId2,
+              title: form.title,
+              description: form.description,
+              slug: form.slug,
+              price: form.price,
+              category: form.category,
+              duration: form.duration,
+              lessonsCount: form.lessonsCount,
+              isPublished: form.isPublished,
+              image: form.image
+            }
+          }
+        });
+        console.log("✅ [Frontend] Курс обновлен:", response.course.id);
+        await router.push("/admin/courses");
+      } catch (e) {
+        console.error("❌ [Frontend] Ошибка сохранения:", e);
+        alert("Ошибка: " + (e.data?.message || "Не удалось обновить курс"));
+      } finally {
+        saving.value = false;
+      }
+    };
+    useSeoMeta({
+      title: "Редактирование курса — Админка"
+    });
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<div${ssrRenderAttrs(_attrs)} data-v-c821d9e9><div class="d-flex align-center mb-6" data-v-c821d9e9>`);
+      _push(ssrRenderComponent(VBtn, {
+        icon: "",
+        variant: "text",
+        color: "grey-darken-2",
+        to: "/admin/courses",
+        class: "mr-3"
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VIcon, { size: "20" }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`mdi-arrow-left`);
+                } else {
+                  return [
+                    createTextVNode("mdi-arrow-left")
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VIcon, { size: "20" }, {
+                default: withCtx(() => [
+                  createTextVNode("mdi-arrow-left")
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`<div data-v-c821d9e9><h1 class="text-h4 font-weight-bold mb-1" style="${ssrRenderStyle({ "color": "#020617" })}" data-v-c821d9e9> Редактирование курса </h1><p class="text-body-2 text-grey-darken-1" data-v-c821d9e9> Изменение данных курса </p></div></div>`);
+      _push(ssrRenderComponent(VRow, null, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(ssrRenderComponent(VCol, {
+              cols: "12",
+              md: "8"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(ssrRenderComponent(VForm, { onSubmit: saveCourse }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`<div class="mb-4" data-v-c821d9e9${_scopeId3}><label class="text-caption text-grey-darken-1 d-block mb-1" data-v-c821d9e9${_scopeId3}>Название</label>`);
+                        _push4(ssrRenderComponent(VTextField, {
+                          modelValue: unref(form).title,
+                          "onUpdate:modelValue": ($event) => unref(form).title = $event,
+                          placeholder: "Название курса",
+                          variant: "outlined",
+                          density: "compact",
+                          "hide-details": "",
+                          class: "mb-4"
+                        }, null, _parent4, _scopeId3));
+                        _push4(`</div><div class="mb-4" data-v-c821d9e9${_scopeId3}><label class="text-caption text-grey-darken-1 d-block mb-1" data-v-c821d9e9${_scopeId3}>Описание</label>`);
+                        _push4(ssrRenderComponent(VTextarea, {
+                          modelValue: unref(form).description,
+                          "onUpdate:modelValue": ($event) => unref(form).description = $event,
+                          placeholder: "Описание курса",
+                          variant: "outlined",
+                          density: "compact",
+                          rows: "4",
+                          "hide-details": "",
+                          class: "mb-4"
+                        }, null, _parent4, _scopeId3));
+                        _push4(`</div>`);
+                        _push4(ssrRenderComponent(VRow, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<label class="text-caption text-grey-darken-1 d-block mb-1" data-v-c821d9e9${_scopeId5}>Цена (₽)</label>`);
+                                    _push6(ssrRenderComponent(VTextField, {
+                                      modelValue: unref(form).price,
+                                      "onUpdate:modelValue": ($event) => unref(form).price = $event,
+                                      modelModifiers: { number: true },
+                                      type: "number",
+                                      placeholder: "0",
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Цена (₽)"),
+                                      createVNode(VTextField, {
+                                        modelValue: unref(form).price,
+                                        "onUpdate:modelValue": ($event) => unref(form).price = $event,
+                                        modelModifiers: { number: true },
+                                        type: "number",
+                                        placeholder: "0",
+                                        variant: "outlined",
+                                        density: "compact",
+                                        "hide-details": "",
+                                        class: "mb-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<label class="text-caption text-grey-darken-1 d-block mb-1" data-v-c821d9e9${_scopeId5}>Длительность</label>`);
+                                    _push6(ssrRenderComponent(VTextField, {
+                                      modelValue: unref(form).duration,
+                                      "onUpdate:modelValue": ($event) => unref(form).duration = $event,
+                                      placeholder: "2 месяца",
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Длительность"),
+                                      createVNode(VTextField, {
+                                        modelValue: unref(form).duration,
+                                        "onUpdate:modelValue": ($event) => unref(form).duration = $event,
+                                        placeholder: "2 месяца",
+                                        variant: "outlined",
+                                        density: "compact",
+                                        "hide-details": "",
+                                        class: "mb-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  sm: "6"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Цена (₽)"),
+                                    createVNode(VTextField, {
+                                      modelValue: unref(form).price,
+                                      "onUpdate:modelValue": ($event) => unref(form).price = $event,
+                                      modelModifiers: { number: true },
+                                      type: "number",
+                                      placeholder: "0",
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  sm: "6"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Длительность"),
+                                    createVNode(VTextField, {
+                                      modelValue: unref(form).duration,
+                                      "onUpdate:modelValue": ($event) => unref(form).duration = $event,
+                                      placeholder: "2 месяца",
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VRow, null, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<label class="text-caption text-grey-darken-1 d-block mb-1" data-v-c821d9e9${_scopeId5}>Категория</label>`);
+                                    _push6(ssrRenderComponent(VSelect, {
+                                      modelValue: unref(form).category,
+                                      "onUpdate:modelValue": ($event) => unref(form).category = $event,
+                                      items: categories,
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Категория"),
+                                      createVNode(VSelect, {
+                                        modelValue: unref(form).category,
+                                        "onUpdate:modelValue": ($event) => unref(form).category = $event,
+                                        items: categories,
+                                        variant: "outlined",
+                                        density: "compact",
+                                        "hide-details": "",
+                                        class: "mb-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                              _push5(ssrRenderComponent(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx((_5, _push6, _parent6, _scopeId5) => {
+                                  if (_push6) {
+                                    _push6(`<label class="text-caption text-grey-darken-1 d-block mb-1" data-v-c821d9e9${_scopeId5}>Уроков</label>`);
+                                    _push6(ssrRenderComponent(VTextField, {
+                                      modelValue: unref(form).lessonsCount,
+                                      "onUpdate:modelValue": ($event) => unref(form).lessonsCount = $event,
+                                      modelModifiers: { number: true },
+                                      type: "number",
+                                      placeholder: "0",
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, _parent6, _scopeId5));
+                                  } else {
+                                    return [
+                                      createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Уроков"),
+                                      createVNode(VTextField, {
+                                        modelValue: unref(form).lessonsCount,
+                                        "onUpdate:modelValue": ($event) => unref(form).lessonsCount = $event,
+                                        modelModifiers: { number: true },
+                                        type: "number",
+                                        placeholder: "0",
+                                        variant: "outlined",
+                                        density: "compact",
+                                        "hide-details": "",
+                                        class: "mb-4"
+                                      }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                    ];
+                                  }
+                                }),
+                                _: 1
+                              }, _parent5, _scopeId4));
+                            } else {
+                              return [
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  sm: "6"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Категория"),
+                                    createVNode(VSelect, {
+                                      modelValue: unref(form).category,
+                                      "onUpdate:modelValue": ($event) => unref(form).category = $event,
+                                      items: categories,
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  _: 1
+                                }),
+                                createVNode(VCol, {
+                                  cols: "12",
+                                  sm: "6"
+                                }, {
+                                  default: withCtx(() => [
+                                    createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Уроков"),
+                                    createVNode(VTextField, {
+                                      modelValue: unref(form).lessonsCount,
+                                      "onUpdate:modelValue": ($event) => unref(form).lessonsCount = $event,
+                                      modelModifiers: { number: true },
+                                      type: "number",
+                                      placeholder: "0",
+                                      variant: "outlined",
+                                      density: "compact",
+                                      "hide-details": "",
+                                      class: "mb-4"
+                                    }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                  ]),
+                                  _: 1
+                                })
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VCheckbox, {
+                          modelValue: unref(form).isPublished,
+                          "onUpdate:modelValue": ($event) => unref(form).isPublished = $event,
+                          label: "Опубликовать курс",
+                          "hide-details": "",
+                          class: "mb-6",
+                          color: "green-darken-3"
+                        }, null, _parent4, _scopeId3));
+                        _push4(`<div class="d-flex ga-2" data-v-c821d9e9${_scopeId3}>`);
+                        _push4(ssrRenderComponent(VBtn, {
+                          type: "submit",
+                          color: "green-darken-3",
+                          variant: "flat",
+                          loading: unref(saving),
+                          style: { "border-radius": "8px" }
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(` Сохранить `);
+                            } else {
+                              return [
+                                createTextVNode(" Сохранить ")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(ssrRenderComponent(VBtn, {
+                          variant: "text",
+                          color: "grey-darken-2",
+                          to: "/admin/courses"
+                        }, {
+                          default: withCtx((_4, _push5, _parent5, _scopeId4) => {
+                            if (_push5) {
+                              _push5(` Отмена `);
+                            } else {
+                              return [
+                                createTextVNode(" Отмена ")
+                              ];
+                            }
+                          }),
+                          _: 1
+                        }, _parent4, _scopeId3));
+                        _push4(`</div>`);
+                      } else {
+                        return [
+                          createVNode("div", { class: "mb-4" }, [
+                            createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Название"),
+                            createVNode(VTextField, {
+                              modelValue: unref(form).title,
+                              "onUpdate:modelValue": ($event) => unref(form).title = $event,
+                              placeholder: "Название курса",
+                              variant: "outlined",
+                              density: "compact",
+                              "hide-details": "",
+                              class: "mb-4"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                          ]),
+                          createVNode("div", { class: "mb-4" }, [
+                            createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Описание"),
+                            createVNode(VTextarea, {
+                              modelValue: unref(form).description,
+                              "onUpdate:modelValue": ($event) => unref(form).description = $event,
+                              placeholder: "Описание курса",
+                              variant: "outlined",
+                              density: "compact",
+                              rows: "4",
+                              "hide-details": "",
+                              class: "mb-4"
+                            }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                          ]),
+                          createVNode(VRow, null, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Цена (₽)"),
+                                  createVNode(VTextField, {
+                                    modelValue: unref(form).price,
+                                    "onUpdate:modelValue": ($event) => unref(form).price = $event,
+                                    modelModifiers: { number: true },
+                                    type: "number",
+                                    placeholder: "0",
+                                    variant: "outlined",
+                                    density: "compact",
+                                    "hide-details": "",
+                                    class: "mb-4"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Длительность"),
+                                  createVNode(VTextField, {
+                                    modelValue: unref(form).duration,
+                                    "onUpdate:modelValue": ($event) => unref(form).duration = $event,
+                                    placeholder: "2 месяца",
+                                    variant: "outlined",
+                                    density: "compact",
+                                    "hide-details": "",
+                                    class: "mb-4"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VRow, null, {
+                            default: withCtx(() => [
+                              createVNode(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Категория"),
+                                  createVNode(VSelect, {
+                                    modelValue: unref(form).category,
+                                    "onUpdate:modelValue": ($event) => unref(form).category = $event,
+                                    items: categories,
+                                    variant: "outlined",
+                                    density: "compact",
+                                    "hide-details": "",
+                                    class: "mb-4"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                _: 1
+                              }),
+                              createVNode(VCol, {
+                                cols: "12",
+                                sm: "6"
+                              }, {
+                                default: withCtx(() => [
+                                  createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Уроков"),
+                                  createVNode(VTextField, {
+                                    modelValue: unref(form).lessonsCount,
+                                    "onUpdate:modelValue": ($event) => unref(form).lessonsCount = $event,
+                                    modelModifiers: { number: true },
+                                    type: "number",
+                                    placeholder: "0",
+                                    variant: "outlined",
+                                    density: "compact",
+                                    "hide-details": "",
+                                    class: "mb-4"
+                                  }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                                ]),
+                                _: 1
+                              })
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCheckbox, {
+                            modelValue: unref(form).isPublished,
+                            "onUpdate:modelValue": ($event) => unref(form).isPublished = $event,
+                            label: "Опубликовать курс",
+                            "hide-details": "",
+                            class: "mb-6",
+                            color: "green-darken-3"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                          createVNode("div", { class: "d-flex ga-2" }, [
+                            createVNode(VBtn, {
+                              type: "submit",
+                              color: "green-darken-3",
+                              variant: "flat",
+                              loading: unref(saving),
+                              style: { "border-radius": "8px" }
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Сохранить ")
+                              ]),
+                              _: 1
+                            }, 8, ["loading"]),
+                            createVNode(VBtn, {
+                              variant: "text",
+                              color: "grey-darken-2",
+                              to: "/admin/courses"
+                            }, {
+                              default: withCtx(() => [
+                                createTextVNode(" Отмена ")
+                              ]),
+                              _: 1
+                            })
+                          ])
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                } else {
+                  return [
+                    createVNode(VForm, {
+                      onSubmit: withModifiers(saveCourse, ["prevent"])
+                    }, {
+                      default: withCtx(() => [
+                        createVNode("div", { class: "mb-4" }, [
+                          createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Название"),
+                          createVNode(VTextField, {
+                            modelValue: unref(form).title,
+                            "onUpdate:modelValue": ($event) => unref(form).title = $event,
+                            placeholder: "Название курса",
+                            variant: "outlined",
+                            density: "compact",
+                            "hide-details": "",
+                            class: "mb-4"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                        ]),
+                        createVNode("div", { class: "mb-4" }, [
+                          createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Описание"),
+                          createVNode(VTextarea, {
+                            modelValue: unref(form).description,
+                            "onUpdate:modelValue": ($event) => unref(form).description = $event,
+                            placeholder: "Описание курса",
+                            variant: "outlined",
+                            density: "compact",
+                            rows: "4",
+                            "hide-details": "",
+                            class: "mb-4"
+                          }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                        ]),
+                        createVNode(VRow, null, {
+                          default: withCtx(() => [
+                            createVNode(VCol, {
+                              cols: "12",
+                              sm: "6"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Цена (₽)"),
+                                createVNode(VTextField, {
+                                  modelValue: unref(form).price,
+                                  "onUpdate:modelValue": ($event) => unref(form).price = $event,
+                                  modelModifiers: { number: true },
+                                  type: "number",
+                                  placeholder: "0",
+                                  variant: "outlined",
+                                  density: "compact",
+                                  "hide-details": "",
+                                  class: "mb-4"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCol, {
+                              cols: "12",
+                              sm: "6"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Длительность"),
+                                createVNode(VTextField, {
+                                  modelValue: unref(form).duration,
+                                  "onUpdate:modelValue": ($event) => unref(form).duration = $event,
+                                  placeholder: "2 месяца",
+                                  variant: "outlined",
+                                  density: "compact",
+                                  "hide-details": "",
+                                  class: "mb-4"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VRow, null, {
+                          default: withCtx(() => [
+                            createVNode(VCol, {
+                              cols: "12",
+                              sm: "6"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Категория"),
+                                createVNode(VSelect, {
+                                  modelValue: unref(form).category,
+                                  "onUpdate:modelValue": ($event) => unref(form).category = $event,
+                                  items: categories,
+                                  variant: "outlined",
+                                  density: "compact",
+                                  "hide-details": "",
+                                  class: "mb-4"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              _: 1
+                            }),
+                            createVNode(VCol, {
+                              cols: "12",
+                              sm: "6"
+                            }, {
+                              default: withCtx(() => [
+                                createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Уроков"),
+                                createVNode(VTextField, {
+                                  modelValue: unref(form).lessonsCount,
+                                  "onUpdate:modelValue": ($event) => unref(form).lessonsCount = $event,
+                                  modelModifiers: { number: true },
+                                  type: "number",
+                                  placeholder: "0",
+                                  variant: "outlined",
+                                  density: "compact",
+                                  "hide-details": "",
+                                  class: "mb-4"
+                                }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                              ]),
+                              _: 1
+                            })
+                          ]),
+                          _: 1
+                        }),
+                        createVNode(VCheckbox, {
+                          modelValue: unref(form).isPublished,
+                          "onUpdate:modelValue": ($event) => unref(form).isPublished = $event,
+                          label: "Опубликовать курс",
+                          "hide-details": "",
+                          class: "mb-6",
+                          color: "green-darken-3"
+                        }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                        createVNode("div", { class: "d-flex ga-2" }, [
+                          createVNode(VBtn, {
+                            type: "submit",
+                            color: "green-darken-3",
+                            variant: "flat",
+                            loading: unref(saving),
+                            style: { "border-radius": "8px" }
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Сохранить ")
+                            ]),
+                            _: 1
+                          }, 8, ["loading"]),
+                          createVNode(VBtn, {
+                            variant: "text",
+                            color: "grey-darken-2",
+                            to: "/admin/courses"
+                          }, {
+                            default: withCtx(() => [
+                              createTextVNode(" Отмена ")
+                            ]),
+                            _: 1
+                          })
+                        ])
+                      ]),
+                      _: 1
+                    })
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+            _push2(ssrRenderComponent(VCol, {
+              cols: "12",
+              md: "4"
+            }, {
+              default: withCtx((_2, _push3, _parent3, _scopeId2) => {
+                if (_push3) {
+                  _push3(`<div class="preview-card" data-v-c821d9e9${_scopeId2}><p class="text-caption text-grey-darken-1 font-weight-medium mb-4" data-v-c821d9e9${_scopeId2}>Предпросмотр</p><div class="mb-4" data-v-c821d9e9${_scopeId2}><p class="text-caption text-grey-darken-1" data-v-c821d9e9${_scopeId2}>Название</p><p class="text-body-2 font-weight-medium" style="${ssrRenderStyle({ "color": "#020617" })}" data-v-c821d9e9${_scopeId2}>${ssrInterpolate(unref(form).title || "Название курса")}</p></div><div class="mb-4" data-v-c821d9e9${_scopeId2}><p class="text-caption text-grey-darken-1" data-v-c821d9e9${_scopeId2}>Цена</p><p class="text-h6 font-weight-bold" style="${ssrRenderStyle({ "color": "#020617" })}" data-v-c821d9e9${_scopeId2}>${ssrInterpolate(unref(form).price ? `${unref(form).price} ₽` : "0 ₽")}</p></div><div class="mb-4" data-v-c821d9e9${_scopeId2}><p class="text-caption text-grey-darken-1" data-v-c821d9e9${_scopeId2}>Категория</p>`);
+                  _push3(ssrRenderComponent(VChip, {
+                    size: "x-small",
+                    color: "green-darken-3",
+                    "text-color": "white",
+                    label: ""
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`${ssrInterpolate(unref(form).category || "Категория")}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(unref(form).category || "Категория"), 1)
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</div><div class="mb-4" data-v-c821d9e9${_scopeId2}><p class="text-caption text-grey-darken-1" data-v-c821d9e9${_scopeId2}>Статус</p>`);
+                  _push3(ssrRenderComponent(VChip, {
+                    size: "x-small",
+                    color: unref(form).isPublished ? "green-darken-3" : "grey-lighten-1",
+                    "text-color": "white",
+                    label: ""
+                  }, {
+                    default: withCtx((_3, _push4, _parent4, _scopeId3) => {
+                      if (_push4) {
+                        _push4(`${ssrInterpolate(unref(form).isPublished ? "Опубликован" : "Черновик")}`);
+                      } else {
+                        return [
+                          createTextVNode(toDisplayString(unref(form).isPublished ? "Опубликован" : "Черновик"), 1)
+                        ];
+                      }
+                    }),
+                    _: 1
+                  }, _parent3, _scopeId2));
+                  _push3(`</div>`);
+                  _push3(ssrRenderComponent(VDivider, { class: "my-4" }, null, _parent3, _scopeId2));
+                  _push3(`<div data-v-c821d9e9${_scopeId2}><p class="text-caption text-grey-darken-1" data-v-c821d9e9${_scopeId2}>Описание</p><p class="text-body-2" data-v-c821d9e9${_scopeId2}>${ssrInterpolate(unref(form).description || "Описание курса")}</p></div></div>`);
+                } else {
+                  return [
+                    createVNode("div", { class: "preview-card" }, [
+                      createVNode("p", { class: "text-caption text-grey-darken-1 font-weight-medium mb-4" }, "Предпросмотр"),
+                      createVNode("div", { class: "mb-4" }, [
+                        createVNode("p", { class: "text-caption text-grey-darken-1" }, "Название"),
+                        createVNode("p", {
+                          class: "text-body-2 font-weight-medium",
+                          style: { "color": "#020617" }
+                        }, toDisplayString(unref(form).title || "Название курса"), 1)
+                      ]),
+                      createVNode("div", { class: "mb-4" }, [
+                        createVNode("p", { class: "text-caption text-grey-darken-1" }, "Цена"),
+                        createVNode("p", {
+                          class: "text-h6 font-weight-bold",
+                          style: { "color": "#020617" }
+                        }, toDisplayString(unref(form).price ? `${unref(form).price} ₽` : "0 ₽"), 1)
+                      ]),
+                      createVNode("div", { class: "mb-4" }, [
+                        createVNode("p", { class: "text-caption text-grey-darken-1" }, "Категория"),
+                        createVNode(VChip, {
+                          size: "x-small",
+                          color: "green-darken-3",
+                          "text-color": "white",
+                          label: ""
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(toDisplayString(unref(form).category || "Категория"), 1)
+                          ]),
+                          _: 1
+                        })
+                      ]),
+                      createVNode("div", { class: "mb-4" }, [
+                        createVNode("p", { class: "text-caption text-grey-darken-1" }, "Статус"),
+                        createVNode(VChip, {
+                          size: "x-small",
+                          color: unref(form).isPublished ? "green-darken-3" : "grey-lighten-1",
+                          "text-color": "white",
+                          label: ""
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(toDisplayString(unref(form).isPublished ? "Опубликован" : "Черновик"), 1)
+                          ]),
+                          _: 1
+                        }, 8, ["color"])
+                      ]),
+                      createVNode(VDivider, { class: "my-4" }),
+                      createVNode("div", null, [
+                        createVNode("p", { class: "text-caption text-grey-darken-1" }, "Описание"),
+                        createVNode("p", { class: "text-body-2" }, toDisplayString(unref(form).description || "Описание курса"), 1)
+                      ])
+                    ])
+                  ];
+                }
+              }),
+              _: 1
+            }, _parent2, _scopeId));
+          } else {
+            return [
+              createVNode(VCol, {
+                cols: "12",
+                md: "8"
+              }, {
+                default: withCtx(() => [
+                  createVNode(VForm, {
+                    onSubmit: withModifiers(saveCourse, ["prevent"])
+                  }, {
+                    default: withCtx(() => [
+                      createVNode("div", { class: "mb-4" }, [
+                        createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Название"),
+                        createVNode(VTextField, {
+                          modelValue: unref(form).title,
+                          "onUpdate:modelValue": ($event) => unref(form).title = $event,
+                          placeholder: "Название курса",
+                          variant: "outlined",
+                          density: "compact",
+                          "hide-details": "",
+                          class: "mb-4"
+                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                      ]),
+                      createVNode("div", { class: "mb-4" }, [
+                        createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Описание"),
+                        createVNode(VTextarea, {
+                          modelValue: unref(form).description,
+                          "onUpdate:modelValue": ($event) => unref(form).description = $event,
+                          placeholder: "Описание курса",
+                          variant: "outlined",
+                          density: "compact",
+                          rows: "4",
+                          "hide-details": "",
+                          class: "mb-4"
+                        }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                      ]),
+                      createVNode(VRow, null, {
+                        default: withCtx(() => [
+                          createVNode(VCol, {
+                            cols: "12",
+                            sm: "6"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Цена (₽)"),
+                              createVNode(VTextField, {
+                                modelValue: unref(form).price,
+                                "onUpdate:modelValue": ($event) => unref(form).price = $event,
+                                modelModifiers: { number: true },
+                                type: "number",
+                                placeholder: "0",
+                                variant: "outlined",
+                                density: "compact",
+                                "hide-details": "",
+                                class: "mb-4"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCol, {
+                            cols: "12",
+                            sm: "6"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Длительность"),
+                              createVNode(VTextField, {
+                                modelValue: unref(form).duration,
+                                "onUpdate:modelValue": ($event) => unref(form).duration = $event,
+                                placeholder: "2 месяца",
+                                variant: "outlined",
+                                density: "compact",
+                                "hide-details": "",
+                                class: "mb-4"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VRow, null, {
+                        default: withCtx(() => [
+                          createVNode(VCol, {
+                            cols: "12",
+                            sm: "6"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Категория"),
+                              createVNode(VSelect, {
+                                modelValue: unref(form).category,
+                                "onUpdate:modelValue": ($event) => unref(form).category = $event,
+                                items: categories,
+                                variant: "outlined",
+                                density: "compact",
+                                "hide-details": "",
+                                class: "mb-4"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                            ]),
+                            _: 1
+                          }),
+                          createVNode(VCol, {
+                            cols: "12",
+                            sm: "6"
+                          }, {
+                            default: withCtx(() => [
+                              createVNode("label", { class: "text-caption text-grey-darken-1 d-block mb-1" }, "Уроков"),
+                              createVNode(VTextField, {
+                                modelValue: unref(form).lessonsCount,
+                                "onUpdate:modelValue": ($event) => unref(form).lessonsCount = $event,
+                                modelModifiers: { number: true },
+                                type: "number",
+                                placeholder: "0",
+                                variant: "outlined",
+                                density: "compact",
+                                "hide-details": "",
+                                class: "mb-4"
+                              }, null, 8, ["modelValue", "onUpdate:modelValue"])
+                            ]),
+                            _: 1
+                          })
+                        ]),
+                        _: 1
+                      }),
+                      createVNode(VCheckbox, {
+                        modelValue: unref(form).isPublished,
+                        "onUpdate:modelValue": ($event) => unref(form).isPublished = $event,
+                        label: "Опубликовать курс",
+                        "hide-details": "",
+                        class: "mb-6",
+                        color: "green-darken-3"
+                      }, null, 8, ["modelValue", "onUpdate:modelValue"]),
+                      createVNode("div", { class: "d-flex ga-2" }, [
+                        createVNode(VBtn, {
+                          type: "submit",
+                          color: "green-darken-3",
+                          variant: "flat",
+                          loading: unref(saving),
+                          style: { "border-radius": "8px" }
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(" Сохранить ")
+                          ]),
+                          _: 1
+                        }, 8, ["loading"]),
+                        createVNode(VBtn, {
+                          variant: "text",
+                          color: "grey-darken-2",
+                          to: "/admin/courses"
+                        }, {
+                          default: withCtx(() => [
+                            createTextVNode(" Отмена ")
+                          ]),
+                          _: 1
+                        })
+                      ])
+                    ]),
+                    _: 1
+                  })
+                ]),
+                _: 1
+              }),
+              createVNode(VCol, {
+                cols: "12",
+                md: "4"
+              }, {
+                default: withCtx(() => [
+                  createVNode("div", { class: "preview-card" }, [
+                    createVNode("p", { class: "text-caption text-grey-darken-1 font-weight-medium mb-4" }, "Предпросмотр"),
+                    createVNode("div", { class: "mb-4" }, [
+                      createVNode("p", { class: "text-caption text-grey-darken-1" }, "Название"),
+                      createVNode("p", {
+                        class: "text-body-2 font-weight-medium",
+                        style: { "color": "#020617" }
+                      }, toDisplayString(unref(form).title || "Название курса"), 1)
+                    ]),
+                    createVNode("div", { class: "mb-4" }, [
+                      createVNode("p", { class: "text-caption text-grey-darken-1" }, "Цена"),
+                      createVNode("p", {
+                        class: "text-h6 font-weight-bold",
+                        style: { "color": "#020617" }
+                      }, toDisplayString(unref(form).price ? `${unref(form).price} ₽` : "0 ₽"), 1)
+                    ]),
+                    createVNode("div", { class: "mb-4" }, [
+                      createVNode("p", { class: "text-caption text-grey-darken-1" }, "Категория"),
+                      createVNode(VChip, {
+                        size: "x-small",
+                        color: "green-darken-3",
+                        "text-color": "white",
+                        label: ""
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(unref(form).category || "Категория"), 1)
+                        ]),
+                        _: 1
+                      })
+                    ]),
+                    createVNode("div", { class: "mb-4" }, [
+                      createVNode("p", { class: "text-caption text-grey-darken-1" }, "Статус"),
+                      createVNode(VChip, {
+                        size: "x-small",
+                        color: unref(form).isPublished ? "green-darken-3" : "grey-lighten-1",
+                        "text-color": "white",
+                        label: ""
+                      }, {
+                        default: withCtx(() => [
+                          createTextVNode(toDisplayString(unref(form).isPublished ? "Опубликован" : "Черновик"), 1)
+                        ]),
+                        _: 1
+                      }, 8, ["color"])
+                    ]),
+                    createVNode(VDivider, { class: "my-4" }),
+                    createVNode("div", null, [
+                      createVNode("p", { class: "text-caption text-grey-darken-1" }, "Описание"),
+                      createVNode("p", { class: "text-body-2" }, toDisplayString(unref(form).description || "Описание курса"), 1)
+                    ])
+                  ])
+                ]),
+                _: 1
+              })
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</div>`);
+    };
+  }
+});
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/admin/courses/[id].vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const _id_ = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-c821d9e9"]]);
+export {
+  _id_ as default
+};
+//# sourceMappingURL=_id_-DYvONbmP.js.map

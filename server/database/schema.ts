@@ -102,6 +102,7 @@ export const seoSettings = sqliteTable('seo_settings', {
   title: text('title').notNull().default('Генетика Кроя'),
   description: text('description').notNull().default('Курсы кройки и шитья'),
   keywords: text('keywords').notNull().default('кройка, шитье, курсы'),
+  ogImage: text('og_image').default(''),
   enableSitemap: integer('enable_sitemap').notNull().default(1),
   enableRobots: integer('enable_robots').notNull().default(1),
   updatedAt: text('updated_at').default(sql`(datetime('now'))`),

@@ -564,6 +564,10 @@
                 <label class="text-caption text-grey-darken-1 d-block mb-1">Ключевые слова</label>
                 <v-text-field v-model="seo.keywords" variant="outlined" density="compact" hide-details />
               </div>
+              <div class="mb-4">
+                <label class="text-caption text-grey-darken-1 d-block mb-1">OG Image (URL изображения для соцсетей)</label>
+                <v-text-field v-model="seo.ogImage" placeholder="https://example.com/image.jpg" variant="outlined" density="compact" hide-details />
+              </div>
               <v-checkbox v-model="seo.enableSitemap" label="Включить sitemap.xml" hide-details class="mb-2" color="green-darken-3" />
               <v-checkbox v-model="seo.enableRobots" label="Включить robots.txt" hide-details class="mb-6" color="green-darken-3" />
               <v-btn color="green-darken-3" variant="flat" @click="saveSeo" :loading="seo.saving">
@@ -694,6 +698,7 @@ const seo = reactive({
   title: '',
   description: 'Курсы кройки и шитья',
   keywords: 'кройка, шитье, курсы',
+  ogImage: '',
   enableSitemap: true,
   enableRobots: true,
   saving: false,
@@ -1260,6 +1265,7 @@ const saveSeo = async () => {
           title: seo.title,
           description: seo.description,
           keywords: seo.keywords,
+          ogImage: seo.ogImage,
           enableSitemap: seo.enableSitemap,
           enableRobots: seo.enableRobots,
         },
@@ -1352,6 +1358,7 @@ onMounted(async () => {
         title: allSettings.seo.title,
         description: allSettings.seo.description,
         keywords: allSettings.seo.keywords,
+        ogImage: allSettings.seo.ogImage || '',
         enableSitemap: !!allSettings.seo.enableSitemap,
         enableRobots: !!allSettings.seo.enableRobots,
       })

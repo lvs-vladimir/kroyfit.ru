@@ -50,9 +50,24 @@
               </div>
 
               <div class="hero-buttons">
-                <a href="https://vk.com/write-53091601" target="_blank" class="btn-primary">
+                <button 
+                  v-if="!isLoggedIn" 
+                  class="btn-primary"
+                  @click="showLoginModal = true"
+                >
                   Купить курс
-                </a>
+                </button>
+                <button 
+                  v-else-if="!isPurchased" 
+                  class="btn-primary"
+                  @click="handlePurchase"
+                  :disabled="purchasing"
+                >
+                  {{ purchasing ? 'Создание платежа...' : 'Купить курс' }}
+                </button>
+                <div v-else class="btn-success">
+                  ✓ Курс приобретен
+                </div>
                 <a href="tel:89132101662" class="btn-outline">
                   Позвонить
                 </a>
@@ -143,12 +158,83 @@
         </div>
       </section>
     </div>
+
+    <!-- Modal for login required -->
+    <div v-if="showLoginModal" class="modal-overlay" @click="showLoginModal = false">
+      <div class="modal-content" @click.stop>
+        <h3 class="modal-title">Вход в аккаунт</h3>
+        <p class="modal-text">Для покупки курса необходимо войти через ВКонтакте</p>
+        <div id="vk-login-modal"></div>
+        <button 
+          class="btn-outline" 
+          style="margin-top: 1rem; color: var(--color-dark); border-color: var(--color-dark);"
+          @click="showLoginModal = false"
+        >
+          Отмена
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 const route = useRoute()
 const router = useRouter()
+
+// Состояние авторизации и покупки
+const isLoggedIn = ref(false)
+const isPurchased = ref(false)
+const purchasing = ref(false)
+const showLoginModal = ref(false)
+const currentUser = ref<any>(null)
+
+// Проверяем авторизацию при загрузке
+onMounted(async () => {
+  try {
+    const userData = await $fetch('/api/user/me')
+    if (userData) {
+      isLoggedIn.value = true
+      currentUser.value = userData
+      
+      // Проверяем, купил ли пользователь этот курс
+      const purchases = await $fetch('/api/user/purchases')
+      if (purchases && purchases.purchases) {
+        isPurchased.value = purchases.purchases.some(
+          (p: any) => p.courseId === route.params.slug && p.status === 'completed'
+        )
+      }
+    }
+  } catch (e) {
+    // Пользователь не авторизован
+    isLoggedIn.value = false
+  }
+})
+
+// Обработка покупки
+const handlePurchase = async () => {
+  if (!course.value) return
+  
+  purchasing.value = true
+  try {
+    const response = await $fetch('/api/payments/create', {
+      method: 'POST',
+      body: {
+        courseId: course.value.id,
+        returnUrl: window.location.href
+      }
+    })
+    
+    if (response.confirmationUrl) {
+      // Переходим на страницу оплаты ЮКассы
+      window.location.href = response.confirmationUrl
+    }
+  } catch (e: any) {
+    console.error('❌ Ошибка создания платежа:', e)
+    alert('Ошибка: ' + (e.data?.message || 'Не удалось создать платеж'))
+  } finally {
+    purchasing.value = false
+  }
+}
 
 // Загрузка курса
 const { data: courseData, pending, error } = await useFetch(
@@ -254,10 +340,16 @@ const formatDescription = (text: string) => {
     .join('')
 }
 
+// Загружаем SEO настройки из БД
+const { data: siteInfo } = await useFetch('/api/site-info')
+
+const siteName = computed(() => siteInfo.value?.siteName || 'Генетика Кроя')
+
 // SEO
 useSeoMeta({
-  title: () => course.value ? `${course.value.title} — Генетика Кроя` : 'Курс не найден',
-  description: () => course.value?.description || 'Курсы кройки и шитья',
+  title: () => course.value ? `${course.value.title} — ${siteName.value}` : 'Курс не найден',
+  description: () => course.value?.description || siteInfo.value?.seo?.description || 'Курсы кройки и шитья',
+  ogImage: () => course.value?.image || siteInfo.value?.seo?.ogImage || '',
 })
 </script>
 
@@ -712,6 +804,58 @@ useSeoMeta({
 
 .btn-block {
   width: 100%;
+}
+
+.btn-success {
+  background-color: #10B981;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-block;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  max-width: 400px;
+  width: 90%;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-dark);
+}
+
+.modal-text {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
 }
 
 /* Responsive */

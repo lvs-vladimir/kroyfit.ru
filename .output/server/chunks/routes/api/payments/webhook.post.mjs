@@ -1,5 +1,4 @@
-import { d as defineEventHandler, r as readBody, c as createError } from '../../../nitro/nitro.mjs';
-import { d as db, p as purchases, u as users, c as courses, v as vkGroups } from '../../../_/db.mjs';
+import { d as defineEventHandler, r as readBody, a as db, p as purchases, u as users, f as courses, v as vkGroups, c as createError } from '../../../nitro/nitro.mjs';
 import { eq } from 'drizzle-orm';
 import { s as sendEmail, p as purchaseEmailTemplate, v as vkGroupEmailTemplate } from '../../../_/email.mjs';
 import 'node:http';

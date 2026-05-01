@@ -1,124 +1,109 @@
 import { db } from '../../database/db'
-import { purchases, users, courses, vkGroups } from '../../database/schema'
+import { purchases } from '../../database/schema'
 import { eq } from 'drizzle-orm'
-import { sendEmail, purchaseEmailTemplate, vkGroupEmailTemplate } from '../../services/email'
+import crypto from 'crypto'
+
+const API_KEY = process.env.YOOKASSA_SECRET_KEY || 'live_Gn0WbDxR3hthCMkTu13qWuaVhXo-LPDJI_QN2P54-OM'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
+  console.log('🟡 [API] POST /api/payments/webhook - Webhook от ЮКассы')
   
-  if (body.event === 'payment.succeeded') {
-    const { object } = body
-    const purchaseId = object.metadata?.purchaseId
-
-    if (purchaseId) {
-      try {
-        // Получаем информацию о покупке
-        const purchase = await db.query.purchases.findFirst({
-          where: eq(purchases.id, purchaseId),
-        })
-
-        if (!purchase) {
-          return { success: false, message: 'Покупка не найдена' }
-        }
-
-        // Обновляем статус покупки
-        await db
-          .update(purchases)
-          .set({ status: 'paid', paymentId: object.id })
-          .where(eq(purchases.id, purchaseId))
-
-        // Получаем данные пользователя
-        const user = await db.query.users.findFirst({
-          where: eq(users.id, purchase.userId),
-        })
-
-        // Получаем данные курса
-        const course = await db.query.courses.findFirst({
-          where: eq(courses.id, purchase.courseId),
-        })
-
-        if (user && course) {
-          // Отправляем email о покупке
-          if (user.email) {
-            await sendEmail(
-              user.email,
-              `Спасибо за покупку курса "${course.title}"!`,
-              purchaseEmailTemplate(user.name, course.title, purchase.amount)
-            )
-          }
-
-          // Добавляем пользователя в VK группу
-          if (user.vkId && course.vkGroupId) {
-            try {
-              const vkGroup = await db.query.vkGroups.findFirst({
-                where: eq(vkGroups.courseSlug, course.slug),
-              })
-
-              if (vkGroup && vkGroup.token) {
-                // Вызываем API VK для добавления в группу
-                const vkResponse = await fetch('https://api.vk.com/method/groups.invite', {
-                  method: 'POST',
-                  body: new URLSearchParams({
-                    group_id: vkGroup.vkId,
-                    user_id: user.vkId,
-                    access_token: vkGroup.token,
-                    v: '5.131',
-                  }),
-                })
-
-                const vkData = await vkResponse.json()
-
-                if (!vkData.error) {
-                  console.log(`Пользователь ${user.vkId} добавлен в группу ${vkGroup.name}`)
-
-                  // Отправляем email о добавлении в группу
-                  if (user.email) {
-                    await sendEmail(
-                      user.email,
-                      `Вы добавлены в VK группу "${vkGroup.name}"!`,
-                      vkGroupEmailTemplate(user.name, vkGroup.name)
-                    )
-                  }
-                } else {
-                  console.error('Ошибка VK API:', vkData.error)
-                }
-              }
-            } catch (vkError) {
-              console.error('Ошибка добавления в VK группу:', vkError)
-            }
-          }
-        }
-
-        console.log(`Платеж ${object.id} успешно обработан`)
-        return { success: true, message: 'Платеж обработан' }
-      } catch (e) {
-        console.error('Ошибка обработки платежа:', e)
-        throw createError({
-          statusCode: 500,
-          message: 'Ошибка обработки платежа',
-        })
+  try {
+    const body = await readBody(event)
+    
+    // Проверка подписи webhook (опционально, но рекомендуется)
+    const signature = getHeader(event, 'ye-signature')
+    if (signature) {
+      const bodyString = JSON.stringify(body)
+      const expectedSignature = crypto
+        .createHmac('sha256', API_KEY)
+        .update(bodyString)
+        .digest('hex')
+      
+      if (signature !== expectedSignature) {
+        console.error('❌ [API] Неверная подпись webhook')
+        // Не возвращаем ошибку, чтобы ЮКасса не повторяла
       }
     }
-  }
-
-  if (body.event === 'payment.canceled') {
-    const { object } = body
-    const purchaseId = object.metadata?.purchaseId
-
-    if (purchaseId) {
-      try {
-        await db
-          .update(purchases)
-          .set({ status: 'cancelled' })
-          .where(eq(purchases.id, purchaseId))
-
-        console.log(`Платеж ${object.id} отменен`)
-        return { success: true, message: 'Платеж отменен' }
-      } catch (e) {
-        console.error('Ошибка отмены платежа:', e)
-      }
+    
+    console.log('📨 [API] Получено уведомление:', body.event)
+    
+    // Проверяем тип события
+    const eventType = body.event
+    const object = body.object
+    
+    if (!object || !object.id) {
+      console.error('❌ [API] Неверный формат уведомления')
+      return { received: true }
     }
+    
+    const paymentId = object.id
+    const metadata = object.metadata || {}
+    const purchaseId = metadata.purchaseId
+    
+    if (!purchaseId) {
+      console.error('❌ [API] Нет purchaseId в metadata')
+      return { received: true }
+    }
+    
+    // Обновляем статус покупки в зависимости от события
+    switch (eventType) {
+      case 'payment.succeeded':
+        console.log('✅ [API] Платеж успешен:', paymentId)
+        await db.update(purchases)
+          .set({ 
+            status: 'completed',
+            paymentId: paymentId
+          })
+          .where(eq(purchases.id, purchaseId))
+        console.log('✅ [API] Покупка обновлена: completed')
+        break
+        
+      case 'payment.waiting_for_capture':
+        console.log('⏳ [API] Платеж ожидает подтверждения:', paymentId)
+        await db.update(purchases)
+          .set({ 
+            status: 'waiting_for_capture',
+            paymentId: paymentId
+          })
+          .where(eq(purchases.id, purchaseId))
+        break
+        
+      case 'payment.canceled':
+        console.log('❌ [API] Платеж отменен:', paymentId)
+        await db.update(purchases)
+          .set({ 
+            status: 'canceled',
+            paymentId: paymentId
+          })
+          .where(eq(purchases.id, purchaseId))
+        break
+        
+      case 'payment_method.active':
+        console.log('✅ [API] Способ оплаты привязан:', paymentId)
+        // Можно сохранить payment_method_id для будущих платежей
+        break
+        
+      case 'refund.succeeded':
+        console.log('💰 [API] Возврат успешен:', paymentId)
+        await db.update(purchases)
+          .set({ 
+            status: 'refunded',
+            paymentId: paymentId
+          })
+          .where(eq(purchases.id, purchaseId))
+        break
+        
+      default:
+        console.log('ℹ️ [API] Неизвестное событие:', eventType)
+    }
+    
+    // Всегда возвращаем 200 OK
+    return { received: true }
+    
+  } catch (error: any) {
+    console.error('❌ [API] Ошибка обработки webhook:', error)
+    // Всё равно возвращаем 200 чтобы ЮКасса не повторяла запрос
+    return { received: true }
   }
-
-  return { success: true }
 })

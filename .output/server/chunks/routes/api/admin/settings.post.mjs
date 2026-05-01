@@ -1,5 +1,4 @@
-import { d as defineEventHandler, r as readBody, c as createError, g as getCookie } from '../../../nitro/nitro.mjs';
-import { d as db, a as admins, r as roles, c as courses, u as users, e as emailSettings, s as seoSettings, g as generalSettings } from '../../../_/db.mjs';
+import { d as defineEventHandler, r as readBody, c as createError, a as db, b as admins, e as roles, f as courses, u as users, h as emailSettings, i as seoSettings, j as generalSettings, g as getCookie } from '../../../nitro/nitro.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
 import 'node:https';
@@ -114,7 +113,7 @@ const settings_post = defineEventHandler(async (event) => {
     }
     if (type === "course") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043A\u0443\u0440\u0441\u0430...");
-      const { title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data;
+      const { title, description, slug, price, category, duration, lessonsCount, isPublished, image, benefits } = data;
       if (!title || !slug) {
         throw createError({ statusCode: 400, message: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 slug \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u044B" });
       }
@@ -133,6 +132,7 @@ const settings_post = defineEventHandler(async (event) => {
         lessonsCount: lessonsCount || 0,
         isPublished: isPublished ? 1 : 0,
         image: image || "",
+        benefits: benefits || "",
         createdAt: (/* @__PURE__ */ new Date()).toISOString(),
         updatedAt: (/* @__PURE__ */ new Date()).toISOString()
       };
@@ -142,7 +142,7 @@ const settings_post = defineEventHandler(async (event) => {
     }
     if (type === "course-update") {
       console.log("\u{1F7E1} [API] \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u043A\u0443\u0440\u0441\u0430...");
-      const { id: courseId, title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data;
+      const { id: courseId, title, description, slug, price, category, duration, lessonsCount, isPublished, image, benefits } = data;
       if (!courseId) {
         throw createError({ statusCode: 400, message: "ID \u043A\u0443\u0440\u0441\u0430 \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u0435\u043D" });
       }
@@ -166,6 +166,7 @@ const settings_post = defineEventHandler(async (event) => {
       if (lessonsCount !== void 0) updateData.lessonsCount = lessonsCount;
       if (isPublished !== void 0) updateData.isPublished = isPublished ? 1 : 0;
       if (image !== void 0) updateData.image = image;
+      if (benefits !== void 0) updateData.benefits = benefits;
       await db.update(courses).set(updateData).where(eq(courses.id, courseId));
       const [updatedCourse] = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1);
       console.log("\u2705 [API] \u041A\u0443\u0440\u0441 \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D:", courseId);
@@ -215,6 +216,22 @@ const settings_post = defineEventHandler(async (event) => {
       console.log("\u2705 [API] \u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D");
       return { success: true, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u0443\u0434\u0430\u043B\u0435\u043D" };
     }
+    if (type === "admin-password") {
+      console.log("\u{1F510} [API] \u0418\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u0435 \u043F\u0430\u0440\u043E\u043B\u044F \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430:", data.adminId);
+      if (!data.adminId) {
+        throw createError({ statusCode: 400, message: "ID \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430 \u043E\u0431\u044F\u0437\u0430\u0442\u0435\u043B\u0435\u043D" });
+      }
+      if (!data.password || data.password.length < 6) {
+        throw createError({ statusCode: 400, message: "\u041F\u0430\u0440\u043E\u043B\u044C \u0434\u043E\u043B\u0436\u0435\u043D \u0441\u043E\u0434\u0435\u0440\u0436\u0430\u0442\u044C \u043C\u0438\u043D\u0438\u043C\u0443\u043C 6 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432" });
+      }
+      const existing = await db.select().from(admins).where(eq(admins.id, data.adminId)).limit(1);
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: "\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D" });
+      }
+      await db.update(admins).set({ password: data.password }).where(eq(admins.id, data.adminId));
+      console.log("\u2705 [API] \u041F\u0430\u0440\u043E\u043B\u044C \u0430\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440\u0430 \u0438\u0437\u043C\u0435\u043D\u0435\u043D");
+      return { success: true, message: "\u041F\u0430\u0440\u043E\u043B\u044C \u0438\u0437\u043C\u0435\u043D\u0435\u043D" };
+    }
     if (type === "user-update") {
       console.log("\u{1F7E1} [API] \u041E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F...");
       const { id: userId, name, email, vkId, avatar } = data;
@@ -235,6 +252,16 @@ const settings_post = defineEventHandler(async (event) => {
       console.log("\u2705 [API] \u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D:", userId);
       return { success: true, message: "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D", user: updatedUser };
     }
+    if (type === "user-delete") {
+      console.log("\u{1F5D1}\uFE0F [API] \u0423\u0434\u0430\u043B\u0435\u043D\u0438\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:", data.id);
+      const existing = await db.select().from(users).where(eq(users.id, data.id)).limit(1);
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D" });
+      }
+      await db.delete(users).where(eq(users.id, data.id));
+      console.log("\u2705 [API] \u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D:", data.id);
+      return { success: true, message: "\u041F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044C \u0443\u0434\u0430\u043B\u0435\u043D" };
+    }
     if (type === "email") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 email \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
       const { smtpHost, smtpPort, smtpUser, smtpPass, smtpFrom, enableWelcome, enablePurchase, enableVkGroup } = data;
@@ -253,11 +280,12 @@ const settings_post = defineEventHandler(async (event) => {
     }
     if (type === "seo") {
       console.log("\u{1F7E1} [API] \u0421\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0438\u0435 SEO \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A...");
-      const { title, description, keywords, enableSitemap, enableRobots } = data;
+      const { title, description, keywords, ogImage, enableSitemap, enableRobots } = data;
       await db.update(seoSettings).set({
         title,
         description,
         keywords,
+        ogImage,
         enableSitemap: enableSitemap ? 1 : 0,
         enableRobots: enableRobots ? 1 : 0
       }).where(eq(seoSettings.id, 1));

@@ -1,0 +1,47 @@
+import { executeAsync } from "/root/kroyfit/node_modules/unctx/dist/index.mjs";
+import { aj as defineNuxtRouteMiddleware, n as navigateTo } from "../server.mjs";
+import { u as useCookie } from "./cookie-Cpnsk9ER.js";
+import "vue";
+import "/root/kroyfit/node_modules/ofetch/dist/node.mjs";
+import "#internal/nuxt/paths";
+import "/root/kroyfit/node_modules/hookable/dist/index.mjs";
+import "/root/kroyfit/node_modules/@nuxt/nitro-server/dist/runtime/h3-compat.mjs";
+import "vue-router";
+import "/root/kroyfit/node_modules/defu/dist/defu.mjs";
+import "/root/kroyfit/node_modules/ufo/dist/index.mjs";
+import "vue/server-renderer";
+import "/root/kroyfit/node_modules/cookie-es/dist/index.mjs";
+import "/root/kroyfit/node_modules/ohash/dist/index.mjs";
+import "/root/kroyfit/node_modules/klona/dist/index.mjs";
+import "./ssr-Cugq82Tj.js";
+const admin = defineNuxtRouteMiddleware(async (to) => {
+  let __temp, __restore;
+  const token = useCookie("admin-token");
+  if (to.path === "/admin/login") {
+    if (!token.value) return;
+    try {
+      ;
+      [__temp, __restore] = executeAsync(() => $fetch("/api/admin/verify-token")), await __temp, __restore();
+      ;
+      return navigateTo("/admin");
+    } catch (e) {
+      token.value = null;
+    }
+    return;
+  }
+  if (!token.value) {
+    return navigateTo("/admin/login");
+  }
+  try {
+    ;
+    [__temp, __restore] = executeAsync(() => $fetch("/api/admin/verify-token")), await __temp, __restore();
+    ;
+  } catch (e) {
+    token.value = null;
+    return navigateTo("/admin/login");
+  }
+});
+export {
+  admin as default
+};
+//# sourceMappingURL=admin-B5s0MTB7.js.map

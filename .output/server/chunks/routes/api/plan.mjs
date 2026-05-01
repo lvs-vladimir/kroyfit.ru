@@ -9,6 +9,10 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'drizzle-orm/better-sqlite3';
+import 'better-sqlite3';
+import 'drizzle-orm/sqlite-core';
+import 'drizzle-orm';
 
 const plan = defineEventHandler(async (event) => {
   const method = event.method;

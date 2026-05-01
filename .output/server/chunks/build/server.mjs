@@ -1,5 +1,5 @@
-import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { inject as inject$1, toRef, getCurrentInstance as getCurrentInstance$1, watch, onScopeDispose, camelize, isVNode, Comment, Fragment, warn, reactive, watchEffect, shallowRef, computed, toValue, capitalize, provide, ref, unref, defineComponent as defineComponent$1, toRaw, hasInjectionContext, effectScope, createVNode, mergeProps, createElementVNode, normalizeClass, defineAsyncComponent, h, shallowReactive, createElementBlock, Suspense, createApp, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, getCurrentScope, withCtx, nextTick, isReadonly, useSSRContext, isRef, isShallow, isReactive, toRefs } from 'vue';
-import { p as parseURL, n as encodePath, o as decodePath, w as withQuery, c as createError$1, q as hasProtocol, t as isScriptProtocol, l as joinURL, v as sanitizeStatusCode, x as getContext, $ as $fetch, y as defu, z as executeAsync } from '../nitro/nitro.mjs';
+import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { reactive, watchEffect, toRef, warn, inject as inject$1, computed, toValue, Fragment, capitalize, watch, onScopeDispose, camelize, isVNode, Comment, ref, toRaw, defineComponent as defineComponent$1, provide, unref, hasInjectionContext, getCurrentInstance as getCurrentInstance$1, shallowRef, createVNode, mergeProps, createElementVNode, effectScope, normalizeClass, defineAsyncComponent, h, shallowReactive, createElementBlock, Suspense, createApp, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, getCurrentScope, withCtx, nextTick, isReadonly, useSSRContext, isRef, isShallow, isReactive, toRefs } from 'vue';
+import { c as createError$1, B as parseURL, C as encodePath, D as decodePath, E as hasProtocol, F as isScriptProtocol, z as joinURL, G as withQuery, H as sanitizeStatusCode, I as getContext, $ as $fetch, J as defu, K as executeAsync } from '../nitro/nitro.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
 import { ssrRenderSuspense, ssrRenderComponent, ssrRenderVNode } from 'vue/server-renderer';
@@ -11,6 +11,11 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'drizzle-orm/better-sqlite3';
+import 'better-sqlite3';
+import 'path';
+import 'drizzle-orm/sqlite-core';
+import 'drizzle-orm';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
 import 'devalue';
@@ -713,6 +718,18 @@ function chunk(str, size = 1) {
     index += size;
   }
   return chunked;
+}
+function humanReadableFileSize(bytes, base = 1e3) {
+  if (bytes < base) {
+    return `${bytes} B`;
+  }
+  const prefix = base === 1024 ? ["Ki", "Mi", "Gi"] : ["k", "M", "G"];
+  let unit = -1;
+  while (Math.abs(bytes) >= base && unit < prefix.length - 1) {
+    bytes /= base;
+    ++unit;
+  }
+  return `${bytes.toFixed(1)} ${prefix[unit]}B`;
 }
 function mergeDeep(source = {}, target = {}, arrayFn, targetCondition) {
   const out = {};
@@ -1629,81 +1646,81 @@ const _routes = [
     name: "admin-courses-new",
     path: "/admin/courses/new",
     meta: { ...__nuxt_page_meta$9 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./new-BNeNo-ln.mjs')
+    component: () => import('./new-BZ8WaBCB.mjs')
   },
   {
     name: "admin-courses-id",
     path: "/admin/courses/:id()",
     meta: { ...__nuxt_page_meta$8 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./_id_-zEJGmu7P.mjs')
+    component: () => import('./_id_-BfgyUSHS.mjs')
   },
   {
     name: "admin-users-id",
     path: "/admin/users/:id()",
     meta: { ...__nuxt_page_meta$7 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./_id_-gJ0J8QVy.mjs')
+    component: () => import('./_id_-CoXmRSgt.mjs')
   },
   {
     name: "admin-courses",
     path: "/admin/courses",
     meta: { ...__nuxt_page_meta$6 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-COt2OEse.mjs')
+    component: () => import('./index-BoLuUVHt.mjs')
   },
   {
     name: "admin-login",
     path: "/admin/login",
     meta: __nuxt_page_meta$5 || {},
-    component: () => import('./login-Dl0VUY8C.mjs')
+    component: () => import('./login-B-3T_VOT.mjs')
   },
   {
     name: "admin-plan",
     path: "/admin/plan",
     meta: { ...__nuxt_page_meta$4 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-ZSHME3Yl.mjs')
+    component: () => import('./index-snSjspbL.mjs')
   },
   {
     name: "admin-purchases",
     path: "/admin/purchases",
     meta: { ...__nuxt_page_meta$3 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-CaAoB1QG.mjs')
+    component: () => import('./index-MKzYB-Wa.mjs')
   },
   {
     name: "admin-settings",
     path: "/admin/settings",
     meta: { ...__nuxt_page_meta$2 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-Cr8oSHDE.mjs')
+    component: () => import('./index-j8hy10jL.mjs')
   },
   {
     name: "admin-users",
     path: "/admin/users",
     meta: { ...__nuxt_page_meta$1 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-ClMf_w5Z.mjs')
+    component: () => import('./index-Bp7WcGf7.mjs')
   },
   {
     name: "courses-slug",
     path: "/courses/:slug()",
-    component: () => import('./_slug_-CmETwZwH.mjs')
+    component: () => import('./_slug_-HGBAzSWs.mjs')
   },
   {
     name: "admin",
     path: "/admin",
     meta: { ...__nuxt_page_meta || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-0sHwVBlb.mjs')
+    component: () => import('./index-lT6htD6q.mjs')
   },
   {
     name: "cabinet",
     path: "/cabinet",
-    component: () => import('./index-jh_WE-Tm.mjs')
+    component: () => import('./index-DKxr7Ecg.mjs')
   },
   {
     name: "profile",
     path: "/profile",
-    component: () => import('./index-WGrr_Hjy.mjs')
+    component: () => import('./index-CZsRJx7V.mjs')
   },
   {
     name: "index",
     path: "/",
-    component: () => import('./index-BPRaAfao.mjs')
+    component: () => import('./index-CLaQcmAa.mjs')
   }
 ];
 const _wrapInTransition = (props, children) => {
@@ -1849,7 +1866,8 @@ const globalMiddleware = [
   manifest_45route_45rule
 ];
 const namedMiddleware = {
-  admin: () => import('./admin-BNgJsls_.mjs')
+  admin: () => import('./admin-D8JCC4y_.mjs'),
+  test: () => import('./test-D4Sys7p8.mjs')
 };
 const plugin$1 = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:router",
@@ -3985,7 +4003,8 @@ const plugins = [
   vuetify_nuxt_plugin_server_9oTjuJUolTgCRp3b2GI8HpSG5efgavDBj_liwzqFHbg
 ];
 const layouts = {
-  admin: defineAsyncComponent(() => import('./admin-xOpsdd7D.mjs').then((m) => m.default || m))
+  admin: defineAsyncComponent(() => import('./admin-B-8Bw2tG.mjs').then((m) => m.default || m)),
+  default: defineAsyncComponent(() => import('./default-DIAyLRdx.mjs').then((m) => m.default || m))
 };
 const routeRulesMatcher = _routeRulesMatcher;
 const LayoutLoader = defineComponent$1({
@@ -4276,8 +4295,8 @@ const _sfc_main$1 = {
     const statusText = _error.statusMessage ?? (is404 ? "Page Not Found" : "Internal Server Error");
     const description = _error.message || _error.toString();
     const stack = void 0;
-    const _Error404 = defineAsyncComponent(() => import('./error-404-Dy42h31u.mjs'));
-    const _Error = defineAsyncComponent(() => import('./error-500-Jgk4NVy-.mjs'));
+    const _Error404 = defineAsyncComponent(() => import('./error-404-DRXQg1v_.mjs'));
+    const _Error = defineAsyncComponent(() => import('./error-500-Do2nex-F.mjs'));
     const ErrorTemplate = is404 ? _Error404 : _Error;
     return (_ctx, _push, _parent, _attrs) => {
       _push(ssrRenderComponent(unref(ErrorTemplate), mergeProps({ status: unref(status), statusText: unref(statusText), statusCode: unref(status), statusMessage: unref(statusText), description: unref(description), stack: unref(stack) }, _attrs), null, _parent));
@@ -4358,5 +4377,5 @@ let entry;
 }
 const entry_default = ((ssrContext) => entry(ssrContext));
 
-export { useGoTo as $, getPropertyFromItem as A, debounce as B, getCurrentInstance as C, useToggleScope as D, camelizeProps as E, ensureValidVNode as F, checkPrintable as G, callEvent as H, IconValue as I, encodeRoutePath as J, resolveRouteObject as K, useNuxtApp as L, useRuntimeConfig as M, nuxtLinkDefaults as N, EventProp as O, getCurrentInstanceName as P, consoleWarn as Q, asyncDataDefaults as R, createError as S, fetchDefaults as T, acceleratedEasing as U, deceleratedEasing as V, destructComputed as W, consoleError as X, CircularBuffer as Y, templateRef as Z, _export_sfc as _, useRouter as a, makeDisplayProps as a0, breakpoints as a1, deprecate as a2, PREFERS_REDUCED_MOTION as a3, includes as a4, isPrimitive as a5, isCssColor as a6, isParsableColor as a7, parseColor as a8, hasLightForeground as a9, findChildrenWithProvide as aa, useTheme as ab, useIcon as ac, flattenFragments as ad, hasEvent as ae, onlyDefinedProps as af, defineComponent as ag, pickWithRest as ah, defer as ai, defineNuxtRouteMiddleware as aj, provideTheme as b, provideDefaults as c, pick as d, entry_default as default, useRtl as e, useLocale as f, genericComponent as g, convertToUnit as h, useProxiedModel as i, isObject as j, keys as k, filterInputAttrs as l, makeThemeProps as m, navigateTo as n, omit as o, propsFactory as p, matchesSelector as q, isClickInsideElement as r, standardEasing as s, focusChild as t, useRoute as u, getNextElement as v, wrapInArray as w, focusableChildren as x, useDisplay as y, clamp as z };
+export { getPropertyFromItem as $, getCurrentInstanceName as A, destructComputed as B, isCssColor as C, isParsableColor as D, parseColor as E, hasLightForeground as F, findChildrenWithProvide as G, consoleWarn as H, IconValue as I, useTheme as J, useIcon as K, flattenFragments as L, useRtl as M, hasEvent as N, isObject as O, PREFERS_REDUCED_MOTION as P, onlyDefinedProps as Q, keys as R, breakpoints as S, deprecate as T, useDisplay as U, matchesSelector as V, isClickInsideElement as W, focusChild as X, getNextElement as Y, focusableChildren as Z, _export_sfc as _, useRouter as a, debounce as a0, useToggleScope as a1, camelizeProps as a2, ensureValidVNode as a3, checkPrintable as a4, useGoTo as a5, makeDisplayProps as a6, EventProp as a7, pick as a8, standardEasing as a9, consoleError as aa, defineComponent as ab, pickWithRest as ac, acceleratedEasing as ad, deceleratedEasing as ae, CircularBuffer as af, defer as ag, asyncDataDefaults as ah, createError as ai, fetchDefaults as aj, defineNuxtRouteMiddleware as ak, useLocale as b, useProxiedModel as c, callEvent as d, entry_default as default, encodeRoutePath as e, filterInputAttrs as f, genericComponent as g, humanReadableFileSize as h, useNuxtApp as i, useRuntimeConfig as j, nuxtLinkDefaults as k, provideTheme as l, makeThemeProps as m, navigateTo as n, omit as o, propsFactory as p, provideDefaults as q, resolveRouteObject as r, clamp as s, convertToUnit as t, useRoute as u, includes as v, wrapInArray as w, isPrimitive as x, getCurrentInstance as y, templateRef as z };
 //# sourceMappingURL=server.mjs.map

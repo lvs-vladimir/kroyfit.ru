@@ -1,5 +1,5 @@
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'vue-bundle-renderer/runtime';
-import { j as joinRelativeURL, u as useRuntimeConfig, b as getResponseStatusText, e as getResponseStatus, f as defineRenderHandler, h as getQuery, c as createError, i as destr, k as getRouteRules, l as joinURL, m as useNitroApp } from '../nitro/nitro.mjs';
+import { m as joinRelativeURL, n as useRuntimeConfig, o as getResponseStatusText, q as getResponseStatus, t as defineRenderHandler, w as getQuery, c as createError, x as destr, y as getRouteRules, z as joinURL, A as useNitroApp } from '../nitro/nitro.mjs';
 import { renderToString } from 'vue/server-renderer';
 import { createHead as createHead$1, propsToString, renderSSRHead } from 'unhead/server';
 import { stringify, uneval } from 'devalue';
@@ -87,7 +87,7 @@ function createHead(options = {}) {
 const NUXT_PAYLOAD_INLINE = false;
 const NUXT_RUNTIME_PAYLOAD_EXTRACTION = false;
 
-const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"Курсы кройки и шитья в Барнауле. Методика точного кроя по Злачевской. С 2014 года."},{"name":"theme-color","content":"#6366F1"}],"link":[{"rel":"preconnect","href":"https://fonts.googleapis.com"},{"rel":"preconnect","href":"https://fonts.gstatic.com","crossorigin":""},{"rel":"stylesheet","href":"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"}],"style":[],"script":[{"src":"https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js","nonce":"csp_nonce"}],"noscript":[],"title":"Генетика Кроя — Курсы кройки и шитья в Барнауле"};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"name":"description","content":"Курсы кройки и шитья в Барнауле. Методика точного кроя по Злачевской. С 2014 года."},{"name":"theme-color","content":"#1C1917"}],"link":[{"rel":"preconnect","href":"https://fonts.googleapis.com"},{"rel":"preconnect","href":"https://fonts.gstatic.com","crossorigin":""},{"rel":"stylesheet","href":"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"},{"rel":"icon","type":"image/svg+xml","href":"data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>"}],"style":[],"script":[{"src":"https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js","nonce":"csp_nonce"}],"noscript":[],"title":"Генетика Кроя — Курсы кройки и шитья в Барнауле"};
 
 const appRootTag = "div";
 

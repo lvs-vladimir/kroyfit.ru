@@ -1,5 +1,4 @@
-import { d as defineEventHandler, c as createError } from '../../../nitro/nitro.mjs';
-import { d as db, a as admins } from '../../../_/db.mjs';
+import { d as defineEventHandler, a as db, b as admins, c as createError } from '../../../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';

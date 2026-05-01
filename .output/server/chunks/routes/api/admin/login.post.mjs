@@ -1,5 +1,4 @@
-import { d as defineEventHandler, r as readBody, c as createError } from '../../../nitro/nitro.mjs';
-import { d as db, a as admins } from '../../../_/db.mjs';
+import { d as defineEventHandler, r as readBody, c as createError, a as db, b as admins, s as setCookie } from '../../../nitro/nitro.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
 import 'node:https';
@@ -49,6 +48,12 @@ const login_post = defineEventHandler(async (event) => {
     }
     console.log("\u2705 [API] Login successful:", admin.name);
     const token = Buffer.from(`${admin.id}:${admin.email}:${Date.now()}`).toString("base64");
+    setCookie(event, "admin-token", token, {
+      httpOnly: false,
+      maxAge: 60 * 60 * 24 * 7,
+      // 7 дней
+      path: "/"
+    });
     return {
       token,
       user: {

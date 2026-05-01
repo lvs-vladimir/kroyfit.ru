@@ -1,5 +1,4 @@
-import { d as defineEventHandler, c as createError } from '../../../nitro/nitro.mjs';
-import { d as db, p as purchases, c as courses } from '../../../_/db.mjs';
+import { d as defineEventHandler, a as db, p as purchases, f as courses, c as createError } from '../../../nitro/nitro.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
 import 'node:https';

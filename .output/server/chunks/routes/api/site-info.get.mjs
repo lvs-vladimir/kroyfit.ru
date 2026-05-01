@@ -1,5 +1,4 @@
-import { d as defineEventHandler } from '../../nitro/nitro.mjs';
-import { d as db, g as generalSettings, s as seoSettings, c as courses } from '../../_/db.mjs';
+import { d as defineEventHandler, a as db, j as generalSettings, i as seoSettings, f as courses } from '../../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -27,7 +26,8 @@ const siteInfo_get = defineEventHandler(async (event) => {
       seo: {
         title: (seo == null ? void 0 : seo.title) || "\u0413\u0435\u043D\u0435\u0442\u0438\u043A\u0430 \u041A\u0440\u043E\u044F \u2014 \u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F",
         description: (seo == null ? void 0 : seo.description) || "\u041A\u0443\u0440\u0441\u044B \u043A\u0440\u043E\u0439\u043A\u0438 \u0438 \u0448\u0438\u0442\u044C\u044F",
-        keywords: (seo == null ? void 0 : seo.keywords) || "\u043A\u0440\u043E\u0439\u043A\u0430, \u0448\u0438\u0442\u044C\u0435, \u043A\u0443\u0440\u0441\u044B"
+        keywords: (seo == null ? void 0 : seo.keywords) || "\u043A\u0440\u043E\u0439\u043A\u0430, \u0448\u0438\u0442\u044C\u0435, \u043A\u0443\u0440\u0441\u044B",
+        ogImage: (seo == null ? void 0 : seo.ogImage) || ""
       },
       courses: coursesList
     };

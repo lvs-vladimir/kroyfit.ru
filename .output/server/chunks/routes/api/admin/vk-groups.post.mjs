@@ -1,5 +1,4 @@
-import { d as defineEventHandler, r as readBody, c as createError } from '../../../nitro/nitro.mjs';
-import { d as db, v as vkGroups } from '../../../_/db.mjs';
+import { d as defineEventHandler, r as readBody, a as db, v as vkGroups, c as createError } from '../../../nitro/nitro.mjs';
 import { eq } from 'drizzle-orm';
 import 'node:http';
 import 'node:https';

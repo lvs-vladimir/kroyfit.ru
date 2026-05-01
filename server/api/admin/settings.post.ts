@@ -322,9 +322,9 @@ export default defineEventHandler(async (event) => {
 
     if (type === 'seo') {
       console.log('🟡 [API] Сохранение SEO настроек...')
-      const { title, description, keywords, enableSitemap, enableRobots } = data
+      const { title, description, keywords, ogImage, enableSitemap, enableRobots } = data
       await db.update(seoSettings).set({
-        title, description, keywords,
+        title, description, keywords, ogImage,
         enableSitemap: enableSitemap ? 1 : 0,
         enableRobots: enableRobots ? 1 : 0,
       }).where(eq(seoSettings.id, 1))

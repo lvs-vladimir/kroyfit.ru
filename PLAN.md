@@ -28,8 +28,32 @@
   - [x] Блок "Что вы получите" с benefits из админки
   - [x] Другие курсы (без цены и кнопки)
 - [x] **Описание в карточках ограничено 80 символами** на главной
+- [x] **Интеграция ЮKassa** - платежи за курсы
+  - [x] Создание платежа через API ЮKassa
+  - [x] Webhook обработчик для уведомлений (payment.succeeded, canceled, refunded, waiting_for_capture, payment_method.active)
+  - [x] Обновление статуса покупки в БД
+  - [x] Проверка авторизации перед покупкой
+- [x] **VK ID авторизация** - вход через VK ID
+  - [x] VK ID OneTap виджет в хедере
+  - [x] Обмен code на access_token через VK API
+  - [x] Автоматическое создание пользователей в БД
+  - [x] Хранение данных пользователя в cookie
+- [x] **API пользователей**
+  - [x] GET /api/user/me - получение текущего пользователя
+  - [x] GET /api/user/purchases - список покупок пользователя
+- [x] **Environment Variables** - вынесены секреты в .env
+  - [x] YOOKASSA_SHOP_ID, YOOKASSA_SECRET_KEY
+  - [x] VK_APP_ID, VK_APP_SECRET, VK_REDIRECT_URL
+- [x] **Webhook YooKassa** - настроен приём уведомлений
+  - URL: https://kroyfit.ru/api/payments/webhook
+  - События: payment.succeeded, payment.waiting_for_capture, payment.canceled, payment_method.active, refund.succeeded
+- [x] **SEO интеграция** - реальные meta теги
+  - [x] Динамические заголовки и описания со страницы настроек
+  - [x] Open Graph изображение (ogImage)
+  - [x] Поле ogImage в админке
+- [x] **Favicon** - ✂️ для всего сайта
 - [x] **База данных** - полная схема с таблицами:
-  - roles, admins, users, courses (с benefits), purchases, vk_groups, email_settings, seo_settings, general_settings
+  - roles, admins, users (с vkId), courses (с benefits), purchases (с paymentId, status), vk_groups, email_settings, seo_settings (с og_image), general_settings
 - [x] **Авторизация** - исправлена установка cookie при логине
 - [x] **Изменение пароля администраторов** - работает корректно
 - [x] **GitHub** - обновлён репозиторий с новыми функциями

@@ -1,52 +1,123 @@
 import { db } from '../../database/db'
-import { purchases } from '../../database/schema'
+import { purchases, courses } from '../../database/schema'
+import { eq } from 'drizzle-orm'
+
+const SHOP_ID = process.env.YOOKASSA_SHOP_ID || '1344393'
+const API_KEY = process.env.YOOKASSA_SECRET_KEY || 'live_Gn0WbDxR3hthCMkTu13qWuaVhXo-LPDJI_QN2P54-OM'
 
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const { userId, courseId, amount } = body
-
-  if (!userId || !courseId || !amount) {
-    throw createError({
-      statusCode: 400,
-      message: 'Не переданы обязательные параметры',
-    })
-  }
-
+  console.log('🟡 [API] POST /api/payments/create - Создание платежа ЮКасса')
+  
   try {
-    // Создаем запись о покупке со статусом pending
-    const purchaseId = crypto.randomUUID()
+    // Получаем текущего пользователя из cookie/session
+    const body = await readBody(event)
+    const { courseId, returnUrl } = body
     
+    if (!courseId) {
+      throw createError({ statusCode: 400, message: 'ID курса обязателен' })
+    }
+    
+    // Проверяем, что пользователь авторизован (должен быть в cookie)
+    const userCookie = getCookie(event, 'user')
+    if (!userCookie) {
+      throw createError({ statusCode: 401, message: 'Требуется авторизация' })
+    }
+    
+    let user
+    try {
+      user = JSON.parse(userCookie)
+    } catch (e) {
+      throw createError({ statusCode: 401, message: 'Неверная сессия' })
+    }
+    
+    // Получаем информацию о курсе
+    const [course] = await db.select().from(courses).where(eq(courses.id, courseId)).limit(1)
+    if (!course) {
+      throw createError({ statusCode: 404, message: 'Курс не найден' })
+    }
+    
+    // Проверяем, не покупал ли уже пользователь этот курс
+    const existingPurchase = await db.select().from(purchases)
+      .where(eq(purchases.userId, user.id))
+      .limit(100)
+    
+    const alreadyPurchased = existingPurchase.some(p => p.courseId === courseId && p.status === 'completed')
+    if (alreadyPurchased) {
+      throw createError({ statusCode: 400, message: 'Курс уже приобретен' })
+    }
+    
+    // Создаем уникальный idempotency key
+    const idempotenceKey = crypto.randomUUID()
+    
+    // Создаем запись о покупке в БД (pending)
+    const purchaseId = crypto.randomUUID()
     await db.insert(purchases).values({
       id: purchaseId,
-      userId,
-      courseId,
-      amount,
+      userId: user.id,
+      courseId: courseId,
+      amount: course.price,
       status: 'pending',
+      createdAt: new Date().toISOString(),
     })
-
-    // TODO: Интеграция с ЮKassa API
-    // const yookassa = new YooKassa({
-    //   shopId: process.env.YOOKASSA_SHOP_ID,
-    //   secretKey: process.env.YOOKASSA_SECRET_KEY,
-    // })
     
-    // const payment = await yookassa.createPayment({
-    //   amount: { value: amount / 100, currency: 'RUB' },
-    //   confirmation: { type: 'redirect', return_url: 'https://kroyfit.ru/payment-success' },
-    //   metadata: { purchaseId },
-    // })
-
+    // Создаем платеж в ЮКассе
+    const paymentData = {
+      amount: {
+        value: course.price.toFixed(2),
+        currency: 'RUB'
+      },
+      capture: true,
+      confirmation: {
+        type: 'redirect',
+        return_url: returnUrl || 'https://kroyfit.ru/courses/' + course.slug
+      },
+      description: `Оплата курса: ${course.title}`,
+      metadata: {
+        purchaseId: purchaseId,
+        userId: user.id,
+        courseId: courseId
+      }
+    }
+    
+    console.log('🟡 [API] Отправка запроса в ЮКассу:', JSON.stringify(paymentData, null, 2))
+    
+    // Запрос к API ЮКассы
+    const auth = Buffer.from(`${SHOP_ID}:${API_KEY}`).toString('base64')
+    
+    const response = await $fetch('https://api.yookassa.ru/v3/payments', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/json',
+        'Idempotence-Key': idempotenceKey
+      },
+      body: paymentData
+    })
+    
+    console.log('✅ [API] Платеж создан в ЮКассе:', response.id)
+    
+    // Обновляем запись о покупке с payment_id
+    await db.update(purchases)
+      .set({ paymentId: response.id })
+      .where(eq(purchases.id, purchaseId))
+    
     return {
       success: true,
-      purchaseId,
-      message: 'Платеж создан (тестовый режим)',
-      // paymentUrl: payment.confirmation.confirmation_url,
+      confirmationUrl: response.confirmation.confirmation_url,
+      paymentId: response.id,
+      purchaseId: purchaseId
     }
-  } catch (e) {
-    console.error('Ошибка создания платежа:', e)
+    
+  } catch (error: any) {
+    console.error('❌ [API] Ошибка создания платежа:', error)
+    
+    if (error.statusCode) {
+      throw error
+    }
+    
     throw createError({
       statusCode: 500,
-      message: 'Ошибка создания платежа',
+      message: error.message || 'Ошибка создания платежа'
     })
   }
 })

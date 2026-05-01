@@ -111,6 +111,7 @@ try {
         title TEXT NOT NULL DEFAULT 'Генетика Кроя',
         description TEXT NOT NULL DEFAULT 'Курсы кройки и шитья',
         keywords TEXT NOT NULL DEFAULT 'кройка, шитье, курсы',
+        og_image TEXT DEFAULT '',
         enable_sitemap INTEGER NOT NULL DEFAULT 1,
         enable_robots INTEGER NOT NULL DEFAULT 1,
         updated_at TEXT DEFAULT (datetime('now'))
@@ -127,6 +128,19 @@ try {
     console.log('✅ [DB] Таблицы созданы')
   } else {
     console.log('✅ [DB] Таблицы уже существуют')
+    
+    // Миграция: добавляем колонку og_image в seo_settings если её нет
+    try {
+      const columns = sqlite.prepare("PRAGMA table_info(seo_settings)").all()
+      const hasOgImage = columns.some((col: any) => col.name === 'og_image')
+      if (!hasOgImage) {
+        console.log('📝 [DB] Миграция: добавляем колонку og_image в seo_settings')
+        sqlite.exec(`ALTER TABLE seo_settings ADD COLUMN og_image TEXT DEFAULT ''`)
+        console.log('✅ [DB] Колонка og_image добавлена')
+      }
+    } catch (migrationError) {
+      console.error('❌ [DB] Ошибка миграции:', migrationError)
+    }
   }
 } catch (e) {
   console.error('❌ [DB] Ошибка инициализации:', e)

@@ -1,5 +1,4 @@
-import { d as defineEventHandler, s as setHeader } from '../nitro/nitro.mjs';
-import { d as db, c as courses } from '../_/db.mjs';
+import { d as defineEventHandler, a as db, f as courses, l as setHeader } from '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';

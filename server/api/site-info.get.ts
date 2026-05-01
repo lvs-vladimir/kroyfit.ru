@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
         title: seo?.title || 'Генетика Кроя — Курсы кройки и шитья',
         description: seo?.description || 'Курсы кройки и шитья',
         keywords: seo?.keywords || 'кройка, шитье, курсы',
+        ogImage: seo?.ogImage || '',
       },
       courses: coursesList,
     }

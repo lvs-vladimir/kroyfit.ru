@@ -16,8 +16,16 @@
           <NuxtLink :to="getNavLink('#contacts')" class="nav-link">Контакты</NuxtLink>
         </nav>
 
-        <!-- CTA Button -->
-        <NuxtLink :to="getNavLink('#courses')" class="btn-primary">Записаться</NuxtLink>
+        <!-- VK ID Auth / User Info -->
+        <div class="header-auth">
+          <div v-if="currentUser" class="user-info">
+            <img v-if="currentUser.avatar" :src="currentUser.avatar" class="user-avatar" alt="avatar">
+            <span v-else class="user-avatar-default">{{ currentUser.name?.charAt(0) || '?' }}</span>
+            <span class="user-name">{{ currentUser.name }}</span>
+            <button class="btn-logout" @click="logout">Выйти</button>
+          </div>
+          <div v-else id="vk-auth-container" class="vk-auth-widget"></div>
+        </div>
       </div>
     </div>
   </header>
@@ -26,6 +34,82 @@
 <script setup lang="ts">
 const route = useRoute()
 const isScrolled = ref(false)
+const currentUser = ref<any>(null)
+
+// Загружаем данные пользователя
+onMounted(async () => {
+  // Слушаем скролл
+  window.addEventListener('scroll', () => {
+    isScrolled.value = window.scrollY > 50
+  })
+  
+  // Проверяем авторизацию
+  try {
+    const user = await $fetch('/api/user/me')
+    if (user) {
+      currentUser.value = user
+    }
+  } catch (e) {
+    // Пользователь не авторизован
+  }
+  
+  // Инициализируем VK ID виджет если пользователь не авторизован
+  if (!currentUser.value && typeof window !== 'undefined' && 'VKIDSDK' in window) {
+    initVkAuth()
+  }
+})
+
+// Инициализация VK ID
+const initVkAuth = () => {
+  if (!('VKIDSDK' in window)) return
+  
+  const VKID = (window as any).VKIDSDK
+  
+  VKID.Config.init({
+    app: parseInt(import.meta.env.VK_APP_ID || '54572308'),
+    redirectUrl: import.meta.env.VK_REDIRECT_URL || 'https://kroyfit.ru',
+    responseMode: VKID.ConfigResponseMode.Callback,
+    source: VKID.ConfigSource.LOWCODE,
+    scope: '',
+  })
+
+  const oneTap = new VKID.OneTap()
+
+  oneTap.render({
+    container: document.getElementById('vk-auth-container'),
+    showAlternativeLogin: true
+  })
+  .on(VKID.WidgetEvents.ERROR, (error: any) => {
+    console.error('VK ID Error:', error)
+  })
+  .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, async function (payload: any) {
+    const code = payload.code
+    const deviceId = payload.device_id
+
+    try {
+      // Отправляем code на сервер для обмена на access_token
+      const response = await $fetch('/api/auth/vk', {
+        method: 'POST',
+        body: { code, deviceId }
+      })
+      
+      if (response.success) {
+        currentUser.value = response.user
+        // Перезагружаем страницу для обновления состояния
+        window.location.reload()
+      }
+    } catch (e) {
+      console.error('VK Auth Error:', e)
+    }
+  })
+}
+
+// Logout
+const logout = () => {
+  document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
+  currentUser.value = null
+  window.location.reload()
+}
 
 // Если на главной странице — используем якоря, иначе — ссылки на главную с якорем
 const getNavLink = (anchor: string) => {
@@ -34,12 +118,6 @@ const getNavLink = (anchor: string) => {
   }
   return '/' + anchor
 }
-
-onMounted(() => {
-  window.addEventListener('scroll', () => {
-    isScrolled.value = window.scrollY > 50
-  })
-})
 </script>
 
 <style scoped>
@@ -151,6 +229,68 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-avatar-default {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-copper);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.user-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-dark);
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.25rem 0.75rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: var(--color-copper);
+  color: white;
+  border-color: var(--color-copper);
+}
+
+.vk-auth-widget {
+  min-width: 120px;
+}
+
 @media (max-width: 768px) {
   .nav-menu {
     display: none;
@@ -167,6 +307,16 @@ onMounted(() => {
   .btn-primary {
     padding: 0.625rem 1rem;
     font-size: 0.75rem;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .vk-auth-widget {
+    min-width: 100px;
+    transform: scale(0.85);
+    transform-origin: right;
   }
 }
 </style>
