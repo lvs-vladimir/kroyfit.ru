@@ -83,26 +83,116 @@ const initVkAuth = () => {
     console.error('VK ID Error:', error)
   })
   .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, async function (payload: any) {
+    console.log('✅ [VK] Получены данные:', JSON.stringify(payload))
+
+    // Если есть access_token напрямую (Implicit Flow)
+    if (payload.access_token) {
+      console.log('✅ [VK] Получен access_token напрямую, получаем данные пользователя...')
+      
+      try {
+        // Получаем данные пользователя
+        const VKID = (window as any).VKIDSDK
+        const userInfo = await VKID.Auth.userInfo(tokenResponse.access_token)
+        
+        console.log('✅ [VK] Данные пользователя:', userInfo)
+        
+        // Данные находятся внутри user объекта
+        const userData = userInfo.user || userInfo
+        
+        // Отправляем данные на сервер
+        const response = await $fetch('/api/auth/vk', {
+          method: 'POST',
+          body: { 
+            vkId: userData.user_id,
+            name: userData.first_name + (userData.last_name ? ' ' + userData.last_name : ''),
+            avatar: userData.avatar || null,
+          }
+        })
+        
+        if (response.success) {
+          currentUser.value = response.user
+          window.location.reload()
+        }
+      } catch (e: any) {
+        console.error('❌ [VK] Ошибка:', e)
+        alert('Ошибка авторизации: ' + (e.message || 'Неизвестная ошибка'))
+      }
+      return
+    }
+
+    // Иначе используем код - обмениваем через SDK
     const code = payload.code
     const deviceId = payload.device_id
+    
+    if (!code) {
+      console.error('❌ [VK] Нет кода в ответе')
+      return
+    }
+
+    console.log('✅ [VK] Получен код, обмениваем через SDK...')
 
     try {
-      // Отправляем code на сервер для обмена на access_token
-      const response = await $fetch('/api/auth/vk', {
-        method: 'POST',
-        body: { code, deviceId }
-      })
+      // Используем SDK для обмена кода на токены
+      const VKID = (window as any).VKIDSDK
+      const tokenResponse = await VKID.Auth.exchangeCode(code, deviceId)
       
-      if (response.success) {
-        currentUser.value = response.user
-        // Перезагружаем страницу для обновления состояния
-        window.location.reload()
+      console.log('✅ [VK] Токены получены, получаем данные пользователя...')
+      
+      if (tokenResponse.access_token) {
+        // Получаем данные пользователя
+        const userInfo = await VKID.Auth.userInfo(tokenResponse.access_token)
+        
+        console.log('✅ [VK] Данные пользователя:', userInfo)
+        
+        // Данные находятся внутри user объекта
+        const userData = userInfo.user || userInfo
+        
+        // Отправляем данные на сервер
+        const response = await $fetch('/api/auth/vk', {
+          method: 'POST',
+          body: { 
+            vkId: userData.user_id,
+            name: userData.first_name + (userData.last_name ? ' ' + userData.last_name : ''),
+            avatar: userData.avatar || null,
+          }
+        })
+        
+        if (response.success) {
+          currentUser.value = response.user
+          window.location.reload()
+        }
       }
-    } catch (e) {
-      console.error('VK Auth Error:', e)
+    } catch (e: any) {
+      console.error('❌ [VK] Ошибка при обмене кода:', e)
+      alert('Ошибка авторизации: ' + (e.message || 'Неизвестная ошибка'))
     }
   })
 }
+
+// Проверяем, есть ли код в URL (после редиректа от VK)
+onMounted(() => {
+  const urlParams = new URLSearchParams(window.location.search)
+  const code = urlParams.get('code')
+  const deviceId = urlParams.get('device_id')
+  
+  if (code && deviceId && !currentUser.value) {
+    console.log('✅ [VK] Найден код в URL после редиректа')
+    
+    $fetch('/api/auth/vk', {
+      method: 'POST',
+      body: { code, deviceId }
+    }).then((response: any) => {
+      if (response.success) {
+        currentUser.value = response.user
+        // Убираем параметры из URL
+        window.history.replaceState({}, document.title, window.location.pathname)
+        window.location.reload()
+      }
+    }).catch((e: any) => {
+      console.error('❌ [VK] Ошибка при обмене кода из URL:', e)
+    })
+  }
+})
 
 // Logout
 const logout = () => {
@@ -288,7 +378,7 @@ const getNavLink = (anchor: string) => {
 }
 
 .vk-auth-widget {
-  min-width: 120px;
+  min-width: 210px;
 }
 
 @media (max-width: 768px) {
