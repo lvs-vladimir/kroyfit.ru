@@ -121,7 +121,7 @@ export default defineEventHandler(async (event) => {
     }
     
     // Всегда возвращаем 200 OK
-    return { received: true }e }
+    return { received: true }
     
   } catch (error: any) {
     console.error('❌ [API] Ошибка обработки webhook:', error)
