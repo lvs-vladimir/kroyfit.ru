@@ -32,13 +32,27 @@
       <tbody>
           <tr v-for="user in users" :key="user.id">
             <td>
-              <nuxt-link
-                :to="`/admin/users/${user.id}`"
-                class="text-decoration-none font-weight-medium"
-                style="color: #020617;"
-              >
-                {{ user.name }}
-              </nuxt-link>
+              <div class="d-flex align-center gap-2">
+                <v-avatar 
+                  v-if="user.avatar" 
+                  :image="user.avatar" 
+                  size="32"
+                />
+                <v-avatar 
+                  v-else 
+                  size="32"
+                  style="background: #e0e0e0; color: #666;"
+                >
+                  {{ user.name?.charAt(0) || '?' }}
+                </v-avatar>
+                <nuxt-link
+                  :to="`/admin/users/${user.id}`"
+                  class="text-decoration-none font-weight-medium"
+                  style="color: #020617;"
+                >
+                  {{ user.name }}
+                </nuxt-link>
+              </div>
             </td>
             <td class="text-grey-darken-2">{{ user.email }}</td>
             <td>
