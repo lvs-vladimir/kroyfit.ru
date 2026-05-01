@@ -406,17 +406,27 @@
                           - vk.com/название_группы<br>
                           - Только ID: 123456</p>
                           
-                          <p class="font-weight-medium mb-2">2. Получите токен сообщества (ключ доступа)</p>
-                          <p class="mb-2 pl-4">
-                            <a href="https://vk.com/dev/access_token" target="_blank" style="color: #1976d2;">Инструкция от VK →</a><br>
-                            Или: Управление → Работа с API → Ключи доступа → Создать ключ
-                          </p>
-                          <p class="mb-2 pl-4 text-red-darken-2">
-                            <v-icon size="14" color="red">mdi-alert</v-icon>
-                            <strong>Важно:</strong> Токен должен иметь права:<br>
-                            - Доступ к управлению сообществом<br>
-                            - Доступ к приглашениям в группу
-                          </p>
+                           <p class="font-weight-medium mb-2">2. Получите токен пользователя-администратора</p>
+                           <p class="mb-2 pl-4">
+                             Метод <code>groups.invite</code> требует токен <strong>пользователя</strong>, а не группы.<br>
+                             Перейдите по ссылке и авторизуйтесь как администратор группы:
+                           </p>
+                           <p class="mb-2 pl-4">
+                             <a 
+                               :href="`https://oauth.vk.com/authorize?client_id=54572308&display=page&redirect_uri=https://kroyfit.ru&scope=groups,manage&response_type=token&v=5.131`"
+                               target="_blank" 
+                               style="color: #1976d2;"
+                             >Получить токен администратора →</a>
+                           </p>
+                           <p class="mb-2 pl-4 text-caption text-grey">
+                             После авторизации скопируйте значение <code>access_token</code> из URL адресной строки.
+                           </p>
+                           <p class="mb-2 pl-4 text-red-darken-2">
+                             <v-icon size="14" color="red">mdi-alert</v-icon>
+                             <strong>Важно:</strong> Нужен токен пользователя (не группы) с правами:<br>
+                             - groups (доступ к группам)<br>
+                             - manage (управление сообществом)
+                           </p>
                           
                           <p class="font-weight-medium mb-2">3. Нажмите кнопку "Тест"</p>
                           <p class="mb-2 pl-4">Проверьте, что подключение работает.<br>
@@ -430,9 +440,9 @@
                   </v-expansion-panels>
                 </div>
 
-                <!-- 2. Токен сообщества -->
+                <!-- 2. Токен пользователя-администратора -->
                 <div class="mb-4">
-                  <label class="text-caption text-grey-darken-1 d-block mb-1">Токен сообщества</label>
+                  <label class="text-caption text-grey-darken-1 d-block mb-1">Токен пользователя-администратора</label>
                   <div class="d-flex ga-2">
                     <v-text-field 
                       v-model="newVkGroup.token" 
