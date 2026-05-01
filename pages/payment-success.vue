@@ -1,33 +1,86 @@
 <template>
-  <div class="payment-success">
-    <div class="container-max">
-      <div class="success-card">
-        <div class="success-icon">✅</div>
-        <h1>Платёж успешно принят!</h1>
-        <p class="subtitle">Спасибо за покупку курса</p>
-        
-        <div class="course-info" v-if="purchase">
-          <h2>{{ purchase.course?.title }}</h2>
-          <p class="price">{{ purchase.course?.price }} ₽</p>
+  <div class="payment-success-page">
+    <!-- Hero Section -->
+    <section class="success-hero">
+      <div class="container-max">
+        <div class="success-content">
+          <div class="success-icon">✅</div>
+          <h1 class="heading-display">Платёж успешно принят!</h1>
+          <p class="subtitle">Спасибо за покупку курса</p>
         </div>
-        
-        <div class="info-box">
-          <p><strong>ID платежа:</strong> {{ paymentId }}</p>
-          <p><strong>Статус:</strong> <span class="status-badge">Завершён</span></p>
-          <p><strong>Дата:</strong> {{ new Date().toLocaleDateString('ru-RU') }}</p>
-        </div>
-        
-        <div class="actions">
-          <NuxtLink to="/" class="btn btn-primary">На главную</NuxtLink>
-          <NuxtLink to="/courses" class="btn btn-secondary">К курсам</NuxtLink>
-        </div>
-        
-        <p class="note">
-          Письмо с подтверждением отправлено на вашу почту.<br>
-          Доступ к курсу активирован в вашем аккаунте.
-        </p>
       </div>
-    </div>
+    </section>
+
+    <!-- Course Info Section -->
+    <section class="course-details" v-if="purchase">
+      <div class="container-max">
+        <div class="details-card">
+          <h2 class="heading-large">{{ purchase.course?.title }}</h2>
+          <p class="course-description">{{ purchase.course?.description }}</p>
+          <div class="price-display">
+            <span class="price-label">Сумма платежа:</span>
+            <span class="price-value">{{ purchase.course?.price }} ₽</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment Details Section -->
+    <section class="payment-details">
+      <div class="container-max">
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">ID платежа</span>
+            <span class="detail-value">{{ paymentId }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Статус</span>
+            <span class="detail-value status-completed">Завершён</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Дата</span>
+            <span class="detail-value">{{ new Date().toLocaleDateString('ru-RU') }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Next Steps Section -->
+    <section class="next-steps">
+      <div class="container-max">
+        <h2 class="heading-large">Что дальше?</h2>
+        <div class="steps-list">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Проверьте почту</h3>
+            <p>Письмо с подтверждением отправлено на вашу почту</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Доступ активирован</h3>
+            <p>Курс уже доступен в вашем аккаунте</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Начните обучение</h3>
+            <p>Перейдите в профиль и откройте курс</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+      <div class="container-max">
+        <div class="cta-content">
+          <h2 class="heading-large">Готовы начать?</h2>
+          <div class="cta-buttons">
+            <NuxtLink to="/" class="btn btn-primary">На главную</NuxtLink>
+            <NuxtLink to="/courses" class="btn btn-secondary">К другим курсам</NuxtLink>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -54,31 +107,25 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.payment-success {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.payment-success-page {
+  background: var(--color-cream);
 }
 
-.container-max {
-  width: 100%;
-  max-width: 600px;
-}
-
-.success-card {
-  background: white;
-  border-radius: 16px;
-  padding: 60px 40px;
+.success-hero {
+  padding: 80px 0;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, rgba(196, 98, 45, 0.05) 0%, rgba(232, 213, 196, 0.1) 100%);
+}
+
+.success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .success-icon {
   font-size: 80px;
-  margin-bottom: 20px;
   animation: bounce 0.6s ease-in-out;
 }
 
@@ -87,119 +134,228 @@ onMounted(async () => {
   50% { transform: translateY(-20px); }
 }
 
-h1 {
-  font-size: 32px;
-  color: #1a1a1a;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
 .subtitle {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 30px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  opacity: 0.8;
 }
 
-.course-info {
-  background: #f5f5f5;
+.course-details {
+  padding: 60px 0;
+}
+
+.details-card {
+  background: white;
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 30px;
-  text-align: left;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.course-info h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #1a1a1a;
+.course-description {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--color-text);
+  margin: 1rem 0 2rem 0;
+  line-height: 1.6;
 }
 
-.price {
-  font-size: 24px;
+.price-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.price-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.price-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
   font-weight: 700;
-  color: #667eea;
+  color: var(--color-copper);
 }
 
-.info-box {
-  background: #f9f9f9;
-  border-left: 4px solid #667eea;
-  padding: 20px;
-  margin-bottom: 30px;
-  text-align: left;
+.payment-details {
+  padding: 60px 0;
+  background: white;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: var(--color-cream);
   border-radius: 8px;
 }
 
-.info-box p {
-  margin: 10px 0;
-  font-size: 14px;
-  color: #666;
+.detail-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: var(--color-text);
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.status-badge {
-  display: inline-block;
-  background: #10b981;
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+.detail-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
   font-weight: 600;
+  color: var(--color-text);
 }
 
-.actions {
+.status-completed {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.next-steps {
+  padding: 80px 0;
+}
+
+.steps-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.step {
   display: flex;
-  gap: 12px;
-  margin-bottom: 30px;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  border-left: 4px solid var(--color-copper);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--color-copper);
+  color: white;
+  border-radius: 50%;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.step h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.step p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.cta-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, rgba(196, 98, 45, 0.1) 0%, rgba(232, 213, 196, 0.15) 100%);
+}
+
+.cta-content {
+  text-align: center;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
 .btn {
-  flex: 1;
-  padding: 12px 24px;
+  padding: 1rem 2rem;
   border-radius: 8px;
   text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
   font-weight: 600;
+  font-size: 1rem;
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  display: inline-block;
 }
 
 .btn-primary {
-  background: #667eea;
+  background: var(--color-copper);
   color: white;
 }
 
 .btn-primary:hover {
-  background: #5568d3;
+  background: #b0541f;
   transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(196, 98, 45, 0.3);
 }
 
 .btn-secondary {
-  background: #f0f0f0;
-  color: #1a1a1a;
+  background: white;
+  color: var(--color-copper);
+  border: 2px solid var(--color-copper);
 }
 
 .btn-secondary:hover {
-  background: #e0e0e0;
+  background: var(--color-copper);
+  color: white;
   transform: translateY(-2px);
 }
 
-.note {
-  font-size: 14px;
-  color: #999;
-  line-height: 1.6;
-}
-
-@media (max-width: 640px) {
-  .success-card {
-    padding: 40px 20px;
+@media (max-width: 768px) {
+  .success-hero {
+    padding: 40px 0;
   }
 
-  h1 {
-    font-size: 24px;
+  .success-icon {
+    font-size: 60px;
   }
 
-  .actions {
+  .heading-display {
+    font-size: 2rem;
+  }
+
+  .details-card {
+    padding: 20px;
+  }
+
+  .course-details,
+  .payment-details,
+  .next-steps,
+  .cta-section {
+    padding: 40px 0;
+  }
+
+  .cta-buttons {
     flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
   }
 }
 </style>
