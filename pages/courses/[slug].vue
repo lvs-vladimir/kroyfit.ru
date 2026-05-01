@@ -1,5 +1,17 @@
 <template>
   <div class="course-page">
+
+    <!-- Toast уведомление -->
+    <Transition name="toast">
+      <div v-if="toast.show" class="toast" :class="'toast--' + toast.type">
+        <div class="toast__icon">{{ toast.type === 'error' ? '✕' : '✓' }}</div>
+        <div class="toast__text">
+          <span class="toast__title">{{ toast.title }}</span>
+          <span v-if="toast.message" class="toast__message">{{ toast.message }}</span>
+        </div>
+        <button class="toast__close" @click="toast.show = false">✕</button>
+      </div>
+    </Transition>
     <!-- Loading State -->
     <div v-if="pending" class="loading-container">
       <div class="spinner"></div>
@@ -192,6 +204,25 @@ const purchasing = ref(false)
 const showLoginModal = ref(false)
 const currentUser = ref<any>(null)
 
+// Toast уведомления
+const toast = reactive({
+  show: false,
+  type: 'error' as 'error' | 'success',
+  title: '',
+  message: '',
+})
+
+let toastTimer: ReturnType<typeof setTimeout> | null = null
+
+const showToast = (type: 'error' | 'success', title: string, message = '') => {
+  if (toastTimer) clearTimeout(toastTimer)
+  toast.type = type
+  toast.title = title
+  toast.message = message
+  toast.show = true
+  toastTimer = setTimeout(() => { toast.show = false }, 5000)
+}
+
 // Проверяем авторизацию при загрузке
 onMounted(async () => {
   console.log('🔍 [Auth] Проверяем авторизацию...')
@@ -280,7 +311,7 @@ const initVkModalWidget = () => {
       }
     } catch (e: any) {
       console.error('❌ [VK] Ошибка авторизации:', e)
-      alert('Ошибка авторизации: ' + (e.message || 'Неизвестная ошибка'))
+      showToast('error', 'Ошибка авторизации', e.message || 'Неизвестная ошибка')
     }
   })
 }
@@ -325,7 +356,10 @@ const handlePurchase = async () => {
   } catch (e: any) {
     console.error('❌ [Purchase] Ошибка создания платежа:', e)
     console.error('❌ [Purchase] Детали:', e.data || e.message)
-    alert('Ошибка: ' + (e.data?.message || 'Не удалось создать платеж'))
+    const msg = e.data?.message || e.message || 'Не удалось создать платёж'
+    const title = msg === 'Курс уже приобретен' ? 'Курс уже приобретён' : 'Ошибка оплаты'
+    const sub = msg === 'Курс уже приобретен' ? 'Этот курс уже есть в вашем аккаунте' : msg
+    showToast('error', title, sub)
   } finally {
     purchasing.value = false
   }
@@ -1059,5 +1093,109 @@ useSeoMeta({
   .cta-buttons a {
     width: 100%;
   }
+}
+
+/* Toast уведомления */
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 1.25rem 1.25rem 1.25rem 0;
+  background: var(--color-cream);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.toast--error {
+  border-left: 4px solid var(--color-copper);
+}
+
+.toast--success {
+  border-left: 4px solid #10b981;
+}
+
+.toast__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.toast--error .toast__icon {
+  background: var(--color-copper);
+  color: white;
+}
+
+.toast--success .toast__icon {
+  background: #10b981;
+  color: white;
+}
+
+.toast__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+  padding-top: 0.1rem;
+}
+
+.toast__title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  line-height: 1.2;
+}
+
+.toast__message {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  color: var(--color-text);
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
+.toast__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  opacity: 0.4;
+  font-size: 0.75rem;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  transition: opacity 0.2s;
+}
+
+.toast__close:hover {
+  opacity: 0.8;
+}
+
+/* Анимация toast */
+.toast-enter-active,
+.toast-leave-active {
+  transition: all 0.35s ease;
+}
+
+.toast-enter-from {
+  opacity: 0;
+  transform: translateX(40px);
+}
+
+.toast-leave-to {
+  opacity: 0;
+  transform: translateX(40px);
 }
 </style>
