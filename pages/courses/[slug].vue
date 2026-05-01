@@ -190,11 +190,13 @@ const currentUser = ref<any>(null)
 
 // Проверяем авторизацию при загрузке
 onMounted(async () => {
+  console.log('🔍 [Auth] Проверяем авторизацию...')
   try {
     const userData = await $fetch('/api/user/me')
     if (userData) {
       isLoggedIn.value = true
       currentUser.value = userData
+      console.log('✅ [Auth] Пользователь авторизован:', userData.name)
       
       // Проверяем, купил ли пользователь этот курс
       const purchases = await $fetch('/api/user/purchases')
@@ -202,10 +204,11 @@ onMounted(async () => {
         isPurchased.value = purchases.purchases.some(
           (p: any) => p.courseId === route.params.slug && p.status === 'completed'
         )
+        console.log('🛒 [Purchase] Курс уже куплен:', isPurchased.value)
       }
     }
   } catch (e) {
-    // Пользователь не авторизован
+    console.log('ℹ️ [Auth] Пользователь не авторизован')
     isLoggedIn.value = false
   }
 })
@@ -292,8 +295,13 @@ watch(showLoginModal, (newVal) => {
 const handlePurchase = async () => {
   if (!course.value) return
   
+  console.log('🛒 [Purchase] Начинаем покупку курса:', course.value.title)
+  console.log('🛒 [Purchase] ID курса:', course.value.id)
+  
   purchasing.value = true
   try {
+    console.log('🟡 [Purchase] Отправляем запрос на создание платежа...')
+    
     const response = await $fetch('/api/payments/create', {
       method: 'POST',
       body: {
@@ -302,12 +310,17 @@ const handlePurchase = async () => {
       }
     })
     
+    console.log('✅ [Purchase] Платеж создан:', response)
+    console.log('✅ [Purchase] paymentId:', response.paymentId)
+    console.log('✅ [Purchase] Редиректим на:', response.confirmationUrl)
+    
     if (response.confirmationUrl) {
       // Переходим на страницу оплаты ЮКассы
       window.location.href = response.confirmationUrl
     }
   } catch (e: any) {
-    console.error('❌ Ошибка создания платежа:', e)
+    console.error('❌ [Purchase] Ошибка создания платежа:', e)
+    console.error('❌ [Purchase] Детали:', e.data || e.message)
     alert('Ошибка: ' + (e.data?.message || 'Не удалось создать платеж'))
   } finally {
     purchasing.value = false
