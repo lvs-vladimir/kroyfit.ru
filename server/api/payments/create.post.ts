@@ -66,10 +66,6 @@ export default defineEventHandler(async (event) => {
          purchaseId: purchaseId,
          userId: user.id,
          courseId: courseId
-       },
-       // Приоритизируем СБП (Система быстрых платежей) - выводим первым
-       payment_method_data: {
-         type: 'sbp_mobile'
        }
      }
      
