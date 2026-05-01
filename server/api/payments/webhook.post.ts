@@ -1,5 +1,5 @@
 import { db } from '../../database/db'
-import { purchases } from '../../database/schema'
+import { purchases, courses } from '../../database/schema'
 import { eq } from 'drizzle-orm'
 import crypto from 'crypto'
 
@@ -40,9 +40,11 @@ export default defineEventHandler(async (event) => {
     const paymentId = object.id
     const metadata = object.metadata || {}
     const purchaseId = metadata.purchaseId
+    const userId = metadata.userId
+    const courseId = metadata.courseId
     
-    if (!purchaseId) {
-      console.error('❌ [API] Нет purchaseId в metadata')
+    if (!purchaseId || !userId || !courseId) {
+      console.error('❌ [API] Нет необходимых данных в metadata')
       return { received: true }
     }
     
@@ -50,32 +52,52 @@ export default defineEventHandler(async (event) => {
     switch (eventType) {
       case 'payment.succeeded':
         console.log('✅ [API] Платеж успешен:', paymentId)
-        await db.update(purchases)
-          .set({ 
-            status: 'completed',
-            paymentId: paymentId
-          })
+        
+        // Проверяем, существует ли уже такая покупка
+        const existingPurchase = await db.select()
+          .from(purchases)
           .where(eq(purchases.id, purchaseId))
-        console.log('✅ [API] Покупка обновлена: completed')
+          .limit(1)
+        
+        if (existingPurchase.length === 0) {
+          // Получаем информацию о курсе для сохранения цены
+          const [course] = await db.select()
+            .from(courses)
+            .where(eq(courses.id, courseId))
+            .limit(1)
+          
+          // СОЗДАЁМ покупку только при успешном платеже
+          await db.insert(purchases).values({
+            id: purchaseId,
+            userId: userId,
+            courseId: courseId,
+            amount: course?.price || 0,
+            paymentId: paymentId,
+            status: 'completed',
+            createdAt: new Date().toISOString(),
+          })
+          console.log('✅ [API] Новая покупка создана:', purchaseId)
+        } else {
+          // Обновляем существующую покупку
+          await db.update(purchases)
+            .set({ 
+              status: 'completed',
+              paymentId: paymentId
+            })
+            .where(eq(purchases.id, purchaseId))
+          console.log('✅ [API] Покупка обновлена: completed')
+        }
         break
         
       case 'payment.waiting_for_capture':
         console.log('⏳ [API] Платеж ожидает подтверждения:', paymentId)
-        await db.update(purchases)
-          .set({ 
-            status: 'waiting_for_capture',
-            paymentId: paymentId
-          })
-          .where(eq(purchases.id, purchaseId))
+        // Не создаём покупку, пока платеж не подтверждён
         break
         
       case 'payment.canceled':
         console.log('❌ [API] Платеж отменен:', paymentId)
-        await db.update(purchases)
-          .set({ 
-            status: 'canceled',
-            paymentId: paymentId
-          })
+        // Удаляем покупку если она была создана
+        await db.delete(purchases)
           .where(eq(purchases.id, purchaseId))
         break
         
@@ -99,7 +121,7 @@ export default defineEventHandler(async (event) => {
     }
     
     // Всегда возвращаем 200 OK
-    return { received: true }
+    return { received: true }e }
     
   } catch (error: any) {
     console.error('❌ [API] Ошибка обработки webhook:', error)

@@ -92,16 +92,10 @@ export default defineEventHandler(async (event) => {
      
      console.log('✅ [API] Платеж создан в ЮКассе:', response.id)
      
-     // ТОЛЬКО ПОСЛЕ успешного создания платежа создаём запись в БД
-     await db.insert(purchases).values({
-       id: purchaseId,
-       userId: user.id,
-       courseId: courseId,
-       amount: course.price,
-       paymentId: response.id,
-       status: 'pending',
-       createdAt: new Date().toISOString(),
-     })
+     // НЕ создаём запись в БД! Она будет создана только когда webhook придёт с payment.succeeded
+     // Это предотвращает появление неоплаченных платежей в таблице
+     
+     console.log('🟡 [API] Ожидаем webhook от ЮКассы для создания записи в БД')
     
     return {
       success: true,
