@@ -3,8 +3,12 @@ import Database from 'better-sqlite3'
 import { resolve } from 'path'
 import * as schema from './schema'
 
-const DB_PATH = resolve(process.cwd(), 'kroyfit.db')
+// Используем переменную окружения или корневую директорию
+const dbDir = process.env.DB_DIR || resolve(process.cwd(), '..')
+const DB_PATH = resolve(dbDir, 'kroyfit.db')
 console.log('📁 [DB] Путь к БД:', DB_PATH)
+console.log('📁 [DB] CWD:', process.cwd())
+
 const sqlite = new Database(DB_PATH)
 export const db = drizzle(sqlite, { schema })
 
