@@ -19,6 +19,9 @@ export default defineEventHandler(async (event) => {
     // Ищем администратора в БД
     const [admin] = await db.select().from(admins).where(eq(admins.email, email)).limit(1)
 
+    console.log('🔵 [API] Поиск админа:', email)
+    console.log('🔵 [API] Найден админ:', admin ? admin.email : 'не найден')
+
     if (!admin) {
       console.log('❌ [API] Admin not found:', email)
       throw createError({
@@ -26,6 +29,10 @@ export default defineEventHandler(async (event) => {
         message: 'Неверные данные для входа',
       })
     }
+
+    console.log('🔵 [API] Пароль в БД:', admin.password)
+    console.log('🔵 [API] Пароль от пользователя:', password)
+    console.log('🔵 [API] Совпадают?', admin.password === password)
 
     // Проверяем пароль
     if (admin.password !== password) {

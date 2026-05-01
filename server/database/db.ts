@@ -1,17 +1,10 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
 import { resolve } from 'path'
-import { fileURLToPath } from 'url'
 import * as schema from './schema'
 
-// БД должна быть в корне проекта, а не в .output/
-// Используем import.meta.url для получения текущего пути в ES модулях
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = resolve(__filename, '..')
-
-// Когда сервер запускается из .output/server/index.mjs, 
-// нам нужно подняться на 3 уровня вверх до корня проекта
-const dbPath = process.env.DB_PATH || resolve(__dirname, '../../../kroyfit.db')
+// БД в корне проекта - используем абсолютный путь
+const dbPath = process.env.DB_PATH || '/root/kroyfit/kroyfit.db'
 console.log('📁 [DB] Путь к БД:', dbPath)
 
 const sqlite = new Database(dbPath)
