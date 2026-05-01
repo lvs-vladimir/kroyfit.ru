@@ -1098,18 +1098,19 @@ useSeoMeta({
 /* Toast уведомления */
 .toast {
   position: fixed;
-  top: 100px;
-  right: 24px;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
   z-index: 9999;
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  min-width: 320px;
-  max-width: 420px;
+  min-width: 360px;
+  max-width: 480px;
   padding: 1.25rem 1.25rem 1.25rem 0;
   background: var(--color-cream);
   border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
 
 .toast--error {
@@ -1191,11 +1192,11 @@ useSeoMeta({
 
 .toast-enter-from {
   opacity: 0;
-  transform: translateX(40px);
+  transform: translateX(-50%) translateY(-40%);
 }
 
 .toast-leave-to {
   opacity: 0;
-  transform: translateX(40px);
+  transform: translateX(-50%) translateY(-40%);
 }
 </style>
