@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
         const filepath = resolve(avatarsDir, filename)
         writeFileSync(filepath, Buffer.from(buffer))
         
-        localAvatarPath = `/avatars/${filename}`
+        localAvatarPath = `/api/avatars/${filename}`
         console.log('✅ [API] Аватарка сохранена:', localAvatarPath)
       } catch (e: any) {
         console.error('❌ [API] Ошибка загрузки аватарки:', e.message)
