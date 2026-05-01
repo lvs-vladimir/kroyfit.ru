@@ -18,7 +18,23 @@
       </thead>
       <tbody>
         <tr v-for="purchase in recentPurchases" :key="purchase.id">
-          <td class="font-weight-medium" style="color: #020617;">{{ purchase.user }}</td>
+          <td>
+            <div class="d-flex align-center" style="gap: 12px;">
+              <v-avatar 
+                v-if="purchase.avatar" 
+                :image="purchase.avatar" 
+                size="36"
+              />
+              <v-avatar 
+                v-else 
+                size="36"
+                style="background: #e0e0e0; color: #666; font-weight: 600;"
+              >
+                {{ purchase.user?.charAt(0) || '?' }}
+              </v-avatar>
+              <span class="font-weight-medium" style="color: #020617;">{{ purchase.user }}</span>
+            </div>
+          </td>
           <td class="text-grey-darken-2">{{ purchase.course }}</td>
           <td class="font-weight-medium" style="color: #020617;">{{ purchase.amount }}</td>
           <td>
@@ -91,6 +107,7 @@ onMounted(async () => {
       recentPurchases.value = data.purchases.map(p => ({
         id: p.id,
         user: p.userName || p.userEmail || 'Неизвестно',
+        avatar: p.userAvatar || null,
         course: p.courseTitle || 'Неизвестный курс',
         amount: p.amount ? `${p.amount.toLocaleString('ru-RU')} ₽` : '—',
         status: p.status === 'completed' ? 'Оплачено' : 'В обработке',
