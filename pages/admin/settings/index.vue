@@ -406,26 +406,26 @@
                            - vk.com/название_группы<br>
                            - Только ID: 123456</p>
                            
-                           <p class="font-weight-medium mb-2">2. Создайте VK Standalone приложение (бесплатно, 2 минуты)</p>
+                           <p class="font-weight-medium mb-2">2. Получите токен администратора</p>
                            <p class="mb-2 pl-4">
-                             Ключ группы <strong>не подходит</strong> для отправки приглашений — нужен токен пользователя.<br>
-                             Для этого нужно создать VK приложение типа <strong>Standalone</strong>:
+                             Нажмите кнопку ниже — авторизуйтесь как администратор группы.<br>
+                             Токен будет показан автоматически на следующей странице.
                            </p>
-                           <ol class="mb-2 pl-8 text-caption" style="line-height: 2;">
-                             <li>Перейдите на <a href="https://vk.com/editapp?act=create" target="_blank" style="color:#1976d2">vk.com/editapp?act=create</a></li>
-                             <li>Название: любое (например "KroyFit Admin")</li>
-                             <li>Платформа: <strong>Standalone-приложение</strong></li>
-                             <li>Нажмите «Подключить приложение»</li>
-                             <li>Скопируйте <strong>ID приложения</strong> (например: 12345678)</li>
-                             <li>В настройках приложения → «Настройки» → адрес сайта: <code>https://kroyfit.ru</code></li>
-                             <li>Сохраните и перейдите по ссылке:<br>
-                               <code style="word-break:break-all; font-size:10px">https://oauth.vk.com/authorize?client_id=ВАШ_ID&display=page&redirect_uri=https://kroyfit.ru/vk-token&scope=groups,manage&response_type=token&v=5.131</code>
-                             </li>
-                             <li>Скопируйте токен со страницы /vk-token и вставьте сюда</li>
-                           </ol>
+                           <p class="mb-2 pl-4">
+                             <a
+                               href="https://oauth.vk.com/authorize?client_id=54572308&display=page&redirect_uri=https://kroyfit.ru/vk-token&scope=groups,manage&response_type=token&v=5.131"
+                               target="_blank"
+                               style="color: #1976d2; font-weight: 600;"
+                             >🔑 Получить токен администратора →</a>
+                           </p>
+                           <p class="mb-2 pl-4 text-caption text-grey">
+                             Если появилась ошибка "Security Error" — зайдите в 
+                             <a href="https://vk.com/editapp?id=54572308" target="_blank" style="color:#1976d2">настройки приложения VK</a>
+                             и добавьте <code>https://kroyfit.ru/vk-token</code> в доверенные redirect URI.
+                           </p>
                            <p class="mb-2 pl-4 text-red-darken-2">
                              <v-icon size="14" color="red">mdi-alert</v-icon>
-                             <strong>Почему так?</strong> VK API метод <code>groups.invite</code> работает только с токеном пользователя-администратора, не с ключом группы.
+                             <strong>Важно:</strong> Токен пользователя (не ключ группы) с правами groups + manage.
                            </p>
                           
                           <p class="font-weight-medium mb-2">3. Нажмите кнопку "Тест"</p>
