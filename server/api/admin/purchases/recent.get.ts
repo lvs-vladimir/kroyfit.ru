@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
         userId: purchases.userId,
         userName: users.name,
         userEmail: users.email,
+        userAvatar: users.avatar,
         courseId: purchases.courseId,
         courseTitle: courses.title,
         amount: purchases.amount,
