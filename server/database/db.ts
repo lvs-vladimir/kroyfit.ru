@@ -3,13 +3,14 @@ import Database from 'better-sqlite3'
 import { resolve } from 'path'
 import * as schema from './schema'
 
-// Используем переменную окружения или корневую директорию
-const dbDir = process.env.DB_DIR || resolve(process.cwd(), '..')
-const DB_PATH = resolve(dbDir, 'kroyfit.db')
-console.log('📁 [DB] Путь к БД:', DB_PATH)
-console.log('📁 [DB] CWD:', process.cwd())
+// БД должна быть в корне проекта, а не в .output/
+// Когда сервер запускается из .output/server/index.mjs, 
+// нам нужно подняться на 2 уровня вверх
+const dbPath = process.env.DB_PATH || resolve(__dirname, '../../..', 'kroyfit.db')
+console.log('📁 [DB] Путь к БД:', dbPath)
+console.log('📁 [DB] __dirname:', __dirname)
 
-const sqlite = new Database(DB_PATH)
+const sqlite = new Database(dbPath)
 export const db = drizzle(sqlite, { schema })
 
 // Инициализация таблиц при старте сервера
