@@ -46,21 +46,11 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, message: 'Курс уже приобретен' })
     }
     
-    // Создаем уникальный idempotency key
-    const idempotenceKey = crypto.randomUUID()
-    
-    // Создаем запись о покупке в БД (pending)
-    const purchaseId = crypto.randomUUID()
-    await db.insert(purchases).values({
-      id: purchaseId,
-      userId: user.id,
-      courseId: courseId,
-      amount: course.price,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    })
-    
-     // Создаем платеж в ЮКассе
+     // Создаем уникальный idempotency key
+     const idempotenceKey = crypto.randomUUID()
+     const purchaseId = crypto.randomUUID()
+     
+     // Создаем платеж в ЮКассе ПЕРВЫМ (до создания записи в БД)
      const paymentData = {
        amount: {
          value: course.price.toFixed(2),
@@ -82,28 +72,40 @@ export default defineEventHandler(async (event) => {
          type: 'sbp_mobile'
        }
      }
-    
-    console.log('🟡 [API] Отправка запроса в ЮКассу:', JSON.stringify(paymentData, null, 2))
-    
-    // Запрос к API ЮКассы
-    const auth = Buffer.from(`${SHOP_ID}:${API_KEY}`).toString('base64')
-    
-    const response = await $fetch('https://api.yookassa.ru/v3/payments', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/json',
-        'Idempotence-Key': idempotenceKey
-      },
-      body: paymentData
-    })
-    
-    console.log('✅ [API] Платеж создан в ЮКассе:', response.id)
-    
-    // Обновляем запись о покупке с payment_id
-    await db.update(purchases)
-      .set({ paymentId: response.id })
-      .where(eq(purchases.id, purchaseId))
+     
+     console.log('🟡 [API] Отправка запроса в ЮКассу:', JSON.stringify(paymentData, null, 2))
+     
+     // Запрос к API ЮКассы
+     const auth = Buffer.from(`${SHOP_ID}:${API_KEY}`).toString('base64')
+     
+     let response
+     try {
+       response = await $fetch('https://api.yookassa.ru/v3/payments', {
+         method: 'POST',
+         headers: {
+           'Authorization': `Basic ${auth}`,
+           'Content-Type': 'application/json',
+           'Idempotence-Key': idempotenceKey
+         },
+         body: paymentData
+       })
+     } catch (e: any) {
+       console.error('❌ [API] Ошибка создания платежа в ЮКассе:', e.message)
+       throw createError({ statusCode: 400, message: 'Ошибка создания платежа: ' + (e.data?.description || e.message) })
+     }
+     
+     console.log('✅ [API] Платеж создан в ЮКассе:', response.id)
+     
+     // ТОЛЬКО ПОСЛЕ успешного создания платежа создаём запись в БД
+     await db.insert(purchases).values({
+       id: purchaseId,
+       userId: user.id,
+       courseId: courseId,
+       amount: course.price,
+       paymentId: response.id,
+       status: 'pending',
+       createdAt: new Date().toISOString(),
+     })
     
     return {
       success: true,
