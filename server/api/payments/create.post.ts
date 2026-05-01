@@ -60,24 +60,28 @@ export default defineEventHandler(async (event) => {
       createdAt: new Date().toISOString(),
     })
     
-    // Создаем платеж в ЮКассе
-    const paymentData = {
-      amount: {
-        value: course.price.toFixed(2),
-        currency: 'RUB'
-      },
-      capture: true,
-      confirmation: {
-        type: 'redirect',
-        return_url: returnUrl || 'https://kroyfit.ru/courses/' + course.slug
-      },
-      description: `Оплата курса: ${course.title}`,
-      metadata: {
-        purchaseId: purchaseId,
-        userId: user.id,
-        courseId: courseId
-      }
-    }
+     // Создаем платеж в ЮКассе
+     const paymentData = {
+       amount: {
+         value: course.price.toFixed(2),
+         currency: 'RUB'
+       },
+       capture: true,
+       confirmation: {
+         type: 'redirect',
+         return_url: returnUrl || 'https://kroyfit.ru/courses/' + course.slug
+       },
+       description: `Оплата курса: ${course.title}`,
+       metadata: {
+         purchaseId: purchaseId,
+         userId: user.id,
+         courseId: courseId
+       },
+       // Приоритизируем СБП (Система быстрых платежей) - выводим первым
+       payment_method_data: {
+         type: 'sbp_mobile'
+       }
+     }
     
     console.log('🟡 [API] Отправка запроса в ЮКассу:', JSON.stringify(paymentData, null, 2))
     
