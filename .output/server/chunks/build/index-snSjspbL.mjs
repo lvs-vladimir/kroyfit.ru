@@ -20,7 +20,6 @@ import 'node:crypto';
 import 'node:url';
 import 'drizzle-orm/better-sqlite3';
 import 'better-sqlite3';
-import 'path';
 import 'drizzle-orm/sqlite-core';
 import 'drizzle-orm';
 import 'unhead/server';

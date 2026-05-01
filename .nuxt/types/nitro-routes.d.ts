@@ -34,14 +34,14 @@ declare module "nitropack/types" {
     '/api/admin/vk-groups': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/vk-groups.post').default>>>>
     }
+    '/api/auth/vk': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/auth/vk.post').default>>>>
+    }
     '/api/courses': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/courses.get').default>>>>
     }
     '/api/courses/:id': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/courses/[id].get').default>>>>
-    }
-    '/api/courses/:slug': {
-      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/courses/[slug].get').default>>>>
     }
     '/api/email/send': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/email/send.post').default>>>>
@@ -60,6 +60,12 @@ declare module "nitropack/types" {
     }
     '/api/user/courses': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/user/courses.get').default>>>>
+    }
+    '/api/user/me': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/user/me.get').default>>>>
+    }
+    '/api/user/purchases': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/user/purchases.get').default>>>>
     }
     '/api/users': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/users.get').default>>>>

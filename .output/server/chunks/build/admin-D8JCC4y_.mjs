@@ -1,4 +1,4 @@
-import { K as executeAsync } from '../nitro/nitro.mjs';
+import { L as executeAsync } from '../nitro/nitro.mjs';
 import { ak as defineNuxtRouteMiddleware, n as navigateTo } from './server.mjs';
 import { u as useCookie } from './cookie-1eiVNd_S.mjs';
 import { u as useRequestEvent } from './ssr-BNaGEt3_.mjs';
@@ -12,7 +12,6 @@ import 'node:crypto';
 import 'node:url';
 import 'drizzle-orm/better-sqlite3';
 import 'better-sqlite3';
-import 'path';
 import 'drizzle-orm/sqlite-core';
 import 'drizzle-orm';
 import 'vue';

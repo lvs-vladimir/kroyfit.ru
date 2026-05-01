@@ -1,1 +1,0 @@
-import{aX as t}from"./Dj3GEJJW.js";import{u as l}from"./e0U7fVbq.js";import"./BJ2ClxiI.js";const r=t(async o=>{console.log("=== MIDDLEWARE DEBUG ==="),console.log("Path:",o.path),console.log("Client?",!0),console.log("Server?",!1);const e=l("admin-token");console.log("Cookie value from useCookie:",e.value)});export{r as default};

@@ -1,5 +1,5 @@
 import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { reactive, watchEffect, toRef, warn, inject as inject$1, computed, toValue, Fragment, capitalize, watch, onScopeDispose, camelize, isVNode, Comment, ref, toRaw, defineComponent as defineComponent$1, provide, unref, hasInjectionContext, getCurrentInstance as getCurrentInstance$1, shallowRef, createVNode, mergeProps, createElementVNode, effectScope, normalizeClass, defineAsyncComponent, h, shallowReactive, createElementBlock, Suspense, createApp, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, getCurrentScope, withCtx, nextTick, isReadonly, useSSRContext, isRef, isShallow, isReactive, toRefs } from 'vue';
-import { c as createError$1, B as parseURL, C as encodePath, D as decodePath, E as hasProtocol, F as isScriptProtocol, z as joinURL, G as withQuery, H as sanitizeStatusCode, I as getContext, $ as $fetch, J as defu, K as executeAsync } from '../nitro/nitro.mjs';
+import { c as createError$1, C as parseURL, D as encodePath, E as decodePath, F as hasProtocol, G as isScriptProtocol, A as joinURL, H as withQuery, I as sanitizeStatusCode, J as getContext, $ as $fetch, K as defu, L as executeAsync } from '../nitro/nitro.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { useRoute as useRoute$1, RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
 import { ssrRenderSuspense, ssrRenderComponent, ssrRenderVNode } from 'vue/server-renderer';
@@ -13,7 +13,6 @@ import 'node:crypto';
 import 'node:url';
 import 'drizzle-orm/better-sqlite3';
 import 'better-sqlite3';
-import 'path';
 import 'drizzle-orm/sqlite-core';
 import 'drizzle-orm';
 import 'vue-bundle-renderer/runtime';
@@ -1694,12 +1693,12 @@ const _routes = [
     name: "admin-users",
     path: "/admin/users",
     meta: { ...__nuxt_page_meta$1 || {}, ...{ "middleware": "admin" } },
-    component: () => import('./index-Bp7WcGf7.mjs')
+    component: () => import('./index-m5E6vWVQ.mjs')
   },
   {
     name: "courses-slug",
     path: "/courses/:slug()",
-    component: () => import('./_slug_-HGBAzSWs.mjs')
+    component: () => import('./_slug_-nNlhg_VA.mjs')
   },
   {
     name: "admin",
@@ -1711,6 +1710,11 @@ const _routes = [
     name: "cabinet",
     path: "/cabinet",
     component: () => import('./index-DKxr7Ecg.mjs')
+  },
+  {
+    name: "payment-success",
+    path: "/payment-success",
+    component: () => import('./payment-success-D45z7LoG.mjs')
   },
   {
     name: "profile",
@@ -4004,7 +4008,7 @@ const plugins = [
 ];
 const layouts = {
   admin: defineAsyncComponent(() => import('./admin-B-8Bw2tG.mjs').then((m) => m.default || m)),
-  default: defineAsyncComponent(() => import('./default-DIAyLRdx.mjs').then((m) => m.default || m))
+  default: defineAsyncComponent(() => import('./default-BVassjNm.mjs').then((m) => m.default || m))
 };
 const routeRulesMatcher = _routeRulesMatcher;
 const LayoutLoader = defineComponent$1({

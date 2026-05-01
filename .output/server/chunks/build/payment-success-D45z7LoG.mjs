@@ -1,0 +1,85 @@
+import { _ as __nuxt_component_0 } from './nuxt-link-B6u-mv8x.mjs';
+import { defineComponent, ref, mergeProps, unref, withCtx, createTextVNode, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrInterpolate, ssrRenderComponent } from 'vue/server-renderer';
+import { _ as _export_sfc, u as useRoute } from './server.mjs';
+import '../nitro/nitro.mjs';
+import 'node:http';
+import 'node:https';
+import 'node:events';
+import 'node:buffer';
+import 'node:fs';
+import 'node:path';
+import 'node:crypto';
+import 'node:url';
+import 'drizzle-orm/better-sqlite3';
+import 'better-sqlite3';
+import 'drizzle-orm/sqlite-core';
+import 'drizzle-orm';
+import '../routes/renderer.mjs';
+import 'vue-bundle-renderer/runtime';
+import 'unhead/server';
+import 'devalue';
+import 'unhead/plugins';
+import 'unhead/utils';
+import 'vue-router';
+
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "payment-success",
+  __ssrInlineRender: true,
+  setup(__props) {
+    useRoute();
+    const paymentId = ref("");
+    const purchase = ref(null);
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLink = __nuxt_component_0;
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "payment-success-page" }, _attrs))} data-v-a5aaef0d><section class="success-hero" data-v-a5aaef0d><div class="container-max" data-v-a5aaef0d><div class="success-content" data-v-a5aaef0d><div class="success-icon" data-v-a5aaef0d>✅</div><h1 class="heading-display" data-v-a5aaef0d>Платёж успешно принят!</h1><p class="subtitle" data-v-a5aaef0d>Спасибо за покупку курса</p></div></div></section>`);
+      if (unref(purchase)) {
+        _push(`<section class="course-details" data-v-a5aaef0d><div class="container-max" data-v-a5aaef0d><div class="details-card" data-v-a5aaef0d><h2 class="heading-large" data-v-a5aaef0d>${ssrInterpolate(unref(purchase).course?.title)}</h2><p class="course-description" data-v-a5aaef0d>${ssrInterpolate(unref(purchase).course?.description)}</p><div class="price-display" data-v-a5aaef0d><span class="price-label" data-v-a5aaef0d>Сумма платежа:</span><span class="price-value" data-v-a5aaef0d>${ssrInterpolate(unref(purchase).course?.price)} ₽</span></div></div></div></section>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<section class="payment-details" data-v-a5aaef0d><div class="container-max" data-v-a5aaef0d><div class="details-grid" data-v-a5aaef0d><div class="detail-item" data-v-a5aaef0d><span class="detail-label" data-v-a5aaef0d>ID платежа</span><span class="detail-value" data-v-a5aaef0d>${ssrInterpolate(unref(paymentId))}</span></div><div class="detail-item" data-v-a5aaef0d><span class="detail-label" data-v-a5aaef0d>Статус</span><span class="detail-value status-completed" data-v-a5aaef0d>Завершён</span></div><div class="detail-item" data-v-a5aaef0d><span class="detail-label" data-v-a5aaef0d>Дата</span><span class="detail-value" data-v-a5aaef0d>${ssrInterpolate((/* @__PURE__ */ new Date()).toLocaleDateString("ru-RU"))}</span></div></div></div></section><section class="next-steps" data-v-a5aaef0d><div class="container-max" data-v-a5aaef0d><h2 class="heading-large" data-v-a5aaef0d>Что дальше?</h2><div class="steps-list" data-v-a5aaef0d><div class="step" data-v-a5aaef0d><div class="step-number" data-v-a5aaef0d>1</div><h3 data-v-a5aaef0d>Проверьте почту</h3><p data-v-a5aaef0d>Письмо с подтверждением отправлено на вашу почту</p></div><div class="step" data-v-a5aaef0d><div class="step-number" data-v-a5aaef0d>2</div><h3 data-v-a5aaef0d>Доступ активирован</h3><p data-v-a5aaef0d>Курс уже доступен в вашем аккаунте</p></div><div class="step" data-v-a5aaef0d><div class="step-number" data-v-a5aaef0d>3</div><h3 data-v-a5aaef0d>Начните обучение</h3><p data-v-a5aaef0d>Перейдите в профиль и откройте курс</p></div></div></div></section><section class="cta-section" data-v-a5aaef0d><div class="container-max" data-v-a5aaef0d><div class="cta-content" data-v-a5aaef0d><h2 class="heading-large" data-v-a5aaef0d>Готовы начать?</h2><div class="cta-buttons" data-v-a5aaef0d>`);
+      _push(ssrRenderComponent(_component_NuxtLink, {
+        to: "/",
+        class: "btn btn-primary"
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`На главную`);
+          } else {
+            return [
+              createTextVNode("На главную")
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(ssrRenderComponent(_component_NuxtLink, {
+        to: "/courses",
+        class: "btn btn-secondary"
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`К другим курсам`);
+          } else {
+            return [
+              createTextVNode("К другим курсам")
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`</div></div></div></section></div>`);
+    };
+  }
+});
+const _sfc_setup = _sfc_main.setup;
+_sfc_main.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/payment-success.vue");
+  return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
+};
+const paymentSuccess = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-a5aaef0d"]]);
+
+export { paymentSuccess as default };
+//# sourceMappingURL=payment-success-D45z7LoG.mjs.map

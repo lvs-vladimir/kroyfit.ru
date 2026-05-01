@@ -10,7 +10,6 @@ import 'node:crypto';
 import 'node:url';
 import 'drizzle-orm/better-sqlite3';
 import 'better-sqlite3';
-import 'path';
 import 'drizzle-orm/sqlite-core';
 
 const login_post = defineEventHandler(async (event) => {
@@ -25,6 +24,8 @@ const login_post = defineEventHandler(async (event) => {
   console.log("\u{1F535} [API] Login attempt:", email);
   try {
     const [admin] = await db.select().from(admins).where(eq(admins.email, email)).limit(1);
+    console.log("\u{1F535} [API] \u041F\u043E\u0438\u0441\u043A \u0430\u0434\u043C\u0438\u043D\u0430:", email);
+    console.log("\u{1F535} [API] \u041D\u0430\u0439\u0434\u0435\u043D \u0430\u0434\u043C\u0438\u043D:", admin ? admin.email : "\u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D");
     if (!admin) {
       console.log("\u274C [API] Admin not found:", email);
       throw createError({
@@ -32,6 +33,9 @@ const login_post = defineEventHandler(async (event) => {
         message: "\u041D\u0435\u0432\u0435\u0440\u043D\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0434\u043B\u044F \u0432\u0445\u043E\u0434\u0430"
       });
     }
+    console.log("\u{1F535} [API] \u041F\u0430\u0440\u043E\u043B\u044C \u0432 \u0411\u0414:", admin.password);
+    console.log("\u{1F535} [API] \u041F\u0430\u0440\u043E\u043B\u044C \u043E\u0442 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F:", password);
+    console.log("\u{1F535} [API] \u0421\u043E\u0432\u043F\u0430\u0434\u0430\u044E\u0442?", admin.password === password);
     if (admin.password !== password) {
       console.log("\u274C [API] Invalid password for:", email);
       throw createError({
