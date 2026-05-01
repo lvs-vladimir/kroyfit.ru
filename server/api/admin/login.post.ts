@@ -50,6 +50,13 @@ export default defineEventHandler(async (event) => {
     // Генерируем токен
     const token = Buffer.from(`${admin.id}:${admin.email}:${Date.now()}`).toString('base64')
 
+    // Устанавливаем cookie для авторизации
+    setCookie(event, 'admin-token', token, {
+      httpOnly: false,
+      maxAge: 60 * 60 * 24 * 7, // 7 дней
+      path: '/',
+    })
+
     return {
       token,
       user: {

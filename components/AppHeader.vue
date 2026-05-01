@@ -3,28 +3,37 @@
     <div class="container-max">
       <div class="header-content">
         <!-- Logo -->
-        <div class="logo">
+        <NuxtLink to="/" class="logo">
           <span class="logo-icon">✂️</span>
           <span class="logo-text">Генетика Кроя</span>
-        </div>
+        </NuxtLink>
 
         <!-- Navigation -->
         <nav class="nav-menu">
-          <a href="#courses" class="nav-link">Курсы</a>
-          <a href="#about" class="nav-link">О нас</a>
-          <a href="#results" class="nav-link">Результаты</a>
-          <a href="#contacts" class="nav-link">Контакты</a>
+          <NuxtLink :to="getNavLink('#courses')" class="nav-link">Курсы</NuxtLink>
+          <NuxtLink :to="getNavLink('#about')" class="nav-link">О нас</NuxtLink>
+          <NuxtLink :to="getNavLink('#results')" class="nav-link">Результаты</NuxtLink>
+          <NuxtLink :to="getNavLink('#contacts')" class="nav-link">Контакты</NuxtLink>
         </nav>
 
         <!-- CTA Button -->
-        <button class="btn-primary">Записаться</button>
+        <NuxtLink :to="getNavLink('#courses')" class="btn-primary">Записаться</NuxtLink>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+const route = useRoute()
 const isScrolled = ref(false)
+
+// Если на главной странице — используем якоря, иначе — ссылки на главную с якорем
+const getNavLink = (anchor: string) => {
+  if (route.path === '/') {
+    return anchor
+  }
+  return '/' + anchor
+}
 
 onMounted(() => {
   window.addEventListener('scroll', () => {

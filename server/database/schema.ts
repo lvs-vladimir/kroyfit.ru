@@ -57,6 +57,7 @@ export const courses = sqliteTable('courses', {
   duration: text('duration'),
   lessonsCount: integer('lessons_count').default(0),
   image: text('image'),
+  benefits: text('benefits'), // JSON array of benefits
   isPublished: integer('is_published', { mode: 'boolean' }).default(false),
   vkGroupId: text('vk_group_id'),
   createdAt: text('created_at').default(sql`(datetime('now'))`),

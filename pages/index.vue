@@ -1,13 +1,11 @@
 <template>
   <div class="landing-page">
-    <AppHeader />
     <HeroSection />
     <PainPoints />
     <CoursesSection />
     <ResultsSection />
     <AboutSection />
     <CtaBanner />
-    <ContactsSection />
   </div>
 </template>
 

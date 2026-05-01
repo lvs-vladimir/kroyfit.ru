@@ -1,9 +1,22 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  const token = useCookie('admin-token')
+  // Получаем токен из cookie (работает и на клиенте, и на сервере)
+  let token = useCookie('admin-token').value
+  
+  // На сервере дополнительно проверяем заголовки запроса
+  if (process.server && !token) {
+    try {
+      const event = useRequestEvent()
+      if (event) {
+        token = getCookie(event, 'admin-token')
+      }
+    } catch(e) {
+      // ignore
+    }
+  }
   
   // Если пытаемся зайти на логин - проверяем, авторизованы ли уже
   if (to.path === '/admin/login') {
-    if (!token.value) return
+    if (!token) return
     
     // Проверяем токен
     try {
@@ -12,13 +25,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return navigateTo('/admin')
     } catch (e) {
       // Токен невалиден - оставляем на странице логина
-      token.value = null
+      const cookie = useCookie('admin-token')
+      cookie.value = null
     }
     return
   }
   
   // Для всех остальных страниц админки
-  if (!token.value) {
+  if (!token) {
     return navigateTo('/admin/login')
   }
   
@@ -27,7 +41,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     await $fetch('/api/admin/verify-token')
   } catch (e) {
     // Токен невалиден - чистим и редиректим на логин
-    token.value = null
+    const cookie = useCookie('admin-token')
+    cookie.value = null
     return navigateTo('/admin/login')
   }
 })

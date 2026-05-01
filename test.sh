@@ -48,7 +48,7 @@ echo "Тестирование авторизации..."
 # Получаем токен и сохраняем cookie
 LOGIN_RESULT=$(curl -s -X POST "$BASE_URL/api/admin/login" \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@kroyfit.ru","password":"admin123456"}' \
+  -d '{"email":"ch32v003@gmail.com","password":"Lvs9464"}' \
   -c /tmp/cookies.txt)
   
 if echo "$LOGIN_RESULT" | grep -q "token"; then

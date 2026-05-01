@@ -121,7 +121,7 @@ export default defineEventHandler(async (event) => {
 
     if (type === 'course') {
       console.log('🟡 [API] Создание курса...')
-      const { title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data
+      const { title, description, slug, price, category, duration, lessonsCount, isPublished, image, benefits } = data
       
       if (!title || !slug) {
         throw createError({ statusCode: 400, message: 'Название и slug обязательны' })
@@ -144,6 +144,7 @@ export default defineEventHandler(async (event) => {
         lessonsCount: lessonsCount || 0,
         isPublished: isPublished ? 1 : 0,
         image: image || '',
+        benefits: benefits || '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
@@ -155,7 +156,7 @@ export default defineEventHandler(async (event) => {
     
     if (type === 'course-update') {
       console.log('🟡 [API] Обновление курса...')
-      const { id: courseId, title, description, slug, price, category, duration, lessonsCount, isPublished, image } = data
+      const { id: courseId, title, description, slug, price, category, duration, lessonsCount, isPublished, image, benefits } = data
       
       if (!courseId) {
         throw createError({ statusCode: 400, message: 'ID курса обязателен' })
@@ -184,6 +185,7 @@ export default defineEventHandler(async (event) => {
       if (lessonsCount !== undefined) updateData.lessonsCount = lessonsCount
       if (isPublished !== undefined) updateData.isPublished = isPublished ? 1 : 0
       if (image !== undefined) updateData.image = image
+      if (benefits !== undefined) updateData.benefits = benefits
       
       await db.update(courses).set(updateData).where(eq(courses.id, courseId))
       
@@ -241,6 +243,27 @@ export default defineEventHandler(async (event) => {
       await db.delete(admins).where(eq(admins.id, data.id))
       console.log('✅ [API] Администратор удален')
       return { success: true, message: 'Администратор удален' }
+    }
+
+    if (type === 'admin-password') {
+      console.log('🔐 [API] Изменение пароля администратора:', data.adminId)
+      
+      if (!data.adminId) {
+        throw createError({ statusCode: 400, message: 'ID администратора обязателен' })
+      }
+      
+      if (!data.password || data.password.length < 6) {
+        throw createError({ statusCode: 400, message: 'Пароль должен содержать минимум 6 символов' })
+      }
+      
+      const existing = await db.select().from(admins).where(eq(admins.id, data.adminId)).limit(1)
+      if (existing.length === 0) {
+        throw createError({ statusCode: 404, message: 'Администратор не найден' })
+      }
+      
+      await db.update(admins).set({ password: data.password }).where(eq(admins.id, data.adminId))
+      console.log('✅ [API] Пароль администратора изменен')
+      return { success: true, message: 'Пароль изменен' }
     }
     
     if (type === 'user-update') {

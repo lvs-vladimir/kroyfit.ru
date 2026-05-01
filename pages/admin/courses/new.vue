@@ -48,18 +48,69 @@
             />
           </div>
 
-          <div class="mb-6">
-            <label class="text-caption text-grey-darken-1 d-block mb-1">Описание</label>
-            <v-textarea
-              v-model="form.description"
-              placeholder="Описание курса"
-              variant="outlined"
-              density="compact"
-              rows="4"
-              hide-details
-              class="mb-4"
-            />
-          </div>
+           <div class="mb-6">
+             <label class="text-caption text-grey-darken-1 d-block mb-1">Описание</label>
+             <v-textarea
+               v-model="form.description"
+               placeholder="Описание курса"
+               variant="outlined"
+               density="compact"
+               rows="4"
+               hide-details
+               class="mb-4"
+             />
+           </div>
+
+           <div class="mb-6">
+             <label class="text-caption text-grey-darken-1 d-block mb-1">Фотография курса</label>
+             <v-file-input
+               v-model="imageFile"
+               accept="image/*"
+               placeholder="Выберите фотографию"
+               variant="outlined"
+               density="compact"
+               hide-details
+               class="mb-4"
+               @update:model-value="handleImageUpload"
+             />
+             <div v-if="form.image" class="mt-2">
+               <img :src="form.image" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 8px;">
+             </div>
+           </div>
+
+           <div class="mb-6">
+             <label class="text-caption text-grey-darken-1 d-block mb-1">Что вы получите</label>
+             <div class="mb-4">
+               <div v-for="(benefit, index) in form.benefits" :key="index" class="d-flex ga-2 mb-2">
+                 <v-text-field
+                   v-model="form.benefits[index]"
+                   placeholder="Преимущество курса"
+                   variant="outlined"
+                   density="compact"
+                   hide-details
+                   class="flex-grow-1"
+                 />
+                 <v-btn
+                   icon
+                   size="small"
+                   color="red-darken-3"
+                   variant="text"
+                   @click="removeBenefit(index)"
+                 >
+                   <v-icon size="20">mdi-delete</v-icon>
+                 </v-btn>
+               </div>
+             </div>
+             <v-btn
+               size="small"
+               color="blue-darken-3"
+               variant="outlined"
+               @click="addBenefit"
+             >
+               <v-icon size="20" class="mr-1">mdi-plus</v-icon>
+               Добавить преимущество
+             </v-btn>
+           </div>
 
           <v-row>
             <v-col cols="12" sm="6">
@@ -206,7 +257,10 @@ const form = reactive({
   lessonsCount: 0,
   isPublished: false,
   image: '',
+  benefits: [],
 })
+
+const imageFile = ref(null)
 
 const generateSlug = () => {
   if (!form.title) {
@@ -232,6 +286,31 @@ const generateSlug = () => {
     .replace(/^-+|-+$/g, '')
 }
 
+const handleImageUpload = async (files: any) => {
+  if (!files) return
+  
+  // Vuetify 3 возвращает один File объект, не массив
+  const file = Array.isArray(files) ? files[0] : files
+  
+  if (!file || !(file instanceof Blob)) return
+  
+  const reader = new FileReader()
+  
+  reader.onload = (e: any) => {
+    form.image = e.target.result
+  }
+  
+  reader.readAsDataURL(file)
+}
+
+const addBenefit = () => {
+  form.benefits.push('')
+}
+
+const removeBenefit = (index: number) => {
+  form.benefits.splice(index, 1)
+}
+
 const saveCourse = async () => {
   saving.value = true
   try {
@@ -251,6 +330,7 @@ const saveCourse = async () => {
           lessonsCount: form.lessonsCount,
           isPublished: form.isPublished,
           image: form.image,
+          benefits: JSON.stringify(form.benefits.filter(b => b.trim())),
         },
       },
     })

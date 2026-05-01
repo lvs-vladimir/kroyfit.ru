@@ -1090,11 +1090,9 @@ const savePassword = async () => {
     await $fetch('/api/admin/settings', {
       method: 'POST',
       body: {
-        type: 'profile',
+        type: 'admin-password',
         data: {
           adminId: selectedAdminForPassword.value.id,
-          email: selectedAdminForPassword.value.email,
-          name: selectedAdminForPassword.value.name,
           password: newPassword.value,
         },
       },

@@ -35,7 +35,7 @@
 
           <div class="course-footer">
             <div class="course-price">{{ course.price }} ₽</div>
-            <button class="btn-course">Подробнее</button>
+            <NuxtLink :to="`/courses/${course.slug}`" class="btn-course">Купить курс</NuxtLink>
           </div>
         </div>
       </div>
@@ -44,40 +44,73 @@
 </template>
 
 <script setup lang="ts">
-const courses = [
-  {
-    title: 'Основы кроя',
-    level: 'Начинающий',
-    duration: '2 месяца',
-    lessons: 16,
-    description: 'Научитесь снимать мерки, строить выкройки и шить простую одежду.',
-    skills: ['Снятие мерок', 'Построение выкроек', 'Пошив юбки', 'Пошив платья'],
-    price: '15 000'
-  },
-  {
-    title: 'Продвинутый крой',
-    level: 'Продвинутый',
-    duration: '3 месяца',
-    lessons: 24,
-    description: 'Освойте сложные техники кроя и создавайте уникальные модели.',
-    skills: ['Сложные выкройки', 'Моделирование', 'Пошив брюк', 'Работа с тканями'],
-    price: '25 000'
-  },
-  {
-    title: 'Мастер-класс',
-    level: 'Спецкурс',
-    duration: '1 месяц',
-    lessons: 8,
-    description: 'Интенсивный курс для опытных швей, желающих открыть ателье.',
-    skills: ['Бизнес-план', 'Ценообразование', 'Работа с клиентами', 'Маркетинг'],
-    price: '12 000'
-  }
-]
+const courses = ref([])
+const loading = ref(true)
 
-onMounted(() => {
-  const { observeElements } = useScrollReveal()
-  observeElements('.course-card')
+// Загрузка курсов из БД
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/courses')
+    if (data.success && data.courses) {
+      // Фильтруем только опубликованные курсы
+      const publishedCourses = data.courses.filter((course: any) => course.isPublished === true)
+      
+      courses.value = publishedCourses.map((course: any) => ({
+        id: course.id,
+        slug: course.slug,
+        title: course.title,
+        level: course.category || 'Базовый',
+        duration: course.duration || '2 месяца',
+        lessons: course.lessonsCount || 0,
+        description: course.description ? course.description.substring(0, 80) + (course.description.length > 80 ? '...' : '') : 'Описание курса',
+        skills: course.benefits ? (() => { try { return JSON.parse(course.benefits) } catch(e) { return [] } })() : [],
+        price: course.price ? course.price.toLocaleString('ru-RU') : '0',
+      }))
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки курсов:', e)
+    // Используем fallback данные если ошибка
+    courses.value = [
+      {
+        id: '1',
+        slug: 'osnovy-kroya',
+        title: 'Основы кроя',
+        level: 'Начинающий',
+        duration: '2 месяца',
+        lessons: 16,
+        description: 'Научитесь снимать мерки, строить выкройки и шить простую одежду.',
+        skills: ['Снятие мерок', 'Построение выкроек', 'Пошив юбки', 'Пошив платья'],
+        price: '15 000'
+      },
+      {
+        id: '2',
+        slug: 'prodvinutyy-kroy',
+        title: 'Продвинутый крой',
+        level: 'Продвинутый',
+        duration: '3 месяца',
+        lessons: 24,
+        description: 'Освойте сложные техники кроя и создавайте уникальные модели.',
+        skills: ['Сложные выкройки', 'Моделирование', 'Пошив брюк', 'Работа с тканями'],
+        price: '25 000'
+      }
+    ]
+  } finally {
+    loading.value = false
+    const { observeElements } = useScrollReveal()
+    observeElements('.course-card')
+  }
 })
+
+// Генерируем skills на основе названия и категории курса
+const generateSkills = (title: string, category: string): string[] => {
+  const skillsMap: Record<string, string[]> = {
+    'Технология пошива': ['Основы шитья', 'Работа с тканями', 'Пошив одежды', 'Практические навыки'],
+    'Мастер конструирования': ['Конструирование', 'Методика кроя', 'Точные расчеты', 'Профессиональный уровень'],
+    'Дамское бельё': ['Конструирование белья', 'Работа с деликатными тканями', 'Дизайн', 'Пошив'],
+  }
+  
+  return skillsMap[title] || ['Основные навыки', 'Практика', 'Сертификат']
+}
 </script>
 
 <style scoped>
@@ -125,7 +158,7 @@ onMounted(() => {
   padding: 2rem;
   border-radius: 0;
   transition: all 0.3s ease;
-  opacity: 0;
+  opacity: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -284,6 +317,8 @@ onMounted(() => {
   letter-spacing: 0.05em;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
 }
 
 .btn-course:hover {
